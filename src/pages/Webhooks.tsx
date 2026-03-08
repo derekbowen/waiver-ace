@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2, Webhook } from "lucide-react";
 import { toast } from "sonner";
+import type { Tables } from "@/integrations/supabase/types";
 
 const eventTypes = [
   "envelope.sent",
@@ -20,7 +21,7 @@ const eventTypes = [
 
 export default function Webhooks() {
   const { profile } = useAuth();
-  const [endpoints, setEndpoints] = useState<any[]>([]);
+  const [endpoints, setEndpoints] = useState<Tables<"webhook_endpoints">[]>([]);
   const [url, setUrl] = useState("");
   const [selectedEvents, setSelectedEvents] = useState<string[]>(eventTypes);
   const [loading, setLoading] = useState(true);

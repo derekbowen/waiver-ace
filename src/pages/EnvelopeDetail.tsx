@@ -8,12 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Copy, Send, XCircle, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import type { Tables } from "@/integrations/supabase/types";
 
 export default function EnvelopeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [envelope, setEnvelope] = useState<any>(null);
-  const [events, setEvents] = useState<any[]>([]);
+  const [envelope, setEnvelope] = useState<Tables<"envelopes"> | null>(null);
+  const [events, setEvents] = useState<Tables<"envelope_events">[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

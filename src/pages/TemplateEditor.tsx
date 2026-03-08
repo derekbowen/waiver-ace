@@ -91,8 +91,8 @@ export default function TemplateEditor() {
 
       toast.success("Template created");
       navigate("/templates");
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to save template");
     } finally {
       setSaving(false);
     }

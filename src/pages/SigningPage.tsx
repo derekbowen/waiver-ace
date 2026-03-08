@@ -8,10 +8,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import type { Tables, Json } from "@/integrations/supabase/types";
+
+type EnvelopeWithVersion = Tables<"envelopes"> & {
+  template_versions: Tables<"template_versions"> | null;
+};
 
 export default function SigningPage() {
   const { token } = useParams();
-  const [envelope, setEnvelope] = useState<any>(null);
+  const [envelope, setEnvelope] = useState<EnvelopeWithVersion | null>(null);
   const [templateContent, setTemplateContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
@@ -39,8 +44,9 @@ export default function SigningPage() {
       setEnvelope(env);
 
       // Get template content and replace variables
-      const content = (env.template_versions as any)?.content?.body || "";
-      const payload = env.payload as Record<string, any> || {};
+      const tv = env.template_versions as Tables<"template_versions"> | null;
+      const content = (tv?.content as Record<string, string>)?.body || "";
+      const payload = (env.payload as Record<string, Json>) || {};
       let rendered = content;
       Object.entries(payload).forEach(([key, value]) => {
         rendered = rendered.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), String(value || ""));
@@ -115,8 +121,8 @@ export default function SigningPage() {
 
       setSigned(true);
       toast.success("Waiver signed successfully!");
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Signing failed");
     } finally {
       setSubmitting(false);
     }

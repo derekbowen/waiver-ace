@@ -19,9 +19,9 @@ export default function Dashboard() {
       const envs = envelopes.data || [];
       setStats({
         templates: templates.count || 0,
-        sent: envs.filter((e: any) => e.status === "sent").length,
-        completed: envs.filter((e: any) => e.status === "completed" || e.status === "signed").length,
-        pending: envs.filter((e: any) => ["sent", "viewed"].includes(e.status)).length,
+        sent: envs.filter((e) => e.status === "sent").length,
+        completed: envs.filter((e) => e.status === "completed" || e.status === "signed").length,
+        pending: envs.filter((e) => ["sent", "viewed"].includes(e.status)).length,
       });
     };
     fetchStats();

@@ -21,26 +21,35 @@ interface Envelope {
   created_at: string;
 }
 
+const PAGE_SIZE = 25;
+
 export default function Envelopes() {
   const { profile } = useAuth();
   const [envelopes, setEnvelopes] = useState<Envelope[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!profile?.org_id) { setLoading(false); return; }
+    setLoading(true);
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     supabase
       .from("envelopes")
-      .select("id, signer_name, signer_email, status, booking_id, listing_id, created_at")
+      .select("id, signer_name, signer_email, status, booking_id, listing_id, created_at", { count: "exact" })
       .eq("org_id", profile.org_id)
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
+      .range(from, to)
+      .then(({ data, count }) => {
         setEnvelopes((data as Envelope[]) || []);
+        setTotalCount(count || 0);
         setLoading(false);
       });
-  }, [profile?.org_id]);
+  }, [profile?.org_id, page]);
 
   const filtered = envelopes.filter((e) => {
     const matchSearch = !search || 
@@ -98,32 +107,50 @@ export default function Envelopes() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-2">
-            {filtered.map((e) => (
-              <Link key={e.id} to={`/envelopes/${e.id}`}>
-                <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
-                  <CardContent className="flex items-center justify-between py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                        <Mail className="h-5 w-5 text-primary" />
+          <>
+            <div className="space-y-2">
+              {filtered.map((e) => (
+                <Link key={e.id} to={`/envelopes/${e.id}`}>
+                  <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+                    <CardContent className="flex items-center justify-between py-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                          <Mail className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{e.signer_name || e.signer_email}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {e.booking_id && `Booking: ${e.booking_id} · `}
+                            {format(new Date(e.created_at), "MMM d, yyyy")}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{e.signer_name || e.signer_email}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {e.booking_id && `Booking: ${e.booking_id} · `}
-                          {format(new Date(e.created_at), "MMM d, yyyy")}
-                        </p>
+                      <div className="flex items-center gap-3">
+                        <StatusBadge status={e.status} />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <StatusBadge status={e.status} />
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+
+            {totalCount > PAGE_SIZE && (
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-muted-foreground">
+                  Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, totalCount)} of {totalCount}
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>
+                    Previous
+                  </Button>
+                  <Button variant="outline" size="sm" disabled={(page + 1) * PAGE_SIZE >= totalCount} onClick={() => setPage(page + 1)}>
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </DashboardLayout>

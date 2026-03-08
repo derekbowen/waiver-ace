@@ -14,7 +14,7 @@ import { toast } from "sonner";
 export default function NewEnvelope() {
   const { profile } = useAuth();
   const navigate = useNavigate();
-  const [templates, setTemplates] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<{ id: string; name: string }[]>([]);
   const [templateId, setTemplateId] = useState("");
   const [signerEmail, setSignerEmail] = useState("");
   const [signerName, setSignerName] = useState("");
@@ -80,8 +80,8 @@ export default function NewEnvelope() {
 
       toast.success("Envelope created! Signing link is ready.");
       navigate(`/envelopes/${envelope.id}`);
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to create envelope");
     } finally {
       setSaving(false);
     }

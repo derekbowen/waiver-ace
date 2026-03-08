@@ -6,6 +6,76 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
 };
 
+async function fireWebhooks(
+  supabase: ReturnType<typeof createClient>,
+  orgId: string,
+  eventType: string,
+  envelopeId: string,
+  payload: Record<string, unknown>
+) {
+  const { data: endpoints } = await supabase
+    .from("webhook_endpoints")
+    .select("id, url, secret, events")
+    .eq("org_id", orgId)
+    .eq("is_active", true);
+
+  if (!endpoints?.length) return;
+
+  for (const ep of endpoints) {
+    if (!(ep.events as string[])?.includes(eventType)) continue;
+
+    const body = JSON.stringify({
+      event: eventType,
+      envelope_id: envelopeId,
+      timestamp: new Date().toISOString(),
+      data: payload,
+    });
+
+    // Sign payload with HMAC-SHA256
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(ep.secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
+    const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body));
+    const signature = Array.from(new Uint8Array(sig))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    let responseStatus: number | null = null;
+    let responseBody: string | null = null;
+    let deliveredAt: string | null = null;
+
+    try {
+      const res = await fetch(ep.url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-WaiverFlow-Signature": signature,
+        },
+        body,
+      });
+      responseStatus = res.status;
+      responseBody = (await res.text()).slice(0, 1000);
+      if (res.ok) deliveredAt = new Date().toISOString();
+    } catch (err: unknown) {
+      responseBody = err instanceof Error ? err.message : "Delivery failed";
+    }
+
+    await supabase.from("webhook_deliveries").insert({
+      webhook_endpoint_id: ep.id,
+      envelope_id: envelopeId,
+      event_type: eventType,
+      payload: JSON.parse(body),
+      response_status: responseStatus,
+      response_body: responseBody,
+      delivered_at: deliveredAt,
+    });
+  }
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -27,7 +97,13 @@ serve(async (req: Request) => {
     });
   }
 
-  const keyHash = btoa(apiKey);
+  // SHA-256 hash for secure key comparison
+  const encoded = new TextEncoder().encode(apiKey);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+  const keyHash = Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
   const { data: keyData } = await supabase
     .from("api_keys")
     .select("org_id, is_active")
@@ -98,6 +174,14 @@ serve(async (req: Request) => {
         metadata: { source: "api" },
       });
 
+      // Fire webhooks
+      await fireWebhooks(supabase, orgId, "envelope.sent", envelope.id, {
+        signer_email: envelope.signer_email,
+        signer_name: envelope.signer_name,
+        booking_id: envelope.booking_id,
+        listing_id: envelope.listing_id,
+      });
+
       const signingUrl = `${req.headers.get("origin") || "https://waiverflow.app"}/sign/${envelope.signing_token}`;
 
       return new Response(JSON.stringify({
@@ -149,6 +233,8 @@ serve(async (req: Request) => {
         metadata: { source: "api" },
       });
 
+      await fireWebhooks(supabase, orgId, "envelope.canceled", envelopeId, {});
+
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -171,8 +257,9 @@ serve(async (req: Request) => {
       status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return new Response(JSON.stringify({ error: message }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
