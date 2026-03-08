@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Loader2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
-import { TIERS, type TierKey } from "@/lib/stripe-tiers";
+import { TIERS, OVERAGE_RATE, type TierKey } from "@/lib/stripe-tiers";
 
 export default function Pricing() {
   const { user, subscription, refreshSubscription } = useAuth();
@@ -63,7 +63,7 @@ export default function Pricing() {
         <div className="mb-8 text-center">
           <h1 className="font-heading text-3xl font-bold">Choose Your Plan</h1>
           <p className="text-muted-foreground mt-2">
-            Scale your waiver management as your business grows
+            Pay for what you use — every plan includes overage at ${OVERAGE_RATE.toFixed(2)}/waiver
           </p>
           {subscription.subscribed && (
             <Button variant="outline" className="mt-4 gap-2" onClick={handleManage} disabled={portalLoading}>
@@ -73,10 +73,10 @@ export default function Pricing() {
           )}
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {tierEntries.map(([key, tier]) => {
             const isCurrent = subscription.tier === key;
-            const isPopular = key === "pro";
+            const isPopular = key === "growth";
 
             return (
               <Card key={key} className={`relative flex flex-col ${isPopular ? "border-primary shadow-lg ring-2 ring-primary/20" : ""} ${isCurrent ? "border-primary bg-primary/5" : ""}`}>
@@ -92,11 +92,14 @@ export default function Pricing() {
                 )}
                 <CardHeader className="text-center pb-2">
                   <CardTitle className="font-heading text-xl">{tier.name}</CardTitle>
-                  <CardDescription>{tier.description}</CardDescription>
+                  <CardDescription className="min-h-[40px]">{tier.description}</CardDescription>
                   <div className="mt-4">
                     <span className="text-4xl font-bold">${tier.price}</span>
                     <span className="text-muted-foreground">/mo</span>
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {tier.waiver_limit} waivers included
+                  </p>
                 </CardHeader>
                 <CardContent className="flex-1">
                   <ul className="space-y-3">
