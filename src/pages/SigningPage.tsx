@@ -277,7 +277,7 @@ export default function SigningPage() {
         </div>
       </header>
 
-      <div className="container max-w-2xl py-8 px-4">
+      <div className="max-w-2xl mx-auto py-6 px-4 sm:py-8">
         <div className="animate-fade-in">
           <h1 className="font-heading text-xl font-bold mb-1">Liability Waiver</h1>
           <p className="text-sm text-muted-foreground mb-6">
@@ -290,7 +290,7 @@ export default function SigningPage() {
               <div
                 ref={contentRef}
                 onScroll={handleScroll}
-                className="max-h-[400px] overflow-y-auto p-6 text-sm leading-relaxed whitespace-pre-wrap"
+                className="max-h-[50vh] sm:max-h-[400px] overflow-y-auto p-4 sm:p-6 text-sm leading-relaxed whitespace-pre-wrap"
               >
                 {templateContent}
               </div>
@@ -306,7 +306,7 @@ export default function SigningPage() {
           <div className={`space-y-6 transition-opacity ${scrolledToEnd ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
             <Card>
               <CardContent className="pt-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Full Legal Name *</Label>
                     <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" />
@@ -342,8 +342,8 @@ export default function SigningPage() {
                     <div className="relative">
                       <canvas
                         ref={canvasRef}
-                        width={560}
-                        height={160}
+                        width={400}
+                        height={150}
                         onMouseDown={startDrawing}
                         onMouseMove={draw}
                         onMouseUp={stopDrawing}

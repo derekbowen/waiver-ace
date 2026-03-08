@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -10,8 +11,10 @@ import {
   Webhook,
   Plug,
   CreditCard,
+  Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -25,7 +28,7 @@ const navItems = [
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const location = useLocation();
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -36,52 +39,88 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
+    <>
+      <nav className="flex-1 space-y-1 p-4">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
+          return (
+            <Link
+              key={item.href}
+              to={item.href}
+              onClick={onNavigate}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="border-t p-4">
+        <div className="mb-3 px-3">
+          <p className="text-sm font-medium truncate">{profile?.full_name || profile?.email || "User"}</p>
+          <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
+        </div>
+        <Button variant="ghost" size="sm" className="w-full justify-start gap-2" onClick={handleSignOut}>
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </Button>
+      </div>
+    </>
+  );
+}
+
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+
+  return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-card">
+      {/* Mobile header */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center gap-3 border-b bg-card px-4 md:hidden">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="shrink-0">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0 flex flex-col">
+            <div className="flex h-14 items-center gap-2 border-b px-6">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <FileText className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <span className="font-heading text-lg font-bold tracking-tight">WaiverFlow</span>
+            </div>
+            <SidebarContent onNavigate={() => setOpen(false)} />
+          </SheetContent>
+        </Sheet>
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
+            <FileText className="h-3.5 w-3.5 text-primary-foreground" />
+          </div>
+          <span className="font-heading text-sm font-bold tracking-tight">WaiverFlow</span>
+        </div>
+      </header>
+
+      {/* Desktop sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-50 hidden md:flex w-64 flex-col border-r bg-card">
         <div className="flex h-16 items-center gap-2 border-b px-6">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <FileText className="h-4 w-4 text-primary-foreground" />
           </div>
           <span className="font-heading text-lg font-bold tracking-tight">WaiverFlow</span>
         </div>
-
-        <nav className="flex-1 space-y-1 p-4">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                )}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="border-t p-4">
-          <div className="mb-3 px-3">
-            <p className="text-sm font-medium truncate">{profile?.full_name || profile?.email || "User"}</p>
-            <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
-          </div>
-          <Button variant="ghost" size="sm" className="w-full justify-start gap-2" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4" />
-            Sign out
-          </Button>
-        </div>
+        <SidebarContent />
       </aside>
 
       {/* Main content */}
-      <main className="ml-64 flex-1">
-        <div className="p-8">
+      <main className="flex-1 md:ml-64">
+        <div className="p-4 pt-18 md:p-8 md:pt-8">
           {children}
         </div>
       </main>

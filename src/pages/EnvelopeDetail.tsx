@@ -70,18 +70,20 @@ export default function EnvelopeDetail() {
   return (
     <DashboardLayout>
       <div className="animate-fade-in max-w-4xl">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/envelopes")}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="font-heading text-2xl font-bold">Envelope</h1>
-              <StatusBadge status={envelope.status} />
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={() => navigate("/envelopes")}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="min-w-0">
+              <div className="flex items-center gap-3">
+                <h1 className="font-heading text-2xl font-bold">Envelope</h1>
+                <StatusBadge status={envelope.status} />
+              </div>
+              <p className="text-sm text-muted-foreground mt-1 font-mono truncate">{envelope.id}</p>
             </div>
-            <p className="text-sm text-muted-foreground mt-1 font-mono">{envelope.id}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 sm:shrink-0">
             {["draft", "sent", "viewed"].includes(envelope.status) && (
               <>
                 <Button variant="outline" size="sm" onClick={copySigningLink} className="gap-2">

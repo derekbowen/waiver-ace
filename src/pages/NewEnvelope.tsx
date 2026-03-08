@@ -164,7 +164,7 @@ export default function NewEnvelope() {
           <Card>
             <CardHeader><CardTitle className="text-base">Signer</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Email *</Label>
                   <Input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="signer@example.com" />
@@ -180,7 +180,7 @@ export default function NewEnvelope() {
           <Card>
             <CardHeader><CardTitle className="text-base">Booking Data</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Booking ID</Label>
                   <Input value={bookingId} onChange={(e) => setBookingId(e.target.value)} placeholder="bk_123" />

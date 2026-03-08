@@ -128,7 +128,7 @@ export default function TemplateEditor() {
                 <Label>Description</Label>
                 <Input placeholder="Standard waiver for bookings" value={description} onChange={(e) => setDescription(e.target.value)} />
               </div>
-              <div className="flex items-center justify-between rounded-lg border p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border p-4">
                 <div className="space-y-0.5">
                   <Label htmlFor="require-signing" className="text-sm font-medium">Require signing before booking confirmation</Label>
                   <p className="text-xs text-muted-foreground">When enabled, bookings won't be confirmed until the waiver is signed</p>

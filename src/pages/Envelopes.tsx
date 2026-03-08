@@ -63,23 +63,23 @@ export default function Envelopes() {
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
             <h1 className="font-heading text-2xl font-bold">Envelopes</h1>
             <p className="text-sm text-muted-foreground mt-1">Track all waiver signatures</p>
           </div>
-          <Button onClick={() => navigate("/envelopes/new")} className="gap-2">
+          <Button onClick={() => navigate("/envelopes/new")} className="gap-2 w-full sm:w-auto">
             <Plus className="h-4 w-4" /> New Envelope
           </Button>
         </div>
 
-        <div className="flex gap-3 mb-6">
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search by email, name, booking ID..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-full sm:w-[160px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>

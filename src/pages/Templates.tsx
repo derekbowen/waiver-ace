@@ -48,12 +48,12 @@ export default function Templates() {
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
             <h1 className="font-heading text-2xl font-bold">Templates</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage your waiver templates</p>
           </div>
-          <Button onClick={() => navigate("/templates/new")} className="gap-2">
+          <Button onClick={() => navigate("/templates/new")} className="gap-2 w-full sm:w-auto">
             <Plus className="h-4 w-4" /> New Template
           </Button>
         </div>
