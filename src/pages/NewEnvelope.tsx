@@ -52,6 +52,9 @@ export default function NewEnvelope() {
 
       if (!version) throw new Error("No active template version found");
 
+      // Default expiration: 7 days from now
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
       const { data: envelope, error } = await supabase
         .from("envelopes")
         .insert({
@@ -64,6 +67,7 @@ export default function NewEnvelope() {
           host_id: hostId.trim() || null,
           customer_id: customerId.trim() || null,
           status: "sent",
+          expires_at: expiresAt,
           payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId },
         })
         .select()
@@ -78,7 +82,17 @@ export default function NewEnvelope() {
         metadata: { signer_email: signerEmail },
       });
 
-      toast.success("Envelope created! Signing link is ready.");
+      // Send signing email
+      const signingUrl = `${window.location.origin}/sign/${envelope.signing_token}`;
+      await supabase.functions.invoke("send-signing-email", {
+        body: {
+          to: signerEmail.trim(),
+          signer_name: signerName.trim() || signerEmail.trim(),
+          signing_url: signingUrl,
+        },
+      });
+
+      toast.success("Envelope created and signing link emailed!");
       navigate(`/envelopes/${envelope.id}`);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to create envelope");

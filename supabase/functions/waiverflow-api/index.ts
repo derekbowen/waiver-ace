@@ -6,6 +6,24 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
 };
 
+// Simple in-memory rate limiter: 60 requests per minute per API key prefix
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(keyPrefix: string): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const limit = 60;
+  const windowMs = 60_000;
+
+  let entry = rateLimitMap.get(keyPrefix);
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 0, resetAt: now + windowMs };
+    rateLimitMap.set(keyPrefix, entry);
+  }
+
+  entry.count++;
+  return { allowed: entry.count <= limit, remaining: Math.max(0, limit - entry.count) };
+}
+
 async function fireWebhooks(
   supabase: ReturnType<typeof createClient>,
   orgId: string,
@@ -119,6 +137,21 @@ serve(async (req: Request) => {
 
   const orgId = keyData.org_id;
 
+  // Rate limiting
+  const keyPrefix = apiKey.slice(0, 10);
+  const rateCheck = checkRateLimit(keyPrefix);
+  if (!rateCheck.allowed) {
+    return new Response(JSON.stringify({ error: "Rate limit exceeded. Max 60 requests per minute." }), {
+      status: 429,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+        "X-RateLimit-Remaining": String(rateCheck.remaining),
+        "Retry-After": "60",
+      },
+    });
+  }
+
   // Update last_used_at
   await supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("key_hash", keyHash);
 
@@ -148,6 +181,8 @@ serve(async (req: Request) => {
         });
       }
 
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
       const { data: envelope, error } = await supabase
         .from("envelopes")
         .insert({
@@ -160,6 +195,7 @@ serve(async (req: Request) => {
           host_id: host_id || null,
           customer_id: customer_id || null,
           status: "sent",
+          expires_at: expiresAt,
           payload: payload || {},
         })
         .select()
