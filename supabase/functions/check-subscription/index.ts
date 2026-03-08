@@ -52,7 +52,7 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    // Get user's org
+    // Get user's org and check for tier override
     const { data: profileData } = await supabaseClient
       .from("profiles")
       .select("org_id")
@@ -60,6 +60,33 @@ serve(async (req) => {
       .single();
 
     const orgId = profileData?.org_id;
+
+    // Check if org has a manual tier override (for internal/promo accounts)
+    if (orgId) {
+      const { data: orgData } = await supabaseClient
+        .from("organizations")
+        .select("tier_override")
+        .eq("id", orgId)
+        .single();
+
+      if (orgData?.tier_override) {
+        const overrideTier = orgData.tier_override;
+        logStep("Tier override active", { tier: overrideTier });
+
+        const { data: usageData } = await supabaseClient.rpc("get_org_monthly_usage", { p_org_id: orgId });
+        const usage = usageData ?? 0;
+
+        return new Response(JSON.stringify({
+          subscribed: true,
+          tier: overrideTier,
+          waiver_limit: TIER_LIMITS[overrideTier] ?? 150,
+          usage,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+    }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });

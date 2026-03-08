@@ -2,6 +2,7 @@
 ALTER TABLE public.organizations
   ADD COLUMN IF NOT EXISTS stripe_customer_id text UNIQUE,
   ADD COLUMN IF NOT EXISTS subscription_tier text NOT NULL DEFAULT 'free',
+  ADD COLUMN IF NOT EXISTS tier_override text,  -- set manually to bypass Stripe sync (e.g. for internal/promo accounts)
   ADD COLUMN IF NOT EXISTS current_period_start timestamptz,
   ADD COLUMN IF NOT EXISTS current_period_end timestamptz;
 

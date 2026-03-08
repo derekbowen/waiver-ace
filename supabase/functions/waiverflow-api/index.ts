@@ -246,13 +246,13 @@ serve(async (req: Request) => {
       // Get organization name and subscription tier
       const { data: org } = await supabase
         .from("organizations")
-        .select("name, subscription_tier")
+        .select("name, subscription_tier, tier_override")
         .eq("id", orgId)
         .single();
 
-      // Check usage limits
+      // Check usage limits (tier_override bypasses Stripe sync)
       const tierLimits: Record<string, number> = { free: 5, starter: 15, growth: 50, business: 150 };
-      const currentTier = org?.subscription_tier || "free";
+      const currentTier = org?.tier_override || org?.subscription_tier || "free";
       const limit = tierLimits[currentTier] ?? 5;
 
       const { data: usageCount } = await supabase.rpc("get_org_monthly_usage", { p_org_id: orgId });
