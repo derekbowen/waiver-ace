@@ -64,13 +64,13 @@ export default function Landing() {
             E-Signatures for Marketplace Bookings
           </div>
           <h1 className="font-heading text-5xl font-bold tracking-tight leading-[1.1] mb-6">
-            Liability waivers that
+            Effortless liability waivers
             <br />
-            <span className="text-primary">block bookings</span> until signed
+            <span className="text-primary">for every booking</span>
           </h1>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Generate waivers from templates, collect legally-valid e-signatures with full audit trails,
-            and enforce "no signature = no confirmation" through webhooks and API.
+            and optionally require signing before booking confirmation — all via webhooks and API.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link to="/login">
