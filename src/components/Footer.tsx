@@ -7,9 +7,7 @@ export function Footer() {
       <div className="container">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-              <FileText className="h-3.5 w-3.5 text-primary-foreground" />
-            </div>
+            <img src={logo} alt="Rental Waivers" className="h-7 w-7" />
             <span className="font-heading text-base font-bold tracking-tight">Rental Waivers</span>
           </div>
 
