@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { TIERS } from "@/lib/stripe-tiers";
 
 export default function NewEnvelope() {
-  const { profile } = useAuth();
+  const { profile, subscription } = useAuth();
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<{ id: string; name: string }[]>([]);
   const [templateId, setTemplateId] = useState("");
@@ -34,7 +35,14 @@ export default function NewEnvelope() {
       .then(({ data }) => setTemplates(data || []));
   }, [profile?.org_id]);
 
+  const atLimit = subscription.usage >= subscription.waiverLimit && subscription.tier === "free";
+
   const handleCreate = async () => {
+    if (atLimit) {
+      toast.error("You've reached your monthly waiver limit. Upgrade your plan to continue.");
+      return;
+    }
+
     if (!profile?.org_id || !templateId || !signerEmail) {
       toast.error("Template and signer email are required");
       return;
@@ -115,6 +123,27 @@ export default function NewEnvelope() {
         </div>
 
         <div className="space-y-6">
+          {/* Usage warning */}
+          {atLimit && (
+            <Card className="border-destructive/50 bg-destructive/5">
+              <CardContent className="pt-6 flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">Monthly limit reached</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    You've used {subscription.usage}/{subscription.waiverLimit} waivers on the {TIERS[subscription.tier].name} plan.{" "}
+                    <a href="/pricing" className="text-primary underline">Upgrade your plan</a> to send more.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {!atLimit && subscription.usage > 0 && (
+            <p className="text-sm text-muted-foreground">
+              {subscription.usage}/{subscription.waiverLimit} waivers used this period ({TIERS[subscription.tier].name} plan)
+            </p>
+          )}
+
           <Card>
             <CardHeader><CardTitle className="text-base">Template</CardTitle></CardHeader>
             <CardContent>
@@ -171,7 +200,7 @@ export default function NewEnvelope() {
 
           <div className="flex justify-end gap-3">
             <Button variant="outline" onClick={() => navigate("/envelopes")}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={saving} className="gap-2">
+            <Button onClick={handleCreate} disabled={saving || atLimit} className="gap-2">
               <Send className="h-4 w-4" /> {saving ? "Creating..." : "Create & Send"}
             </Button>
           </div>

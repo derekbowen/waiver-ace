@@ -8,6 +8,8 @@ interface SubscriptionState {
   tier: TierKey;
   subscriptionEnd: string | null;
   loading: boolean;
+  usage: number;
+  waiverLimit: number;
 }
 
 interface AuthContextType {
@@ -23,7 +25,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: null, session: null, loading: true, profile: null, roles: [],
-  subscription: { subscribed: false, tier: "free", subscriptionEnd: null, loading: true },
+  subscription: { subscribed: false, tier: "free", subscriptionEnd: null, loading: true, usage: 0, waiverLimit: 5 },
   refreshSubscription: async () => {},
   signOut: async () => {},
 });
@@ -37,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<AuthContextType["profile"]>(null);
   const [roles, setRoles] = useState<string[]>([]);
   const [subscription, setSubscription] = useState<SubscriptionState>({
-    subscribed: false, tier: "free", subscriptionEnd: null, loading: true,
+    subscribed: false, tier: "free", subscriptionEnd: null, loading: true, usage: 0, waiverLimit: 5,
   });
 
   const checkSubscription = useCallback(async () => {
@@ -46,9 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
       setSubscription({
         subscribed: data.subscribed ?? false,
-        tier: getTierByProductId(data.product_id),
+        tier: data.tier ? (data.tier as TierKey) : getTierByProductId(data.product_id),
         subscriptionEnd: data.subscription_end ?? null,
         loading: false,
+        usage: data.usage ?? 0,
+        waiverLimit: data.waiver_limit ?? 5,
       });
     } catch {
       setSubscription(prev => ({ ...prev, loading: false }));
@@ -68,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setProfile(null);
         setRoles([]);
-        setSubscription({ subscribed: false, tier: "free", subscriptionEnd: null, loading: false });
+        setSubscription({ subscribed: false, tier: "free", subscriptionEnd: null, loading: false, usage: 0, waiverLimit: 5 });
       }
       setLoading(false);
     });

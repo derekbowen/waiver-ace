@@ -3,10 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Mail, CheckCircle, Clock } from "lucide-react";
+import { FileText, Mail, CheckCircle, Clock, TrendingUp } from "lucide-react";
+import { TIERS } from "@/lib/stripe-tiers";
+import { Progress } from "@/components/ui/progress";
 
 export default function Dashboard() {
-  const { profile } = useAuth();
+  const { profile, subscription } = useAuth();
   const [stats, setStats] = useState({ templates: 0, sent: 0, completed: 0, pending: 0 });
 
   useEffect(() => {
@@ -52,6 +54,31 @@ export default function Dashboard() {
                 <a href="/settings" className="text-primary underline">Settings</a>{" "}
                 to create your organization before you can create templates and envelopes.
               </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Usage Card */}
+        {profile?.org_id && (
+          <Card className="mb-6">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Monthly Usage</CardTitle>
+              <TrendingUp className="h-4 w-4 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-3xl font-heading font-bold">{subscription.usage}</span>
+                <span className="text-sm text-muted-foreground">/ {subscription.waiverLimit} waivers</span>
+              </div>
+              <Progress value={Math.min((subscription.usage / subscription.waiverLimit) * 100, 100)} className="h-2 mb-2" />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{TIERS[subscription.tier].name} plan</span>
+                {subscription.usage >= subscription.waiverLimit && subscription.tier === "free" ? (
+                  <a href="/pricing" className="text-primary font-medium">Upgrade plan</a>
+                ) : (
+                  <span>{subscription.waiverLimit - subscription.usage} remaining</span>
+                )}
+              </div>
             </CardContent>
           </Card>
         )}

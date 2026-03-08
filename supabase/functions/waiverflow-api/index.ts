@@ -243,12 +243,31 @@ serve(async (req: Request) => {
         .eq("id", template_id)
         .single();
 
-      // Get organization name
+      // Get organization name and subscription tier
       const { data: org } = await supabase
         .from("organizations")
-        .select("name")
+        .select("name, subscription_tier")
         .eq("id", orgId)
         .single();
+
+      // Check usage limits
+      const tierLimits: Record<string, number> = { free: 5, starter: 15, growth: 50, business: 150 };
+      const currentTier = org?.subscription_tier || "free";
+      const limit = tierLimits[currentTier] ?? 5;
+
+      const { data: usageCount } = await supabase.rpc("get_org_monthly_usage", { p_org_id: orgId });
+      const usage = usageCount ?? 0;
+
+      if (usage >= limit && currentTier === "free") {
+        return new Response(JSON.stringify({
+          error: "Monthly waiver limit reached. Upgrade your plan to continue.",
+          usage,
+          limit,
+          tier: currentTier,
+        }), {
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -332,6 +351,9 @@ serve(async (req: Request) => {
         signing_token: envelope.signing_token,
         created_at: envelope.created_at,
         email_sent: emailSent,
+        usage: usage + 1,
+        limit,
+        tier: currentTier,
       }), {
         status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
