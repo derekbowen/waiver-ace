@@ -19,6 +19,7 @@ const navItems = [
   { label: "Envelopes", href: "/envelopes", icon: Mail },
   { label: "API Keys", href: "/settings/api-keys", icon: Key },
   { label: "Webhooks", href: "/settings/webhooks", icon: Webhook },
+  { label: "Pricing", href: "/pricing", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
