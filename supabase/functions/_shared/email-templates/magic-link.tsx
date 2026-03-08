@@ -24,13 +24,13 @@ export const MagicLinkEmail = ({
 }: MagicLinkEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your WaiverFlow login link</Preview>
+    <Preview>Your Rental Waivers login link</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>WaiverFlow</Text>
+        <Text style={brand}>Rental Waivers</Text>
         <Heading style={h1}>Your login link</Heading>
         <Text style={text}>
-          Click below to sign in to WaiverFlow. This link expires shortly.
+          Click below to sign in to Rental Waivers. This link expires shortly.
         </Text>
         <Button style={button} href={confirmationUrl}>
           Sign In

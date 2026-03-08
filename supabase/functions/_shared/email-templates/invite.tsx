@@ -27,13 +27,13 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>You've been invited to WaiverFlow</Preview>
+    <Preview>You've been invited to Rental Waivers</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>WaiverFlow</Text>
+        <Text style={brand}>Rental Waivers</Text>
         <Heading style={h1}>You've been invited</Heading>
         <Text style={text}>
-          You've been invited to join a team on WaiverFlow — effortless liability
+          You've been invited to join a team on Rental Waivers — effortless liability
           waivers for every booking. Click below to accept and create your account.
         </Text>
         <Button style={button} href={confirmationUrl}>
