@@ -194,6 +194,7 @@ export type Database = {
           logo_url: string | null
           name: string
           retention_years: number
+          tier_override: string | null
           updated_at: string
         }
         Insert: {
@@ -203,6 +204,7 @@ export type Database = {
           logo_url?: string | null
           name: string
           retention_years?: number
+          tier_override?: string | null
           updated_at?: string
         }
         Update: {
@@ -212,6 +214,7 @@ export type Database = {
           logo_url?: string | null
           name?: string
           retention_years?: number
+          tier_override?: string | null
           updated_at?: string
         }
         Relationships: []
