@@ -17,6 +17,7 @@ import SigningPage from "./pages/SigningPage";
 import Settings from "./pages/Settings";
 import ApiKeys from "./pages/ApiKeys";
 import Webhooks from "./pages/Webhooks";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
