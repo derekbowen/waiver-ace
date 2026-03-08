@@ -39,6 +39,12 @@ const steps = [
 ];
 
 export default function Landing() {
+  const { user, loading } = useAuth();
+
+  if (!loading && user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
