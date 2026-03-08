@@ -6,32 +6,32 @@ const features = [
   {
     icon: FileText,
     title: "Template Builder",
-    description: "Create reusable waiver templates with dynamic variables. WYSIWYG editor with versioning.",
+    description: "Create reusable waiver templates with dynamic variables for any rental, event, or service marketplace.",
   },
   {
     icon: Shield,
     title: "Legally Valid E-Signatures",
-    description: "Full audit trail with timestamps, IP addresses, and user agents. Tamper-proof PDF generation.",
+    description: "Full audit trail with timestamps, IP addresses, and user agents. Compliant e-signature capture.",
   },
   {
     icon: Zap,
-    title: "REST API & Webhooks",
-    description: "Create envelopes programmatically. HMAC-signed webhooks for real-time status updates.",
+    title: "REST API & Integrations",
+    description: "Works with Sharetribe, Arcadier, and any marketplace. HMAC-signed webhooks for real-time updates.",
   },
   {
     icon: Globe,
     title: "Multi-Tenant & Secure",
-    description: "Organization-level isolation. JWT auth, rate limiting, and encrypted secrets.",
+    description: "Organization-level isolation. Sell as a white-label service or use for your own marketplace.",
   },
 ];
 
 const steps = [
-  "Admin creates a waiver template with variables",
-  "System creates an envelope via API with booking data",
-  "Customer receives signing link via email",
-  "Signer reviews waiver and completes e-signature",
-  "Webhook fires with booking_id and envelope_id",
-  "Admin views signed documents in dashboard",
+  "Connect WaiverFlow to your marketplace (Sharetribe, Arcadier, or custom)",
+  "Create a waiver template with dynamic variables for your use case",
+  "When a booking is created, WaiverFlow automatically sends the signing link",
+  "Customer reviews the waiver and completes their e-signature",
+  "Waiver completion triggers a webhook — booking is confirmed automatically",
+  "View all signed documents and audit trails in your dashboard",
 ];
 
 export default function Landing() {
@@ -61,16 +61,16 @@ export default function Landing() {
       <section className="container pt-32 pb-20">
         <div className="mx-auto max-w-3xl text-center animate-fade-in">
           <div className="mb-4 inline-flex items-center rounded-full border px-4 py-1.5 text-sm text-muted-foreground">
-            E-Signatures for Marketplace Bookings
+            E-Signatures for Rental, Event & Service Marketplaces
           </div>
           <h1 className="font-heading text-5xl font-bold tracking-tight leading-[1.1] mb-6">
-            Liability waivers that
+            Automated waivers that
             <br />
             <span className="text-primary">block bookings</span> until signed
           </h1>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Generate waivers from templates, collect legally-valid e-signatures with full audit trails,
-            and enforce "no signature = no confirmation" through webhooks and API.
+            Plug into Sharetribe, Arcadier, or any marketplace platform. Automatically send waivers when
+            bookings are created, collect e-signatures, and confirm bookings only after signing.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link to="/login">
@@ -88,7 +88,7 @@ export default function Landing() {
       {/* Features */}
       <section className="border-t bg-secondary/30 py-20">
         <div className="container">
-          <h2 className="font-heading text-3xl font-bold text-center mb-12">Built for Marketplace Operations</h2>
+          <h2 className="font-heading text-3xl font-bold text-center mb-12">Built for Any Marketplace</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {features.map((f) => (
               <div key={f.title} className="rounded-xl border bg-card p-6">
@@ -127,7 +127,7 @@ export default function Landing() {
             Ready to enforce signed waivers?
           </h2>
           <p className="text-primary-foreground/80 mb-8">
-            Set up in minutes. No code changes to your booking system needed.
+            Set up in minutes. Works with Sharetribe, Arcadier, and custom marketplaces.
           </p>
           <Link to="/login">
             <Button size="lg" variant="secondary" className="gap-2">

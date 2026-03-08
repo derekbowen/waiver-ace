@@ -8,6 +8,7 @@ import {
   LogOut,
   Key,
   Webhook,
+  Plug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Templates", href: "/templates", icon: FileText },
   { label: "Envelopes", href: "/envelopes", icon: Mail },
+  { label: "Integrations", href: "/settings/integrations", icon: Plug },
   { label: "API Keys", href: "/settings/api-keys", icon: Key },
   { label: "Webhooks", href: "/settings/webhooks", icon: Webhook },
   { label: "Settings", href: "/settings", icon: Settings },

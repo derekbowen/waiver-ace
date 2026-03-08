@@ -65,8 +65,8 @@ export default function Settings() {
         toast.success("Organization created! You are now an admin.");
         window.location.reload();
       }
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to save settings");
     } finally {
       setSaving(false);
     }
@@ -89,7 +89,7 @@ export default function Settings() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Organization Name</Label>
-                <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="Acme Pool Rentals" />
+                <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="My Marketplace" />
               </div>
               <div className="space-y-2">
                 <Label>PDF Retention (years)</Label>

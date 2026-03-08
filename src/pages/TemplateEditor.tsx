@@ -13,31 +13,32 @@ import { toast } from "sonner";
 
 const defaultVariables = [
   "customer_name", "booking_id", "listing_id", "date", "time",
-  "host_name", "address_redacted", "rules", "state",
+  "provider_name", "location", "rules", "state", "activity_type",
 ];
 
 const defaultContent = `WAIVER AND RELEASE OF LIABILITY
 
-This Waiver and Release of Liability ("Agreement") is entered into by and between the Host and the Customer identified below.
+This Waiver and Release of Liability ("Agreement") is entered into by and between the Provider and the Customer identified below.
 
 Customer: {{customer_name}}
 Booking ID: {{booking_id}}
+Activity/Service: {{activity_type}}
 Date: {{date}}
 Time: {{time}}
-Location: {{address_redacted}}
+Location: {{location}}
 State: {{state}}
 
 ASSUMPTION OF RISK
-The Customer acknowledges that the use of the pool and related facilities involves inherent risks, including but not limited to: drowning, slipping, diving injuries, and other physical harm. The Customer voluntarily assumes all such risks.
+The Customer acknowledges that participation in the booked activity or use of the booked facility involves inherent risks, including but not limited to physical injury, property damage, and other harm. The Customer voluntarily assumes all such risks.
 
 RELEASE AND WAIVER
-The Customer hereby releases, waives, discharges, and covenants not to sue the Host ({{host_name}}), the property owner, and the platform from any and all liability, claims, demands, and causes of action arising out of or related to any loss, damage, or injury that may be sustained during the booking.
+The Customer hereby releases, waives, discharges, and covenants not to sue the Provider ({{provider_name}}), the property owner, and the platform from any and all liability, claims, demands, and causes of action arising out of or related to any loss, damage, or injury that may be sustained during the booking.
 
 RULES AND REGULATIONS
 {{rules}}
 
 INDEMNIFICATION
-The Customer agrees to indemnify and hold harmless the Host and platform from any claims arising from the Customer's use of the facilities.
+The Customer agrees to indemnify and hold harmless the Provider and platform from any claims arising from the Customer's participation in the booked activity or use of the booked facility.
 
 By signing below, I acknowledge that I have read this waiver, understand its contents, and agree to its terms.`;
 
@@ -119,11 +120,11 @@ export default function TemplateEditor() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Name</Label>
-                <Input placeholder="Pool Liability Waiver" value={name} onChange={(e) => setName(e.target.value)} />
+                <Input placeholder="Liability Waiver" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>Description</Label>
-                <Input placeholder="Standard waiver for pool bookings" value={description} onChange={(e) => setDescription(e.target.value)} />
+                <Input placeholder="Standard waiver for bookings" value={description} onChange={(e) => setDescription(e.target.value)} />
               </div>
             </CardContent>
           </Card>
