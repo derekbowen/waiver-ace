@@ -133,7 +133,22 @@ export default function Login() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Loading..." : isSignUp ? "Create account" : "Sign in"}
           </Button>
-        </form>
+
+          {showResend && (
+            <div className="mt-3 rounded-md border border-yellow-500/30 bg-yellow-500/10 p-3 text-center">
+              <p className="text-sm text-muted-foreground mb-2">Your email hasn't been confirmed yet.</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleResendConfirmation}
+                disabled={resending}
+              >
+                {resending ? "Sending..." : "Resend confirmation email"}
+              </Button>
+            </div>
+          )}
+
 
         <div className="my-6 flex items-center gap-3">
           <Separator className="flex-1" />
