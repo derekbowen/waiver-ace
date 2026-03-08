@@ -148,7 +148,7 @@ export default function Login() {
               </Button>
             </div>
           )}
-
+        </form>
 
         <div className="my-6 flex items-center gap-3">
           <Separator className="flex-1" />
