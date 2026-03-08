@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Footer } from "@/components/Footer";
 import {
   FileText,
   Mail,
@@ -78,10 +79,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <main className="ml-64 flex-1">
-        <div className="p-8">
+      <main className="ml-64 flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 p-8">
           {children}
         </div>
+        <Footer />
       </main>
     </div>
   );

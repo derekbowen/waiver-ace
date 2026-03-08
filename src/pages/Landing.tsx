@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/Footer";
 import { FileText, Shield, Zap, Globe, ArrowRight, CheckCircle } from "lucide-react";
 
 const features = [
@@ -138,18 +139,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-primary">
-              <FileText className="h-3 w-3 text-primary-foreground" />
-            </div>
-            <span className="font-heading font-semibold text-foreground">Rental Waivers</span>
-          </div>
-          <p>&copy; {new Date().getFullYear()} Rental Waivers. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
