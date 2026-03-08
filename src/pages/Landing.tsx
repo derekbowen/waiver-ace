@@ -27,6 +27,7 @@ const features = [
 
 const steps = [
   "Admin creates a waiver template with variables",
+  "Toggle required signing on or off per template",
   "System creates an envelope via API with booking data",
   "Customer receives signing link via email",
   "Signer reviews waiver and completes e-signature",
