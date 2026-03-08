@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -48,6 +49,7 @@ export default function TemplateEditor() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState(defaultContent);
+  const [requireSigning, setRequireSigning] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -125,6 +127,13 @@ export default function TemplateEditor() {
               <div className="space-y-2">
                 <Label>Description</Label>
                 <Input placeholder="Standard waiver for bookings" value={description} onChange={(e) => setDescription(e.target.value)} />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <Label htmlFor="require-signing" className="text-sm font-medium">Require signing before booking confirmation</Label>
+                  <p className="text-xs text-muted-foreground">When enabled, bookings won't be confirmed until the waiver is signed</p>
+                </div>
+                <Switch id="require-signing" checked={requireSigning} onCheckedChange={setRequireSigning} />
               </div>
             </CardContent>
           </Card>

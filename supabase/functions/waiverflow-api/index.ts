@@ -24,6 +24,61 @@ function checkRateLimit(keyPrefix: string): { allowed: boolean; remaining: numbe
   return { allowed: entry.count <= limit, remaining: Math.max(0, limit - entry.count) };
 }
 
+function generateSigningEmailHtml({ signerName, signingUrl, templateName, organizationName }: {
+  signerName?: string;
+  signingUrl: string;
+  templateName?: string;
+  organizationName?: string;
+}): string {
+  const orgName = organizationName || "WaiverFlow";
+  const displayName = signerName || "there";
+  const docName = templateName || "Waiver Agreement";
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+  <div style="text-align: center; margin-bottom: 32px;">
+    <h1 style="font-size: 24px; font-weight: 600; margin: 0;">${orgName}</h1>
+  </div>
+
+  <p style="font-size: 16px; margin-bottom: 16px;">Hi ${displayName},</p>
+
+  <p style="font-size: 16px; margin-bottom: 24px;">
+    You have a document that requires your signature: <strong>${docName}</strong>
+  </p>
+
+  <p style="font-size: 16px; margin-bottom: 24px;">
+    Please review and sign the document by clicking the button below:
+  </p>
+
+  <div style="text-align: center; margin: 32px 0;">
+    <a href="${signingUrl}" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;">
+      Review & Sign Document
+    </a>
+  </div>
+
+  <p style="font-size: 14px; color: #64748b; margin-top: 32px;">
+    If the button doesn't work, copy and paste this link into your browser:
+    <br>
+    <a href="${signingUrl}" style="color: #3b82f6; word-break: break-all;">${signingUrl}</a>
+  </p>
+
+  <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
+
+  <p style="font-size: 12px; color: #94a3b8; text-align: center;">
+    This email was sent by ${orgName} via WaiverFlow.<br>
+    If you did not expect this email, please ignore it.
+  </p>
+</body>
+</html>
+  `;
+}
+
 async function fireWebhooks(
   supabase: ReturnType<typeof createClient>,
   orgId: string,
@@ -159,7 +214,7 @@ serve(async (req: Request) => {
     // POST /envelopes - Create envelope
     if (req.method === "POST" && (path === "/envelopes" || path === "/envelopes/")) {
       const body = await req.json();
-      const { template_id, signer_email, signer_name, booking_id, listing_id, host_id, customer_id, payload } = body;
+      const { template_id, signer_email, signer_name, booking_id, listing_id, host_id, customer_id, payload, send_email = true } = body;
 
       if (!template_id || !signer_email) {
         return new Response(JSON.stringify({ error: "template_id and signer_email are required" }), {
@@ -167,10 +222,10 @@ serve(async (req: Request) => {
         });
       }
 
-      // Get current template version
+      // Get current template version with template name
       const { data: version } = await supabase
         .from("template_versions")
-        .select("id")
+        .select("id, template_id")
         .eq("template_id", template_id)
         .eq("is_current", true)
         .single();
@@ -180,6 +235,20 @@ serve(async (req: Request) => {
           status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+
+      // Get template name
+      const { data: template } = await supabase
+        .from("templates")
+        .select("name")
+        .eq("id", template_id)
+        .single();
+
+      // Get organization name
+      const { data: org } = await supabase
+        .from("organizations")
+        .select("name")
+        .eq("id", orgId)
+        .single();
 
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -218,7 +287,43 @@ serve(async (req: Request) => {
         listing_id: envelope.listing_id,
       });
 
-      const signingUrl = `${req.headers.get("origin") || "https://waiverflow.app"}/sign/${envelope.signing_token}`;
+      const baseUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "https://waiverflow.app";
+      const signingUrl = `${baseUrl}/sign/${envelope.signing_token}`;
+
+      // Send email if requested
+      let emailSent = false;
+      if (send_email) {
+        try {
+          const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+          if (RESEND_API_KEY) {
+            const emailResponse = await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${RESEND_API_KEY}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                from: "WaiverFlow <onboarding@resend.dev>",
+                to: [signer_email],
+                subject: `Action Required: Please sign "${template?.name || 'Waiver Agreement'}"`,
+                html: generateSigningEmailHtml({
+                  signerName: signer_name,
+                  signingUrl,
+                  templateName: template?.name,
+                  organizationName: org?.name,
+                }),
+              }),
+            });
+            const emailData = await emailResponse.json();
+            emailSent = emailResponse.ok;
+            if (!emailResponse.ok) {
+              console.error("Failed to send email:", emailData);
+            }
+          }
+        } catch (emailError) {
+          console.error("Error sending email:", emailError);
+        }
+      }
 
       return new Response(JSON.stringify({
         id: envelope.id,
@@ -226,6 +331,7 @@ serve(async (req: Request) => {
         signing_url: signingUrl,
         signing_token: envelope.signing_token,
         created_at: envelope.created_at,
+        email_sent: emailSent,
       }), {
         status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

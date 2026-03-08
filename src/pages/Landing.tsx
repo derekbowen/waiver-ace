@@ -26,12 +26,13 @@ const features = [
 ];
 
 const steps = [
-  "Connect WaiverFlow to your marketplace (Sharetribe, Arcadier, or custom)",
-  "Create a waiver template with dynamic variables for your use case",
-  "When a booking is created, WaiverFlow automatically sends the signing link",
-  "Customer reviews the waiver and completes their e-signature",
-  "Waiver completion triggers a webhook — booking is confirmed automatically",
-  "View all signed documents and audit trails in your dashboard",
+  "Admin creates a waiver template with variables",
+  "Toggle required signing on or off per template",
+  "System creates an envelope via API with booking data",
+  "Customer receives signing link via email",
+  "Signer reviews waiver and completes e-signature",
+  "Webhook fires with booking_id and envelope_id",
+  "Admin views signed documents in dashboard",
 ];
 
 export default function Landing() {
@@ -64,13 +65,13 @@ export default function Landing() {
             E-Signatures for Rental, Event & Service Marketplaces
           </div>
           <h1 className="font-heading text-5xl font-bold tracking-tight leading-[1.1] mb-6">
-            Automated waivers that
+            Effortless liability waivers
             <br />
-            <span className="text-primary">block bookings</span> until signed
+            <span className="text-primary">for every booking</span>
           </h1>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Plug into Sharetribe, Arcadier, or any marketplace platform. Automatically send waivers when
-            bookings are created, collect e-signatures, and confirm bookings only after signing.
+            Generate waivers from templates, collect legally-valid e-signatures with full audit trails,
+            and optionally require signing before booking confirmation — all via webhooks and API.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link to="/login">
@@ -124,10 +125,10 @@ export default function Landing() {
       <section className="border-t bg-primary py-16">
         <div className="container text-center">
           <h2 className="font-heading text-3xl font-bold text-primary-foreground mb-4">
-            Ready to enforce signed waivers?
+            Ready to streamline your waivers?
           </h2>
           <p className="text-primary-foreground/80 mb-8">
-            Set up in minutes. Works with Sharetribe, Arcadier, and custom marketplaces.
+            Set up in minutes. Toggle required signing on or off — no code changes needed.
           </p>
           <Link to="/login">
             <Button size="lg" variant="secondary" className="gap-2">
