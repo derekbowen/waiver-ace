@@ -12,7 +12,7 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   templateName?: string;
   organizationName?: string;
 }): string {
-  const orgName = organizationName || "WaiverFlow";
+  const orgName = organizationName || "Rental Waivers";
   const displayName = signerName || "there";
   const docName = templateName || "Waiver Agreement";
 
