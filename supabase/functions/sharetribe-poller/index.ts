@@ -284,10 +284,10 @@ serve(async (req: Request) => {
           },
           body: JSON.stringify({
             to: customer.email,
-            signer_name: customer.displayName,
-            signing_url: signingUrl,
-            listing_title: listing.title,
-            provider_name: provider.displayName,
+            signerName: customer.displayName,
+            signingUrl,
+            templateName: listing.title,
+            organizationName: provider.displayName,
           }),
         });
 

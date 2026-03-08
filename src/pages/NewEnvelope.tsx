@@ -91,12 +91,15 @@ export default function NewEnvelope() {
       });
 
       // Send signing email
+      // Get template name for the email subject line
+      const selectedTemplate = templates.find((t) => t.id === templateId);
       const signingUrl = `${window.location.origin}/sign/${envelope.signing_token}`;
       await supabase.functions.invoke("send-signing-email", {
         body: {
           to: signerEmail.trim(),
-          signer_name: signerName.trim() || signerEmail.trim(),
-          signing_url: signingUrl,
+          signerName: signerName.trim() || signerEmail.trim(),
+          signingUrl,
+          templateName: selectedTemplate?.name || "Waiver Agreement",
         },
       });
 
