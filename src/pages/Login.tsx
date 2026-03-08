@@ -16,6 +16,7 @@ export default function Login() {
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
