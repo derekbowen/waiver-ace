@@ -50,7 +50,7 @@ serve(async (req: Request) => {
     // POST /envelopes - Create envelope
     if (req.method === "POST" && (path === "/envelopes" || path === "/envelopes/")) {
       const body = await req.json();
-      const { template_id, signer_email, signer_name, booking_id, listing_id, host_id, customer_id, payload } = body;
+      const { template_id, signer_email, signer_name, booking_id, listing_id, host_id, customer_id, payload, send_email = true } = body;
 
       if (!template_id || !signer_email) {
         return new Response(JSON.stringify({ error: "template_id and signer_email are required" }), {
@@ -58,10 +58,10 @@ serve(async (req: Request) => {
         });
       }
 
-      // Get current template version
+      // Get current template version with template name
       const { data: version } = await supabase
         .from("template_versions")
-        .select("id")
+        .select("id, template_id")
         .eq("template_id", template_id)
         .eq("is_current", true)
         .single();
@@ -71,6 +71,20 @@ serve(async (req: Request) => {
           status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+
+      // Get template name
+      const { data: template } = await supabase
+        .from("templates")
+        .select("name")
+        .eq("id", template_id)
+        .single();
+
+      // Get organization name
+      const { data: org } = await supabase
+        .from("organizations")
+        .select("name")
+        .eq("id", orgId)
+        .single();
 
       const { data: envelope, error } = await supabase
         .from("envelopes")
@@ -98,7 +112,43 @@ serve(async (req: Request) => {
         metadata: { source: "api" },
       });
 
-      const signingUrl = `${req.headers.get("origin") || "https://waiverflow.app"}/sign/${envelope.signing_token}`;
+      const baseUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "https://waiverflow.app";
+      const signingUrl = `${baseUrl}/sign/${envelope.signing_token}`;
+
+      // Send email if requested
+      let emailSent = false;
+      if (send_email) {
+        try {
+          const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+          if (RESEND_API_KEY) {
+            const emailResponse = await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${RESEND_API_KEY}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                from: "WaiverFlow <onboarding@resend.dev>",
+                to: [signer_email],
+                subject: `Action Required: Please sign "${template?.name || 'Waiver Agreement'}"`,
+                html: generateSigningEmailHtml({
+                  signerName: signer_name,
+                  signingUrl,
+                  templateName: template?.name,
+                  organizationName: org?.name,
+                }),
+              }),
+            });
+            const emailData = await emailResponse.json();
+            emailSent = emailResponse.ok;
+            if (!emailResponse.ok) {
+              console.error("Failed to send email:", emailData);
+            }
+          }
+        } catch (emailError) {
+          console.error("Error sending email:", emailError);
+        }
+      }
 
       return new Response(JSON.stringify({
         id: envelope.id,
@@ -106,6 +156,7 @@ serve(async (req: Request) => {
         signing_url: signingUrl,
         signing_token: envelope.signing_token,
         created_at: envelope.created_at,
+        email_sent: emailSent,
       }), {
         status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
