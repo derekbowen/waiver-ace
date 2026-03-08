@@ -8,6 +8,7 @@ import {
   LogOut,
   Key,
   Webhook,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ const navItems = [
   { label: "Envelopes", href: "/envelopes", icon: Mail },
   { label: "API Keys", href: "/settings/api-keys", icon: Key },
   { label: "Webhooks", href: "/settings/webhooks", icon: Webhook },
+  { label: "Pricing", href: "/pricing", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
