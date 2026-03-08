@@ -48,6 +48,7 @@ export default function TemplateEditor() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState(defaultContent);
+  const [requireSigning, setRequireSigning] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
