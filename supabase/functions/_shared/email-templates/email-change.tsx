@@ -29,23 +29,16 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email change for {siteName}</Preview>
+    <Preview>Confirm your email change for WaiverFlow</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Text style={brand}>WaiverFlow</Text>
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>
-          You requested to change your email address for {siteName} from{' '}
-          <Link href={`mailto:${email}`} style={link}>
-            {email}
-          </Link>{' '}
+          You requested to change your email from{' '}
+          <Link href={`mailto:${email}`} style={link}>{email}</Link>{' '}
           to{' '}
-          <Link href={`mailto:${newEmail}`} style={link}>
-            {newEmail}
-          </Link>
-          .
-        </Text>
-        <Text style={text}>
-          Click the button below to confirm this change:
+          <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
         </Text>
         <Button style={button} href={confirmationUrl}>
           Confirm Email Change
@@ -61,27 +54,36 @@ export const EmailChangeEmail = ({
 
 export default EmailChangeEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
+const main = { backgroundColor: '#ffffff', fontFamily: "'DM Sans', Arial, sans-serif" }
+const container = { padding: '40px 30px' }
+const brand = {
+  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+  fontSize: '18px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  color: 'hsl(220, 65%, 18%)',
+  margin: '0 0 30px',
+}
+const h1 = {
+  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+  fontSize: '24px',
+  fontWeight: 'bold' as const,
+  color: 'hsl(220, 20%, 10%)',
   margin: '0 0 20px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
+  fontSize: '15px',
+  color: 'hsl(220, 10%, 46%)',
+  lineHeight: '1.6',
+  margin: '0 0 24px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
+const link = { color: 'hsl(220, 65%, 18%)', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
-  fontSize: '14px',
+  backgroundColor: 'hsl(220, 65%, 18%)',
+  color: 'hsl(0, 0%, 98%)',
+  fontSize: '15px',
+  fontWeight: '600' as const,
   borderRadius: '8px',
-  padding: '12px 20px',
+  padding: '14px 24px',
   textDecoration: 'none',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const footer = { fontSize: '13px', color: '#999999', margin: '32px 0 0' }
