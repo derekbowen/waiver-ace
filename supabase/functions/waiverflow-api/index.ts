@@ -53,7 +53,7 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
   
   <p style="font-size: 12px; color: #94a3b8; text-align: center;">
-    This email was sent by ${orgName} via WaiverFlow.<br>
+    This email was sent by ${orgName} via Rental Waivers.<br>
     If you did not expect this email, please ignore it.
   </p>
 </body>

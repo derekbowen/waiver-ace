@@ -41,7 +41,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <FileText className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-heading text-lg font-bold tracking-tight">WaiverFlow</span>
+          <span className="font-heading text-lg font-bold tracking-tight">Rental Waivers</span>
         </div>
 
         <nav className="flex-1 space-y-1 p-4">
