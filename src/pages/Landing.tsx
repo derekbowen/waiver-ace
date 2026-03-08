@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
-import { FileText, Shield, Zap, Globe, ArrowRight, CheckCircle } from "lucide-react";
+import { Shield, Zap, Globe, ArrowRight, CheckCircle, FileText } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const features = [
   {
