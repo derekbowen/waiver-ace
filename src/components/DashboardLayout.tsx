@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Footer } from "@/components/Footer";
 import {
   FileText,
   Mail,
