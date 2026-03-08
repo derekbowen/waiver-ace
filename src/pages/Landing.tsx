@@ -125,10 +125,10 @@ export default function Landing() {
       <section className="border-t bg-primary py-16">
         <div className="container text-center">
           <h2 className="font-heading text-3xl font-bold text-primary-foreground mb-4">
-            Ready to enforce signed waivers?
+            Ready to streamline your waivers?
           </h2>
           <p className="text-primary-foreground/80 mb-8">
-            Set up in minutes. No code changes to your booking system needed.
+            Set up in minutes. Toggle required signing on or off — no code changes needed.
           </p>
           <Link to="/login">
             <Button size="lg" variant="secondary" className="gap-2">
