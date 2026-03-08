@@ -1,7 +1,8 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
-export function Footer() {
+export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
   return (
     <footer className="border-t bg-card py-10">
       <div className="container">
