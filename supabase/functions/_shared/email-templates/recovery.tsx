@@ -24,10 +24,10 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Reset your WaiverFlow password</Preview>
+    <Preview>Reset your Rental Waivers password</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>WaiverFlow</Text>
+        <Text style={brand}>Rental Waivers</Text>
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
           We received a request to reset your password. Click the button below

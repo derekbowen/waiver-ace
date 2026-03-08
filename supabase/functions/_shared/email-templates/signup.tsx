@@ -29,10 +29,10 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for WaiverFlow</Preview>
+    <Preview>Confirm your email for Rental Waivers</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>WaiverFlow</Text>
+        <Text style={brand}>Rental Waivers</Text>
         <Heading style={h1}>Welcome aboard</Heading>
         <Text style={text}>
           Thanks for signing up! You're one step away from effortless liability
