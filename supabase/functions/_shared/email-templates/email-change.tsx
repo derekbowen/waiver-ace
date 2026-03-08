@@ -33,6 +33,7 @@ export const EmailChangeEmail = ({
     <Preview>Confirm your email change for Rental Waivers</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src="https://sibwbzhpyiwmhigskgtr.supabase.co/storage/v1/object/public/email-assets/logo.png" alt="Rental Waivers" width="40" height="40" style={{ margin: '0 0 16px' }} />
         <Text style={brand}>Rental Waivers</Text>
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>

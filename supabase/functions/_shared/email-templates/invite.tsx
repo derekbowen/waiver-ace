@@ -31,6 +31,7 @@ export const InviteEmail = ({
     <Preview>You've been invited to Rental Waivers</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src="https://sibwbzhpyiwmhigskgtr.supabase.co/storage/v1/object/public/email-assets/logo.png" alt="Rental Waivers" width="40" height="40" style={{ margin: '0 0 16px' }} />
         <Text style={brand}>Rental Waivers</Text>
         <Heading style={h1}>You've been invited</Heading>
         <Text style={text}>
