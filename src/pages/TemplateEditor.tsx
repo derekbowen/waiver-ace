@@ -135,6 +135,7 @@ export default function TemplateEditor() {
                 <Switch id="require-signing" checked={requireSigning} onCheckedChange={setRequireSigning} />
               </div>
             </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
