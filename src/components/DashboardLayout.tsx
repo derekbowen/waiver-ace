@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Footer } from "@/components/Footer";
+import logo from "@/assets/logo.png";
 import {
   FileText,
   Mail,
