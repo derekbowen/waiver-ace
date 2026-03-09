@@ -61,6 +61,71 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   `;
 }
 
+async function dispatchWebhooks(
+  supabase: any,
+  orgId: string,
+  eventType: string,
+  payload: Record<string, any>
+) {
+  try {
+    const { data: endpoints } = await supabase
+      .from("webhook_endpoints")
+      .select("id, url, secret, events")
+      .eq("org_id", orgId);
+
+    if (!endpoints?.length) return;
+
+    const body = JSON.stringify({ event: eventType, data: payload, timestamp: new Date().toISOString() });
+
+    for (const ep of endpoints) {
+      if (!(ep.events as string[])?.includes(eventType)) continue;
+
+      // HMAC-SHA256 signature using the stored secret hash as the signing key
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(ep.secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      );
+      const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+      const signature = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
+
+      try {
+        const res = await fetch(ep.url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Webhook-Signature": `sha256=${signature}`,
+            "X-Webhook-Event": eventType,
+          },
+          body,
+        });
+
+        await supabase.from("webhook_deliveries").insert({
+          endpoint_id: ep.id,
+          event_type: eventType,
+          payload,
+          response_status: res.status,
+          success: res.ok,
+        });
+      } catch (err: any) {
+        await supabase.from("webhook_deliveries").insert({
+          endpoint_id: ep.id,
+          event_type: eventType,
+          payload,
+          response_status: 0,
+          success: false,
+          error_message: err.message,
+        });
+      }
+    }
+  } catch (e) {
+    console.error("Webhook dispatch error:", e);
+  }
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -110,6 +175,23 @@ serve(async (req: Request) => {
       if (!template_id || !signer_email) {
         return new Response(JSON.stringify({ error: "template_id and signer_email are required" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Enforce tier waiver limits
+      const tierLimits: Record<string, number> = { free: 5, starter: 15, growth: 50, business: 150 };
+      const { data: orgRow } = await supabase.from("organizations").select("tier_override").eq("id", orgId).single();
+      const orgTier = orgRow?.tier_override || "free";
+      const monthlyLimit = tierLimits[orgTier] ?? 5;
+      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+      const { count: monthlyUsed } = await supabase
+        .from("envelopes")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", orgId)
+        .gte("created_at", startOfMonth);
+      if ((monthlyUsed ?? 0) >= monthlyLimit) {
+        return new Response(JSON.stringify({ error: "Monthly waiver limit reached. Upgrade your plan.", used: monthlyUsed, limit: monthlyLimit }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
@@ -205,6 +287,11 @@ serve(async (req: Request) => {
         }
       }
 
+      // Dispatch webhook
+      await dispatchWebhooks(supabase, orgId, "envelope.sent", {
+        id: envelope.id, status: "sent", signer_email, signing_url: signingUrl,
+      });
+
       return new Response(JSON.stringify({
         id: envelope.id,
         status: envelope.status,
@@ -255,20 +342,65 @@ serve(async (req: Request) => {
         metadata: { source: "api" },
       });
 
+      await dispatchWebhooks(supabase, orgId, "envelope.canceled", { id: envelopeId });
+
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // GET /templates - List templates
-    if (req.method === "GET" && (path === "/templates" || path === "/templates/")) {
-      const { data: templates } = await supabase
-        .from("templates")
-        .select("id, name, description, is_active, created_at")
-        .eq("org_id", orgId)
-        .order("created_at", { ascending: false });
+    // GET /envelopes - List envelopes with pagination
+    if (req.method === "GET" && (path === "/envelopes" || path === "/envelopes/")) {
+      const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
+      const pageSize = Math.min(100, Math.max(1, parseInt(url.searchParams.get("page_size") || "20")));
+      const status = url.searchParams.get("status");
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
 
-      return new Response(JSON.stringify(templates || []), {
+      let query = supabase
+        .from("envelopes")
+        .select("id, status, signer_email, signer_name, booking_id, listing_id, signed_at, created_at", { count: "exact" })
+        .eq("org_id", orgId)
+        .order("created_at", { ascending: false })
+        .range(from, to);
+
+      if (status) query = query.eq("status", status);
+
+      const { data, count, error } = await query;
+      if (error) throw error;
+
+      return new Response(JSON.stringify({
+        data: data || [],
+        total: count || 0,
+        page,
+        page_size: pageSize,
+        total_pages: Math.ceil((count || 0) / pageSize),
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // GET /templates - List templates with pagination
+    if (req.method === "GET" && (path === "/templates" || path === "/templates/")) {
+      const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
+      const pageSize = Math.min(100, Math.max(1, parseInt(url.searchParams.get("page_size") || "20")));
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data: templates, count } = await supabase
+        .from("templates")
+        .select("id, name, description, is_active, created_at", { count: "exact" })
+        .eq("org_id", orgId)
+        .order("created_at", { ascending: false })
+        .range(from, to);
+
+      return new Response(JSON.stringify({
+        data: templates || [],
+        total: count || 0,
+        page,
+        page_size: pageSize,
+        total_pages: Math.ceil((count || 0) / pageSize),
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

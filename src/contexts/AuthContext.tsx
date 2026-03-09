@@ -88,20 +88,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, checkSubscription]);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("profiles")
       .select("id, full_name, email, org_id")
       .eq("user_id", userId)
       .single();
-    setProfile(data);
+    if (!error) setProfile(data);
   };
 
   const fetchRoles = async (userId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId);
-    setRoles(data?.map((r: any) => r.role) ?? []);
+    if (!error) setRoles(data?.map((r: any) => r.role) ?? []);
   };
 
   const signOut = async () => {

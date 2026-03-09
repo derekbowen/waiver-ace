@@ -70,6 +70,23 @@ serve(async (req) => {
       logStep("Active subscription found", { productId, subscriptionEnd });
     }
 
+    // Sync tier to organization for server-side limit enforcement
+    const tierMap: Record<string, string> = {
+      prod_U72HqqcrOsLCZK: "starter",
+      prod_U72HGR1DW4wSdM: "growth",
+      prod_U72HK4z5JuWIki: "business",
+    };
+    const resolvedTier = productId ? (tierMap[productId as string] || "free") : "free";
+    const { data: userProfile } = await supabaseClient
+      .from("profiles")
+      .select("org_id")
+      .eq("user_id", user.id)
+      .single();
+    if (userProfile?.org_id) {
+      await supabaseClient.from("organizations").update({ tier_override: resolvedTier }).eq("id", userProfile.org_id);
+      logStep("Synced tier to org", { org_id: userProfile.org_id, tier: resolvedTier });
+    }
+
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
       product_id: productId,
