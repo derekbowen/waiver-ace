@@ -56,13 +56,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
+    const {
+      data: { subscription: authSub },
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (nextSession?.user) {
         setTimeout(() => {
-          fetchProfile(session.user.id);
-          fetchRoles(session.user.id);
+          fetchProfile(nextSession.user.id);
+          fetchRoles(nextSession.user.id);
           checkSubscription();
         }, 0);
       } else {
@@ -70,17 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoles([]);
         setSubscription({ subscribed: false, tier: "free", subscriptionEnd: null, loading: false });
       }
-      setLoading(false);
-    });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-        fetchRoles(session.user.id);
-        checkSubscription();
-      }
       setLoading(false);
     });
 
