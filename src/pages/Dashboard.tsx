@@ -16,6 +16,7 @@ export default function Dashboard() {
         supabase.from("templates").select("id", { count: "exact", head: true }).eq("org_id", profile.org_id!),
         supabase.from("envelopes").select("id, status").eq("org_id", profile.org_id!),
       ]);
+      if (templates.error || envelopes.error) return;
       const envs = envelopes.data || [];
       setStats({
         templates: templates.count || 0,

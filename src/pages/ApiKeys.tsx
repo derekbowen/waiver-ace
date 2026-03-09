@@ -30,8 +30,8 @@ export default function ApiKeys() {
     if (!profile?.org_id || !newKeyName.trim()) return;
     const rawKey = `wf_${crypto.randomUUID().replace(/-/g, "")}`;
     const prefix = rawKey.slice(0, 10);
-    // Simple hash for storage (in production, use proper hashing)
-    const hash = btoa(rawKey);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawKey));
+    const hash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
 
     const { data, error } = await supabase
       .from("api_keys")
@@ -53,7 +53,8 @@ export default function ApiKeys() {
   };
 
   const deleteKey = async (id: string) => {
-    await supabase.from("api_keys").delete().eq("id", id);
+    const { error } = await supabase.from("api_keys").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
     setKeys(keys.filter((k) => k.id !== id));
     toast.success("API key deleted");
   };

@@ -57,7 +57,8 @@ export default function Webhooks() {
   };
 
   const deleteEndpoint = async (id: string) => {
-    await supabase.from("webhook_endpoints").delete().eq("id", id);
+    const { error } = await supabase.from("webhook_endpoints").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
     setEndpoints(endpoints.filter((e) => e.id !== id));
     toast.success("Webhook deleted");
   };
