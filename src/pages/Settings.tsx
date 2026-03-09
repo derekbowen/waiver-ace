@@ -63,24 +63,12 @@ export default function Settings() {
         if (error) throw error;
         toast.success("Settings saved");
       } else {
-        // Create org and link to profile
-        const { data: org, error: orgErr } = await supabase
-          .from("organizations")
-          .insert({ name: orgName, retention_years: retentionYears })
-          .select()
-          .single();
-        if (orgErr) throw orgErr;
-
-        // Update profile with org_id
-        const { error: profErr } = await supabase
-          .from("profiles")
-          .update({ org_id: org.id })
-          .eq("user_id", user!.id);
-        if (profErr) throw profErr;
-
-        // Add admin role
-        const { error: roleErr } = await supabase.from("user_roles").insert({ user_id: user!.id, role: "admin" });
-        if (roleErr) throw roleErr;
+        // Use Edge Function to bypass RLS for org setup
+        const { data, error } = await supabase.functions.invoke("setup-org", {
+          body: { name: orgName, retention_years: retentionYears },
+        });
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
 
         setHasOrg(true);
         toast.success("Organization created! You are now an admin.");
