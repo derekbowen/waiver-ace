@@ -59,7 +59,8 @@ export default function Settings() {
         if (profErr) throw profErr;
 
         // Add admin role
-        await supabase.from("user_roles").insert({ user_id: user!.id, role: "admin" });
+        const { error: roleErr } = await supabase.from("user_roles").insert({ user_id: user!.id, role: "admin" });
+        if (roleErr) throw roleErr;
 
         setHasOrg(true);
         toast.success("Organization created! You are now an admin.");
