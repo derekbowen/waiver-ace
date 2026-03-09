@@ -11,14 +11,21 @@ import {
   Key,
   Webhook,
   CreditCard,
+  BarChart3,
+  Users,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/useTheme";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Templates", href: "/templates", icon: FileText },
   { label: "Envelopes", href: "/envelopes", icon: Mail },
+  { label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "Team", href: "/settings/team", icon: Users },
   { label: "API Keys", href: "/settings/api-keys", icon: Key },
   { label: "Webhooks", href: "/settings/webhooks", icon: Webhook },
   { label: "Pricing", href: "/pricing", icon: CreditCard },
@@ -29,6 +36,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
 
   const handleSignOut = async () => {
     await signOut();
@@ -70,10 +78,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             <p className="text-sm font-medium truncate">{profile?.full_name || profile?.email || "User"}</p>
             <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
           </div>
-          <Button variant="ghost" size="sm" className="w-full justify-start gap-2" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4" />
-            Sign out
-          </Button>
+          <div className="flex gap-1">
+            <Button variant="ghost" size="sm" className="flex-1 justify-start gap-2" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={toggle} title="Toggle dark mode">
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
       </aside>
 

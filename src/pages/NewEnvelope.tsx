@@ -2,17 +2,19 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUsage } from "@/hooks/useUsage";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function NewEnvelope() {
   const { profile } = useAuth();
+  const { used, limit, isOverLimit } = useUsage();
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<any[]>([]);
   const [templateId, setTemplateId] = useState("");
@@ -22,6 +24,7 @@ export default function NewEnvelope() {
   const [listingId, setListingId] = useState("");
   const [hostId, setHostId] = useState("");
   const [customerId, setCustomerId] = useState("");
+  const [expiresInDays, setExpiresInDays] = useState("7");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -64,6 +67,7 @@ export default function NewEnvelope() {
           host_id: hostId.trim() || null,
           customer_id: customerId.trim() || null,
           status: "sent",
+          expires_at: expiresInDays ? new Date(Date.now() + Number(expiresInDays) * 86400000).toISOString() : null,
           payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId },
         })
         .select()
@@ -101,6 +105,21 @@ export default function NewEnvelope() {
         </div>
 
         <div className="space-y-6">
+          {isOverLimit && (
+            <Card className="border-warning/50 bg-warning/5">
+              <CardContent className="pt-6 flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">Monthly waiver limit reached</p>
+                  <p className="text-sm text-muted-foreground">
+                    You've used {used}/{limit} waivers this month.{" "}
+                    <a href="/pricing" className="text-primary underline">Upgrade your plan</a> to send more.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader><CardTitle className="text-base">Template</CardTitle></CardHeader>
             <CardContent>
@@ -155,9 +174,28 @@ export default function NewEnvelope() {
             </CardContent>
           </Card>
 
+          <Card>
+            <CardHeader><CardTitle className="text-base">Expiration</CardTitle></CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Label>Expires in (days)</Label>
+                <Select value={expiresInDays} onValueChange={setExpiresInDays}>
+                  <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="3">3 days</SelectItem>
+                    <SelectItem value="7">7 days</SelectItem>
+                    <SelectItem value="14">14 days</SelectItem>
+                    <SelectItem value="30">30 days</SelectItem>
+                    <SelectItem value="">No expiration</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="flex justify-end gap-3">
             <Button variant="outline" onClick={() => navigate("/envelopes")}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={saving} className="gap-2">
+            <Button onClick={handleCreate} disabled={saving || isOverLimit} className="gap-2">
               <Send className="h-4 w-4" /> {saving ? "Creating..." : "Create & Send"}
             </Button>
           </div>

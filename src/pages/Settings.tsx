@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Save } from "lucide-react";
+import { Save, Globe } from "lucide-react";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useI18n } from "@/i18n";
 
 export default function Settings() {
   const { profile, user } = useAuth();
+  const { locale } = useI18n();
   const [orgName, setOrgName] = useState("");
   const [retentionYears, setRetentionYears] = useState(7);
   const [saving, setSaving] = useState(false);
@@ -99,6 +102,30 @@ export default function Settings() {
               <Button onClick={handleSave} disabled={saving || !orgName.trim()} className="gap-2">
                 <Save className="h-4 w-4" /> {saving ? "Saving..." : hasOrg ? "Save Changes" : "Create Organization"}
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Language</CardTitle>
+              <CardDescription>Choose your preferred language</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <Select
+                  value={locale}
+                  onValueChange={(v) => {
+                    if ((window as any).__setLocale) (window as any).__setLocale(v);
+                  }}
+                >
+                  <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="es">Espanol</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardContent>
           </Card>
         </div>

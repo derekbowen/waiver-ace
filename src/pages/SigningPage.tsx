@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { SignatureCanvas } from "@/components/SignatureCanvas";
 
 export default function SigningPage() {
   const { token } = useParams();
@@ -18,6 +19,7 @@ export default function SigningPage() {
   const [scrolledToEnd, setScrolledToEnd] = useState(false);
   const [fullName, setFullName] = useState("");
   const [initials, setInitials] = useState("");
+  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -94,9 +96,15 @@ export default function SigningPage() {
           signer_name: fullName.trim(),
           signed_at: now,
           user_agent: navigator.userAgent,
+          content_snapshot: {
+            rendered: templateContent,
+            template_version_id: envelope.template_version_id,
+            snapshot_at: now,
+          },
           signature_data: {
             full_name: fullName.trim(),
             initials: initials.trim(),
+            signature_image: signatureDataUrl,
             agreed_to_electronic_signing: true,
             signed_at_utc: now,
             user_agent: navigator.userAgent,
@@ -227,13 +235,7 @@ export default function SigningPage() {
 
                 <div className="space-y-2">
                   <Label>Signature</Label>
-                  <div className="rounded-lg border-2 border-dashed bg-accent/30 p-8 text-center">
-                    {fullName ? (
-                      <p className="text-2xl italic font-serif text-foreground">{fullName}</p>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">Your typed name will appear here as your signature</p>
-                    )}
-                  </div>
+                  <SignatureCanvas onSignature={setSignatureDataUrl} />
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -249,7 +251,7 @@ export default function SigningPage() {
               </CardContent>
             </Card>
 
-            <Button onClick={handleSign} disabled={submitting || !agreed || !fullName || !initials} className="w-full" size="lg">
+            <Button onClick={handleSign} disabled={submitting || !agreed || !fullName || !initials || !signatureDataUrl} className="w-full" size="lg">
               {submitting ? "Signing..." : "Finish & Submit"}
             </Button>
 

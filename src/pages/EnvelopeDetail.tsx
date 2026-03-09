@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Copy, Send, XCircle, ExternalLink } from "lucide-react";
+import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -15,6 +15,7 @@ export default function EnvelopeDetail() {
   const [envelope, setEnvelope] = useState<any>(null);
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -34,6 +35,29 @@ export default function EnvelopeDetail() {
     const url = `${window.location.origin}/sign/${envelope.signing_token}`;
     navigator.clipboard.writeText(url);
     toast.success("Signing link copied");
+  };
+
+  const downloadPdf = async () => {
+    setPdfLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-pdf", {
+        body: { envelope_id: id },
+      });
+      if (error) throw error;
+
+      // data is already an ArrayBuffer or Blob
+      const blob = data instanceof Blob ? data : new Blob([data], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `waiver-${id?.slice(0, 8)}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to generate PDF");
+    } finally {
+      setPdfLoading(false);
+    }
   };
 
   const cancelEnvelope = async () => {
@@ -81,6 +105,11 @@ export default function EnvelopeDetail() {
             <p className="text-sm text-muted-foreground mt-1 font-mono">{envelope.id}</p>
           </div>
           <div className="flex gap-2">
+            {["completed", "signed"].includes(envelope.status) && (
+              <Button variant="outline" size="sm" onClick={downloadPdf} disabled={pdfLoading} className="gap-2">
+                {pdfLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />} Download PDF
+              </Button>
+            )}
             {["draft", "sent", "viewed"].includes(envelope.status) && (
               <>
                 <Button variant="outline" size="sm" onClick={copySigningLink} className="gap-2">
