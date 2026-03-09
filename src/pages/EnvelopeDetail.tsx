@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2 } from "lucide-react";
+import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -17,18 +18,38 @@ export default function EnvelopeDetail() {
   const [loading, setLoading] = useState(true);
   const [pdfLoading, setPdfLoading] = useState(false);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const [envRes, eventsRes] = await Promise.all([
-        supabase.from("envelopes").select("*").eq("id", id).single(),
-        supabase.from("envelope_events").select("*").eq("envelope_id", id).order("created_at", { ascending: true }),
-      ]);
-      setEnvelope(envRes.data);
-      setEvents(eventsRes.data || []);
-      setLoading(false);
-    };
-    fetch();
+  const fetchDetail = useCallback(async () => {
+    const [envRes, eventsRes] = await Promise.all([
+      supabase.from("envelopes").select("*").eq("id", id).single(),
+      supabase.from("envelope_events").select("*").eq("envelope_id", id).order("created_at", { ascending: true }),
+    ]);
+    setEnvelope(envRes.data);
+    setEvents(eventsRes.data || []);
+    setLoading(false);
   }, [id]);
+
+  useEffect(() => {
+    fetchDetail();
+  }, [fetchDetail]);
+
+  // Realtime: update when this envelope or its events change
+  useEffect(() => {
+    if (!id) return;
+    const channel = supabase
+      .channel(`envelope-${id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "envelopes", filter: `id=eq.${id}` },
+        () => fetchDetail()
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "envelope_events", filter: `envelope_id=eq.${id}` },
+        () => fetchDetail()
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [id, fetchDetail]);
 
   const copySigningLink = () => {
     if (!envelope) return;
@@ -106,9 +127,16 @@ export default function EnvelopeDetail() {
           </div>
           <div className="flex gap-2">
             {["completed", "signed"].includes(envelope.status) && (
-              <Button variant="outline" size="sm" onClick={downloadPdf} disabled={pdfLoading} className="gap-2">
-                {pdfLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />} Download PDF
-              </Button>
+              <>
+                <Link to={`/envelopes/${id}/certificate`}>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Shield className="h-3 w-3" /> Certificate
+                  </Button>
+                </Link>
+                <Button variant="outline" size="sm" onClick={downloadPdf} disabled={pdfLoading} className="gap-2">
+                  {pdfLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />} Download PDF
+                </Button>
+              </>
             )}
             {["draft", "sent", "viewed"].includes(envelope.status) && (
               <>

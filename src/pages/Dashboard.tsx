@@ -1,32 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Mail, CheckCircle, Clock } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const { profile } = useAuth();
   const [stats, setStats] = useState({ templates: 0, sent: 0, completed: 0, pending: 0 });
 
+  const fetchStats = useCallback(async () => {
+    if (!profile?.org_id) return;
+    const [templates, envelopes] = await Promise.all([
+      supabase.from("templates").select("id", { count: "exact", head: true }).eq("org_id", profile.org_id!),
+      supabase.from("envelopes").select("id, status").eq("org_id", profile.org_id!),
+    ]);
+    if (templates.error || envelopes.error) return;
+    const envs = envelopes.data || [];
+    setStats({
+      templates: templates.count || 0,
+      sent: envs.filter((e: any) => e.status === "sent").length,
+      completed: envs.filter((e: any) => e.status === "completed" || e.status === "signed").length,
+      pending: envs.filter((e: any) => ["sent", "viewed"].includes(e.status)).length,
+    });
+  }, [profile?.org_id]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  // Realtime: re-fetch stats when any envelope changes
   useEffect(() => {
     if (!profile?.org_id) return;
-    const fetchStats = async () => {
-      const [templates, envelopes] = await Promise.all([
-        supabase.from("templates").select("id", { count: "exact", head: true }).eq("org_id", profile.org_id!),
-        supabase.from("envelopes").select("id, status").eq("org_id", profile.org_id!),
-      ]);
-      if (templates.error || envelopes.error) return;
-      const envs = envelopes.data || [];
-      setStats({
-        templates: templates.count || 0,
-        sent: envs.filter((e: any) => e.status === "sent").length,
-        completed: envs.filter((e: any) => e.status === "completed" || e.status === "signed").length,
-        pending: envs.filter((e: any) => ["sent", "viewed"].includes(e.status)).length,
-      });
-    };
-    fetchStats();
-  }, [profile?.org_id]);
+    const channel = supabase
+      .channel("dashboard-envelopes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "envelopes", filter: `org_id=eq.${profile.org_id}` },
+        (payload) => {
+          fetchStats();
+          if (payload.eventType === "UPDATE" && (payload.new as any)?.status === "completed") {
+            toast.success(`Waiver signed by ${(payload.new as any)?.signer_name || (payload.new as any)?.signer_email}`);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [profile?.org_id, fetchStats]);
 
   const statCards = [
     { label: "Templates", value: stats.templates, icon: FileText, color: "text-primary" },

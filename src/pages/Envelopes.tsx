@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,7 +32,7 @@ export default function Envelopes() {
   const pageSize = 20;
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchEnvelopes = useCallback(() => {
     if (!profile?.org_id) { setLoading(false); return; }
     supabase
       .from("envelopes")
@@ -44,6 +44,24 @@ export default function Envelopes() {
         setLoading(false);
       });
   }, [profile?.org_id]);
+
+  useEffect(() => {
+    fetchEnvelopes();
+  }, [fetchEnvelopes]);
+
+  // Realtime: update list when envelopes change
+  useEffect(() => {
+    if (!profile?.org_id) return;
+    const channel = supabase
+      .channel("envelopes-list")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "envelopes", filter: `org_id=eq.${profile.org_id}` },
+        () => fetchEnvelopes()
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [profile?.org_id, fetchEnvelopes]);
 
   const filtered = envelopes.filter((e) => {
     const matchSearch = !search || 

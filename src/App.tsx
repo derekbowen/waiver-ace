@@ -21,6 +21,7 @@ import Webhooks from "./pages/Webhooks";
 import TeamMembers from "./pages/TeamMembers";
 import Analytics from "./pages/Analytics";
 import BulkSend from "./pages/BulkSend";
+import CompletionCertificate from "./pages/CompletionCertificate";
 import Pricing from "./pages/Pricing";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/envelopes" element={<ProtectedRoute><Envelopes /></ProtectedRoute>} />
             <Route path="/envelopes/new" element={<ProtectedRoute><NewEnvelope /></ProtectedRoute>} />
             <Route path="/envelopes/:id" element={<ProtectedRoute><EnvelopeDetail /></ProtectedRoute>} />
+            <Route path="/envelopes/:id/certificate" element={<ProtectedRoute><CompletionCertificate /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/settings/api-keys" element={<ProtectedRoute><ApiKeys /></ProtectedRoute>} />
             <Route path="/settings/webhooks" element={<ProtectedRoute><Webhooks /></ProtectedRoute>} />
