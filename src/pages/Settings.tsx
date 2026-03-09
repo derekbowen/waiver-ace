@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Save, Globe, ExternalLink, Loader2, CreditCard } from "lucide-react";
+import { Save, Globe, ExternalLink, Loader2, CreditCard, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useI18n } from "@/i18n";
@@ -133,6 +133,26 @@ export default function Settings() {
               </div>
             </CardContent>
           </Card>
+
+          {hasOrg && (
+            <Card className="border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  Marketplace Integration
+                </CardTitle>
+                <CardDescription>
+                  Automatically send waivers when customers book on ShareTribe or other marketplaces
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/settings/marketplace"}>
+                  <ExternalLink className="h-4 w-4" />
+                  Configure Integration
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           {hasOrg && (
             <Card>

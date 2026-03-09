@@ -58,6 +58,66 @@ export type Database = {
           },
         ]
       }
+      marketplace_integrations: {
+        Row: {
+          id: string
+          org_id: string
+          platform: string
+          client_id: string | null
+          client_secret: string | null
+          webhook_secret: string
+          api_base_url: string | null
+          default_template_id: string | null
+          is_active: boolean
+          config: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          org_id: string
+          platform?: string
+          client_id?: string | null
+          client_secret?: string | null
+          webhook_secret?: string
+          api_base_url?: string | null
+          default_template_id?: string | null
+          is_active?: boolean
+          config?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          org_id?: string
+          platform?: string
+          client_id?: string | null
+          client_secret?: string | null
+          webhook_secret?: string
+          api_base_url?: string | null
+          default_template_id?: string | null
+          is_active?: boolean
+          config?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_integrations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_integrations_default_template_id_fkey"
+            columns: ["default_template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       envelope_events: {
         Row: {
           created_at: string

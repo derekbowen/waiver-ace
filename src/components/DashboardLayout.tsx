@@ -19,6 +19,7 @@ import {
   MoreHorizontal,
   X,
   ChevronRight,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ const navItems = [
   { label: "Team", href: "/settings/team", icon: Users },
   { label: "API Keys", href: "/settings/api-keys", icon: Key },
   { label: "Webhooks", href: "/settings/webhooks", icon: Webhook },
+  { label: "Marketplace", href: "/settings/marketplace", icon: Zap },
   { label: "Pricing", href: "/pricing", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
