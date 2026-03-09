@@ -23,7 +23,7 @@ export default function ApiKeys() {
       .select("*")
       .eq("org_id", profile.org_id)
       .order("created_at", { ascending: false })
-      .then(({ data }) => { setKeys(data || []); setLoading(false); });
+      .then(({ data, error }) => { if (!error) setKeys(data || []); setLoading(false); });
   }, [profile?.org_id]);
 
   const createKey = async () => {

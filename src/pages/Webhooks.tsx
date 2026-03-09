@@ -32,19 +32,21 @@ export default function Webhooks() {
       .select("*")
       .eq("org_id", profile.org_id)
       .order("created_at", { ascending: false })
-      .then(({ data }) => { setEndpoints(data || []); setLoading(false); });
+      .then(({ data, error }) => { if (!error) setEndpoints(data || []); setLoading(false); });
   }, [profile?.org_id]);
 
   const createEndpoint = async () => {
     if (!profile?.org_id || !url.trim()) return;
     const secret = `whsec_${crypto.randomUUID().replace(/-/g, "")}`;
+    const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(secret));
+    const secretHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
 
     const { data, error } = await supabase
       .from("webhook_endpoints")
       .insert({
         org_id: profile.org_id,
         url: url.trim(),
-        secret,
+        secret: secretHash,
         events: selectedEvents,
       })
       .select()
@@ -53,7 +55,7 @@ export default function Webhooks() {
     if (error) { toast.error(error.message); return; }
     setEndpoints([data, ...endpoints]);
     setUrl("");
-    toast.success(`Webhook created. Secret: ${secret} (save it now)`);
+    toast.success(`Webhook created. Secret: ${secret} (save it now — it won't be shown again)`);
   };
 
   const deleteEndpoint = async (id: string) => {

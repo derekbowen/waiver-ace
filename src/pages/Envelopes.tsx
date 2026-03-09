@@ -36,8 +36,8 @@ export default function Envelopes() {
       .select("id, signer_name, signer_email, status, booking_id, listing_id, created_at")
       .eq("org_id", profile.org_id)
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setEnvelopes((data as Envelope[]) || []);
+      .then(({ data, error }) => {
+        if (!error) setEnvelopes((data as Envelope[]) || []);
         setLoading(false);
       });
   }, [profile?.org_id]);
