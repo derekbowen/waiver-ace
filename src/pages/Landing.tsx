@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock, Smartphone, Droplets, Home, Wrench, PartyPopper } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { TIERS } from "@/lib/stripe-tiers";
 import logo from "@/assets/logo.png";
 
 export default function Landing() {
@@ -340,10 +341,10 @@ export default function Landing() {
 
           <div className="grid gap-4 md:grid-cols-4">
             {[
-              { name: "Free", price: "$0", waivers: "5/month", highlight: false },
-              { name: "Starter", price: "$19", waivers: "15/month", highlight: false },
-              { name: "Growth", price: "$49", waivers: "50/month", highlight: true },
-              { name: "Business", price: "$99", waivers: "150/month", highlight: false },
+              { name: TIERS.free.name, price: `$${TIERS.free.price}`, waivers: `${TIERS.free.waiver_limit}/month`, highlight: false },
+              { name: TIERS.starter.name, price: `$${TIERS.starter.price}`, waivers: `${TIERS.starter.waiver_limit}/month`, highlight: false },
+              { name: TIERS.growth.name, price: `$${TIERS.growth.price}`, waivers: `${TIERS.growth.waiver_limit}/month`, highlight: true },
+              { name: TIERS.business.name, price: `$${TIERS.business.price}`, waivers: `${TIERS.business.waiver_limit}/month`, highlight: false },
             ].map((p) => (
               <div key={p.name} className={`rounded-xl border p-6 text-center ${p.highlight ? "border-primary border-2 bg-card relative" : "bg-card"}`}>
                 {p.highlight && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">POPULAR</div>}
