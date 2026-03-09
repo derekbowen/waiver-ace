@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield } from "lucide-react";
+import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ export default function EnvelopeDetail() {
   const navigate = useNavigate();
   const [envelope, setEnvelope] = useState<any>(null);
   const [events, setEvents] = useState<any[]>([]);
+  const [groupSigs, setGroupSigs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [pdfLoading, setPdfLoading] = useState(false);
 
@@ -25,6 +26,17 @@ export default function EnvelopeDetail() {
     ]);
     setEnvelope(envRes.data);
     setEvents(eventsRes.data || []);
+
+    // Fetch group signatures if applicable
+    if (envRes.data?.is_group_waiver) {
+      const { data: sigs } = await supabase
+        .from("group_signatures")
+        .select("*")
+        .eq("envelope_id", id!)
+        .order("signed_at", { ascending: true });
+      setGroupSigs(sigs || []);
+    }
+
     setLoading(false);
   }, [id]);
 
@@ -47,13 +59,20 @@ export default function EnvelopeDetail() {
         { event: "INSERT", schema: "public", table: "envelope_events", filter: `envelope_id=eq.${id}` },
         () => fetchDetail()
       )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "group_signatures", filter: `envelope_id=eq.${id}` },
+        () => fetchDetail()
+      )
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [id, fetchDetail]);
 
   const copySigningLink = () => {
     if (!envelope) return;
-    const url = `${window.location.origin}/sign/${envelope.signing_token}`;
+    const url = envelope.is_group_waiver
+      ? `${window.location.origin}/waiver/${envelope.group_token}`
+      : `${window.location.origin}/sign/${envelope.signing_token}`;
     navigator.clipboard.writeText(url);
     toast.success("Signing link copied");
   };
@@ -172,6 +191,37 @@ export default function EnvelopeDetail() {
             </CardContent>
           </Card>
         </div>
+
+        {envelope.is_group_waiver && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Users className="h-4 w-4" /> Group Signatures ({groupSigs.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {groupSigs.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No one has signed yet. Share the link with your group.</p>
+              ) : (
+                <div className="space-y-3">
+                  {groupSigs.map((sig) => (
+                    <div key={sig.id} className="flex items-center justify-between rounded-lg border p-3">
+                      <div>
+                        <p className="text-sm font-medium">{sig.signer_name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {sig.signer_email || "No email provided"} · Signed {format(new Date(sig.signed_at), "PPpp")}
+                        </p>
+                      </div>
+                      {sig.signature_image && (
+                        <img src={sig.signature_image} alt="Signature" className="h-8 max-w-[120px] object-contain" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="mt-6">
           <CardHeader><CardTitle className="text-base">Event Timeline</CardTitle></CardHeader>

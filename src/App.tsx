@@ -15,6 +15,7 @@ import Envelopes from "./pages/Envelopes";
 import EnvelopeDetail from "./pages/EnvelopeDetail";
 import NewEnvelope from "./pages/NewEnvelope";
 import SigningPage from "./pages/SigningPage";
+import GroupSigningPage from "./pages/GroupSigningPage";
 import Settings from "./pages/Settings";
 import ApiKeys from "./pages/ApiKeys";
 import Webhooks from "./pages/Webhooks";
@@ -25,6 +26,7 @@ import CompletionCertificate from "./pages/CompletionCertificate";
 import Pricing from "./pages/Pricing";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Docs from "./pages/Docs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,8 +43,10 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign/:token" element={<SigningPage />} />
+            <Route path="/waiver/:groupToken" element={<GroupSigningPage />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/docs" element={<Docs />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
             <Route path="/templates/new" element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />

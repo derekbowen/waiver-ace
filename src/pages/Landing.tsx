@@ -55,6 +55,9 @@ export default function Landing() {
             <span className="font-heading text-lg font-bold tracking-tight">Rental Waivers</span>
           </div>
           <div className="flex items-center gap-3">
+            <Link to="/docs">
+              <Button variant="ghost" size="sm">API Docs</Button>
+            </Link>
             <Link to="/login">
               <Button variant="ghost" size="sm">Sign in</Button>
             </Link>
