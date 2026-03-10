@@ -1,17 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
-
-interface EmailRequest {
-  to: string;
-  signerName: string;
-  signingUrl: string;
-  templateName: string;
-  organizationName?: string;
-}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -24,17 +17,100 @@ serve(async (req) => {
       throw new Error('RESEND_API_KEY is not configured');
     }
 
-    const { to, signerName, signingUrl, templateName, organizationName } = await req.json() as EmailRequest;
-
-    if (!to || !signingUrl) {
+    // Authenticate the caller
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: to, signingUrl' }),
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+
+    // Require envelope_id instead of arbitrary recipient/URL
+    const { envelope_id } = await req.json();
+    if (!envelope_id) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required field: envelope_id' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const orgName = organizationName || 'WaiverFlow';
-    const displayName = signerName || 'there';
+    // Use service role to fetch envelope and validate ownership
+    const adminClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { persistSession: false } }
+    );
+
+    // Get the caller's org_id
+    const { data: profile } = await adminClient
+      .from('profiles')
+      .select('org_id')
+      .eq('user_id', userId)
+      .single();
+
+    if (!profile?.org_id) {
+      return new Response(
+        JSON.stringify({ error: 'User has no organization' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Fetch envelope and verify it belongs to the caller's org
+    const { data: envelope, error: envError } = await adminClient
+      .from('envelopes')
+      .select('id, signer_email, signer_name, signing_token, org_id, template_versions(content)')
+      .eq('id', envelope_id)
+      .single();
+
+    if (envError || !envelope) {
+      return new Response(
+        JSON.stringify({ error: 'Envelope not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (envelope.org_id !== profile.org_id) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Get org name for branding
+    const { data: org } = await adminClient
+      .from('organizations')
+      .select('name')
+      .eq('id', profile.org_id)
+      .single();
+
+    // Build signing URL from our own domain — never accept from client
+    const baseUrl = Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '') || '';
+    // Use the origin from the request for the signing URL
+    const origin = req.headers.get('origin') || 'https://rentalwaivers.lovable.app';
+    const signingUrl = `${origin}/sign/${envelope.signing_token}`;
+
+    const to = envelope.signer_email;
+    const displayName = envelope.signer_name || 'there';
+    const orgName = org?.name || 'WaiverFlow';
+    const templateName = (envelope.template_versions as any)?.content?.title || 'Waiver Agreement';
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -51,7 +127,7 @@ serve(async (req) => {
   <p style="font-size: 16px; margin-bottom: 16px;">Hi ${displayName},</p>
   
   <p style="font-size: 16px; margin-bottom: 24px;">
-    You have a document that requires your signature: <strong>${templateName || 'Waiver Agreement'}</strong>
+    You have a document that requires your signature: <strong>${templateName}</strong>
   </p>
   
   <p style="font-size: 16px; margin-bottom: 24px;">
@@ -89,7 +165,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: 'WaiverFlow <onboarding@resend.dev>',
         to: [to],
-        subject: `Action Required: Please sign "${templateName || 'Waiver Agreement'}"`,
+        subject: `Action Required: Please sign "${templateName}"`,
         html: htmlContent,
       }),
     });

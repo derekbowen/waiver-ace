@@ -25,41 +25,38 @@ export default function SigningPage() {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetch = async () => {
-      // Find envelope by signing token
-      const { data: env } = await supabase
-        .from("envelopes")
-        .select("*, template_versions(*)")
-        .eq("signing_token", token)
-        .single();
+    const fetchEnvelope = async () => {
+      if (!token) { setLoading(false); return; }
 
-      if (!env) {
+      // Use SECURITY DEFINER RPC instead of direct table access
+      const { data, error } = await supabase.rpc("get_envelope_by_token", {
+        p_token: token,
+      });
+
+      if (error || !data) {
         setLoading(false);
         return;
       }
 
+      const env = data as any;
       setEnvelope(env);
 
       // Get template content and replace variables
-      const content = (env.template_versions as any)?.content?.body || "";
-      const payload = env.payload as Record<string, any> || {};
+      const content = env.template_content?.body || "";
+      const payload = (env.payload as Record<string, any>) || {};
       let rendered = content;
       Object.entries(payload).forEach(([key, value]) => {
         rendered = rendered.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), String(value || ""));
       });
-      // Fill remaining known variables
       rendered = rendered.replace(/\{\{customer_name\}\}/g, env.signer_name || "");
       rendered = rendered.replace(/\{\{date\}\}/g, new Date().toLocaleDateString());
       setTemplateContent(rendered);
 
-      // Mark as viewed if not already
+      // Mark as viewed via RPC
       if (env.status === "sent") {
-        await supabase.from("envelopes").update({ status: "viewed" }).eq("id", env.id);
-        await supabase.from("envelope_events").insert({
-          envelope_id: env.id,
-          event_type: "envelope.viewed",
-          ip_address: null,
-          user_agent: navigator.userAgent,
+        await supabase.rpc("view_envelope", {
+          p_token: token,
+          p_user_agent: navigator.userAgent,
         });
       }
 
@@ -69,7 +66,7 @@ export default function SigningPage() {
 
       setLoading(false);
     };
-    fetch();
+    fetchEnvelope();
   }, [token]);
 
   const handleScroll = () => {
@@ -89,42 +86,33 @@ export default function SigningPage() {
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
-      const { error } = await supabase
-        .from("envelopes")
-        .update({
-          status: "completed",
-          signer_name: fullName.trim(),
-          signed_at: now,
+
+      // Use SECURITY DEFINER RPC instead of direct table update
+      const { data: result, error } = await supabase.rpc("sign_envelope", {
+        p_token: token!,
+        p_signer_name: fullName.trim(),
+        p_signature_data: {
+          full_name: fullName.trim(),
+          initials: initials.trim(),
+          signature_image: signatureDataUrl,
+          agreed_to_electronic_signing: true,
+          signed_at_utc: now,
           user_agent: navigator.userAgent,
-          content_snapshot: {
-            rendered: templateContent,
-            template_version_id: envelope.template_version_id,
-            snapshot_at: now,
-          },
-          signature_data: {
-            full_name: fullName.trim(),
-            initials: initials.trim(),
-            signature_image: signatureDataUrl,
-            agreed_to_electronic_signing: true,
-            signed_at_utc: now,
-            user_agent: navigator.userAgent,
-          },
-        })
-        .eq("signing_token", token);
+        },
+        p_user_agent: navigator.userAgent,
+      });
 
       if (error) throw error;
 
-      await supabase.from("envelope_events").insert({
-        envelope_id: envelope.id,
-        event_type: "envelope.completed",
-        user_agent: navigator.userAgent,
-        metadata: { signer_name: fullName.trim() },
-      });
+      const res = result as any;
+      if (!res?.success) {
+        throw new Error(res?.error || "Failed to sign envelope");
+      }
 
-      // Send confirmation email to signer + notification to admin (fire and forget)
+      // Send completion email (fire and forget)
       supabase.functions.invoke("send-completion-email", {
-        body: { envelope_id: envelope.id },
-      }).catch(() => {}); // Don't block the UI on email failure
+        body: { envelope_id: res.envelope_id },
+      }).catch(() => {});
 
       setSigned(true);
       toast.success("Waiver signed successfully!");
@@ -187,7 +175,6 @@ export default function SigningPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-card sticky top-0 z-10">
         <div className="container flex h-14 items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded bg-primary">
@@ -205,7 +192,6 @@ export default function SigningPage() {
             Please read the waiver below carefully, scroll to the bottom, then complete your signature.
           </p>
 
-          {/* Waiver content */}
           <Card className="mb-6">
             <CardContent className="p-0">
               <div
@@ -223,7 +209,6 @@ export default function SigningPage() {
             </CardContent>
           </Card>
 
-          {/* Signature fields */}
           <div className={`space-y-6 transition-opacity ${scrolledToEnd ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
             <Card>
               <CardContent className="pt-6 space-y-4">
