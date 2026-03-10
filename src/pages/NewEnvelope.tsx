@@ -2,27 +2,32 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWallet } from "@/hooks/useWallet";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Send, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Send, AlertTriangle, Users } from "lucide-react";
 import { toast } from "sonner";
-import { TIERS } from "@/lib/stripe-tiers";
 
 export default function NewEnvelope() {
-  const { profile, subscription } = useAuth();
+  const { profile } = useAuth();
+  const { credits, isPaused, isLow, isOverdraft, status } = useWallet();
   const navigate = useNavigate();
-  const [templates, setTemplates] = useState<{ id: string; name: string }[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
   const [templateId, setTemplateId] = useState("");
+  const [isGroupWaiver, setIsGroupWaiver] = useState(false);
+  const [groupLabel, setGroupLabel] = useState("");
   const [signerEmail, setSignerEmail] = useState("");
   const [signerName, setSignerName] = useState("");
   const [bookingId, setBookingId] = useState("");
   const [listingId, setListingId] = useState("");
   const [hostId, setHostId] = useState("");
   const [customerId, setCustomerId] = useState("");
+  const [expiresInDays, setExpiresInDays] = useState("7");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -35,22 +40,18 @@ export default function NewEnvelope() {
       .then(({ data }) => setTemplates(data || []));
   }, [profile?.org_id]);
 
-  const atLimit = subscription.usage >= subscription.waiverLimit && subscription.tier === "free";
-
   const handleCreate = async () => {
-    if (atLimit) {
-      toast.error("You've reached your monthly waiver limit. Upgrade your plan to continue.");
+    if (!profile?.org_id || !templateId) {
+      toast.error("Template is required");
       return;
     }
-
-    if (!profile?.org_id || !templateId || !signerEmail) {
-      toast.error("Template and signer email are required");
+    if (!isGroupWaiver && !signerEmail) {
+      toast.error("Signer email is required for individual waivers");
       return;
     }
 
     setSaving(true);
     try {
-      // Get current version
       const { data: version } = await supabase
         .from("template_versions")
         .select("id")
@@ -60,22 +61,21 @@ export default function NewEnvelope() {
 
       if (!version) throw new Error("No active template version found");
 
-      // Default expiration: 7 days from now
-      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-
       const { data: envelope, error } = await supabase
         .from("envelopes")
         .insert({
           org_id: profile.org_id,
           template_version_id: version.id,
-          signer_email: signerEmail.trim(),
-          signer_name: signerName.trim() || null,
+          signer_email: isGroupWaiver ? (signerEmail.trim() || "group@placeholder.local") : signerEmail.trim(),
+          signer_name: isGroupWaiver ? (groupLabel.trim() || "Group Waiver") : (signerName.trim() || null),
           booking_id: bookingId.trim() || null,
           listing_id: listingId.trim() || null,
           host_id: hostId.trim() || null,
           customer_id: customerId.trim() || null,
           status: "sent",
-          expires_at: expiresAt,
+          is_group_waiver: isGroupWaiver,
+          group_label: isGroupWaiver ? (groupLabel.trim() || null) : null,
+          expires_at: expiresInDays ? new Date(Date.now() + Number(expiresInDays) * 86400000).toISOString() : null,
           payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId },
         })
         .select()
@@ -83,30 +83,16 @@ export default function NewEnvelope() {
 
       if (error) throw error;
 
-      // Log event
       await supabase.from("envelope_events").insert({
         envelope_id: envelope.id,
         event_type: "envelope.sent",
-        metadata: { signer_email: signerEmail },
+        metadata: { is_group: isGroupWaiver, signer_email: signerEmail || null },
       });
 
-      // Send signing email
-      // Get template name for the email subject line
-      const selectedTemplate = templates.find((t) => t.id === templateId);
-      const signingUrl = `${window.location.origin}/sign/${envelope.signing_token}`;
-      await supabase.functions.invoke("send-signing-email", {
-        body: {
-          to: signerEmail.trim(),
-          signerName: signerName.trim() || signerEmail.trim(),
-          signingUrl,
-          templateName: selectedTemplate?.name || "Waiver Agreement",
-        },
-      });
-
-      toast.success("Envelope created and signing link emailed!");
+      toast.success(isGroupWaiver ? "Group waiver created! Share the link with your group." : "Envelope created! Signing link is ready.");
       navigate(`/envelopes/${envelope.id}`);
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to create envelope");
+    } catch (err: any) {
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
@@ -126,25 +112,34 @@ export default function NewEnvelope() {
         </div>
 
         <div className="space-y-6">
-          {/* Usage warning */}
-          {atLimit && (
+          {isPaused && (
             <Card className="border-destructive/50 bg-destructive/5">
               <CardContent className="pt-6 flex items-start gap-3">
                 <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium">Monthly limit reached</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    You've used {subscription.usage}/{subscription.waiverLimit} waivers on the {TIERS[subscription.tier].name} plan.{" "}
-                    <a href="/pricing" className="text-primary underline">Upgrade your plan</a> to send more.
+                  <p className="text-sm font-medium">Waiver collection is paused</p>
+                  <p className="text-sm text-muted-foreground">
+                    Your credit balance has been exhausted.{" "}
+                    <a href="/pricing" className="text-primary underline">Add credits</a> to continue sending waivers.
                   </p>
                 </div>
               </CardContent>
             </Card>
           )}
-          {!atLimit && subscription.usage > 0 && (
-            <p className="text-sm text-muted-foreground">
-              {subscription.usage}/{subscription.waiverLimit} waivers used this period ({TIERS[subscription.tier].name} plan)
-            </p>
+
+          {!isPaused && (isLow || isOverdraft) && (
+            <Card className="border-warning/50 bg-warning/5">
+              <CardContent className="pt-6 flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">{credits} credits remaining</p>
+                  <p className="text-sm text-muted-foreground">
+                    {isOverdraft ? "You're in overdraft. " : "Running low. "}
+                    <a href="/pricing" className="text-primary underline">Add credits</a> to keep sending.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           <Card>
@@ -162,25 +157,73 @@ export default function NewEnvelope() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle className="text-base">Signer</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Users className="h-4 w-4" /> Waiver Type</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Email *</Label>
-                  <Input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="signer@example.com" />
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <Label htmlFor="group-mode" className="text-sm font-medium">Group Waiver</Label>
+                  <p className="text-xs text-muted-foreground">
+                    One shareable link — everyone in the party signs individually. No emails needed upfront.
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <Label>Full Name</Label>
-                  <Input value={signerName} onChange={(e) => setSignerName(e.target.value)} placeholder="John Doe" />
-                </div>
+                <Switch id="group-mode" checked={isGroupWaiver} onCheckedChange={setIsGroupWaiver} />
               </div>
+
+              {isGroupWaiver && (
+                <div className="space-y-2">
+                  <Label>Group Label</Label>
+                  <Input
+                    value={groupLabel}
+                    onChange={(e) => setGroupLabel(e.target.value)}
+                    placeholder="e.g. Smith Family Pool Party"
+                  />
+                  <p className="text-xs text-muted-foreground">Shown to signers so they know which waiver this is for</p>
+                </div>
+              )}
             </CardContent>
           </Card>
+
+          {!isGroupWaiver && (
+            <Card>
+              <CardHeader><CardTitle className="text-base">Signer</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Email *</Label>
+                    <Input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="signer@example.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Full Name</Label>
+                    <Input value={signerName} onChange={(e) => setSignerName(e.target.value)} placeholder="John Doe" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {isGroupWaiver && (
+            <Card className="bg-accent/30">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-3">
+                  <Users className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium mb-1">How group waivers work</p>
+                    <ul className="text-muted-foreground space-y-1 list-disc pl-4">
+                      <li>You'll get a single shareable link (e.g. for a text message or booking confirmation)</li>
+                      <li>Each person opens the link and signs with their own name and signature</li>
+                      <li>No email addresses needed upfront — money keeps flowing at checkout</li>
+                      <li>You'll see all signatures on the envelope detail page</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader><CardTitle className="text-base">Booking Data</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Booking ID</Label>
                   <Input value={bookingId} onChange={(e) => setBookingId(e.target.value)} placeholder="bk_123" />
@@ -201,10 +244,29 @@ export default function NewEnvelope() {
             </CardContent>
           </Card>
 
+          <Card>
+            <CardHeader><CardTitle className="text-base">Expiration</CardTitle></CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Label>Expires in (days)</Label>
+                <Select value={expiresInDays} onValueChange={setExpiresInDays}>
+                  <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="3">3 days</SelectItem>
+                    <SelectItem value="7">7 days</SelectItem>
+                    <SelectItem value="14">14 days</SelectItem>
+                    <SelectItem value="30">30 days</SelectItem>
+                    <SelectItem value="">No expiration</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="flex justify-end gap-3">
             <Button variant="outline" onClick={() => navigate("/envelopes")}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={saving || atLimit} className="gap-2">
-              <Send className="h-4 w-4" /> {saving ? "Creating..." : "Create & Send"}
+            <Button onClick={handleCreate} disabled={saving || isPaused} className="gap-2">
+              <Send className="h-4 w-4" /> {saving ? "Creating..." : isGroupWaiver ? "Create Group Waiver" : "Create & Send"}
             </Button>
           </div>
         </div>

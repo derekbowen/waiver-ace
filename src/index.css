@@ -94,8 +94,16 @@
   * {
     @apply border-border;
   }
+  html {
+    /* Prevent bounce-scroll behind fixed elements on iOS */
+    height: 100%;
+  }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    min-height: 100%;
+    /* iOS-style smooth scrolling & tap behavior */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);

@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Save } from "lucide-react";
+import { Save, Globe, ExternalLink, Loader2, CreditCard, Zap, Coins } from "lucide-react";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useI18n } from "@/i18n";
 
 export default function Settings() {
-  const { profile, user } = useAuth();
+  const { profile, user, wallet } = useAuth();
+  const { locale } = useI18n();
   const [orgName, setOrgName] = useState("");
   const [retentionYears, setRetentionYears] = useState(7);
   const [saving, setSaving] = useState(false);
@@ -43,30 +46,19 @@ export default function Settings() {
         if (error) throw error;
         toast.success("Settings saved");
       } else {
-        // Create org and link to profile
-        const { data: org, error: orgErr } = await supabase
-          .from("organizations")
-          .insert({ name: orgName, retention_years: retentionYears })
-          .select()
-          .single();
-        if (orgErr) throw orgErr;
-
-        // Update profile with org_id
-        const { error: profErr } = await supabase
-          .from("profiles")
-          .update({ org_id: org.id })
-          .eq("user_id", user!.id);
-        if (profErr) throw profErr;
-
-        // Add admin role
-        await supabase.from("user_roles").insert({ user_id: user!.id, role: "admin" });
+        // Use Edge Function to bypass RLS for org setup
+        const { data, error } = await supabase.functions.invoke("setup-org", {
+          body: { name: orgName, retention_years: retentionYears },
+        });
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
 
         setHasOrg(true);
         toast.success("Organization created! You are now an admin.");
         window.location.reload();
       }
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to save settings");
+    } catch (err: any) {
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
@@ -89,7 +81,7 @@ export default function Settings() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Organization Name</Label>
-                <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="My Marketplace" />
+                <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="Acme Pool Rentals" />
               </div>
               <div className="space-y-2">
                 <Label>PDF Retention (years)</Label>
@@ -100,6 +92,70 @@ export default function Settings() {
               </Button>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Language</CardTitle>
+              <CardDescription>Choose your preferred language</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <Select
+                  value={locale}
+                  onValueChange={(v) => {
+                    if ((window as any).__setLocale) (window as any).__setLocale(v);
+                  }}
+                >
+                  <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="es">Espanol</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {hasOrg && (
+            <Card className="border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  Marketplace Integration
+                </CardTitle>
+                <CardDescription>
+                  Automatically send waivers when customers book on ShareTribe or other marketplaces
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/settings/marketplace"}>
+                  <ExternalLink className="h-4 w-4" />
+                  Configure Integration
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {hasOrg && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-primary" />
+                  Credits
+                </CardTitle>
+                <CardDescription>
+                  {wallet.credits} credits remaining
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/pricing"}>
+                  <CreditCard className="h-4 w-4" />
+                  Buy Credits
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </DashboardLayout>
