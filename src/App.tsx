@@ -31,6 +31,8 @@ import Docs from "./pages/Docs";
 import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
 import MarketplaceIntegration from "./pages/MarketplaceIntegration";
+import AdminCredits from "./pages/AdminCredits";
+import SeoLanding from "./pages/SeoLanding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
