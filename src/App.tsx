@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { I18nProvider } from "@/components/I18nProvider";
 import Landing from "./pages/Landing";
+import KioskPage from "./pages/KioskPage";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
