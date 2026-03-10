@@ -199,26 +199,6 @@ serve(async (req: Request) => {
         }
       }
 
-      // Deduct credit from wallet
-      const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
-        p_org_id: orgId,
-        p_reference_id: null,
-        p_type: "waiver_deduction",
-      });
-
-      if (creditErr) throw creditErr;
-
-      const credit = creditResult?.[0];
-      if (!credit?.success) {
-        return new Response(
-          JSON.stringify({
-            error: credit?.error_message || "Insufficient credits",
-            credits_remaining: credit?.new_balance ?? 0,
-          }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
       // Create the envelope
       const { data: envelope, error: envErr } = await supabase
         .from("envelopes")
@@ -245,6 +225,28 @@ serve(async (req: Request) => {
         .single();
 
       if (envErr) throw envErr;
+
+      // Deduct credit from wallet (after successful envelope creation)
+      const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
+        p_org_id: orgId,
+        p_reference_id: envelope.id,
+        p_type: "waiver_deduction",
+      });
+
+      if (creditErr || !creditResult?.[0]?.success) {
+        // Credit deduction failed — cancel the envelope
+        await supabase.from("envelopes").update({ status: "canceled" }).eq("id", envelope.id);
+        const credit = creditResult?.[0];
+        return new Response(
+          JSON.stringify({
+            error: credit?.error_message || "Insufficient credits",
+            credits_remaining: credit?.new_balance ?? 0,
+          }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const credit = creditResult[0];
 
       // Log event
       await supabase.from("envelope_events").insert({

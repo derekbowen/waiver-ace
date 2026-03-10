@@ -67,6 +67,21 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Idempotency check: skip if this session was already processed
+    const { data: existing } = await supabase
+      .from("credit_transactions")
+      .select("id")
+      .eq("reference_id", session.id)
+      .eq("type", "purchase")
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      console.log(`Session ${session.id} already processed, skipping`);
+      return new Response(JSON.stringify({ already_processed: true, session_id: session.id }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Add credits using the atomic DB function
     const { data: result, error } = await supabase.rpc("add_credits", {
       p_org_id: orgId,

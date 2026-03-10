@@ -102,6 +102,21 @@ export default function BulkSend() {
 
         if (error) throw error;
 
+        // Deduct credit server-side after successful envelope creation
+        const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
+          p_org_id: profile.org_id,
+          p_reference_id: envelope.id,
+          p_type: "waiver_deduction",
+        });
+
+        if (creditErr || !creditResult?.[0]?.success) {
+          // Credit deduction failed — cancel this envelope
+          await supabase.from("envelopes").update({ status: "canceled" }).eq("id", envelope.id);
+          const msg = creditResult?.[0]?.error_message || "Insufficient credits";
+          bulkResults.push({ email, success: false, error: msg });
+          break; // Stop sending — no more credits
+        }
+
         await supabase.from("envelope_events").insert({
           envelope_id: envelope.id,
           event_type: "envelope.sent",
