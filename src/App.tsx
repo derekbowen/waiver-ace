@@ -72,6 +72,8 @@ const App = () => (
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/envelopes/bulk" element={<ProtectedRoute><BulkSend /></ProtectedRoute>} />
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
+            <Route path="/admin/credits" element={<ProtectedRoute><AdminCredits /></ProtectedRoute>} />
+            <Route path="/waivers/:slug" element={<SeoLanding />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
