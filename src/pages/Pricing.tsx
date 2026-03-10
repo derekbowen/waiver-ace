@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { CheckCircle, Loader2, Coins, AlertTriangle, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { CREDIT_PACKAGES, getCreditStatus, type PackageId } from "@/lib/credit-packages";
+import { CreditTransactionHistory } from "@/components/CreditTransactionHistory";
 
 export default function Pricing() {
   const { user, wallet, refreshWallet, profile } = useAuth();
