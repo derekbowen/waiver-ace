@@ -7,3 +7,5 @@ project_id = "sibwbzhpyiwmhigskgtr"
     verify_jwt = false
   [functions.send-signing-email]
     verify_jwt = false
+  [functions.send-credits-email]
+    verify_jwt = false

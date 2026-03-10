@@ -116,6 +116,27 @@ serve(async (req) => {
 
     console.log(`Added ${credits} credits to org ${orgId} (session: ${session.id})`);
 
+    // Send credit purchase confirmation email
+    try {
+      const emailUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-credits-email`;
+      await fetch(emailUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+        },
+        body: JSON.stringify({
+          type: "credits_added",
+          org_id: orgId,
+          credits_added: credits,
+          package_label: packageId ? `${credits.toLocaleString()} Credits (${packageId})` : `${credits} Credits`,
+          new_balance: result,
+        }),
+      });
+    } catch (emailErr) {
+      console.error("Non-fatal: Failed to send credits email:", emailErr);
+    }
+
     return new Response(JSON.stringify({
       success: true,
       credits_added: credits,
