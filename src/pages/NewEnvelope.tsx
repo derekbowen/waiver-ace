@@ -256,7 +256,7 @@ export default function NewEnvelope() {
                     <SelectItem value="7">7 days</SelectItem>
                     <SelectItem value="14">14 days</SelectItem>
                     <SelectItem value="30">30 days</SelectItem>
-                    <SelectItem value="">No expiration</SelectItem>
+                    <SelectItem value="none">No expiration</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
