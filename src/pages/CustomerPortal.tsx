@@ -41,18 +41,34 @@ export default function CustomerPortal() {
   const [waivers, setWaivers] = useState<WaiverEntry[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // If a magic token is provided, verify it and load waivers
+  // If a signing token is provided, verify it matches the email and load waivers
   useEffect(() => {
     if (tokenParam && emailParam) {
       verifyAndLoad(emailParam, tokenParam);
     }
   }, [tokenParam, emailParam]);
 
-  async function verifyAndLoad(verifiedEmail: string, _token: string) {
+  async function verifyAndLoad(verifiedEmail: string, token: string) {
     setLoading(true);
     setEmail(verifiedEmail);
     try {
-      // Fetch all envelopes for this email
+      // Verify token: check that a matching envelope exists for this email + signing_token
+      const { data: tokenCheck, error: tokenError } = await supabase
+        .from("envelopes")
+        .select("id")
+        .eq("signer_email", verifiedEmail)
+        .eq("signing_token", token)
+        .limit(1);
+
+      if (tokenError) throw tokenError;
+
+      if (!tokenCheck || tokenCheck.length === 0) {
+        toast.error("Invalid or expired link. Please use the link from your email.");
+        setLoading(false);
+        return;
+      }
+
+      // Token verified — fetch all envelopes for this email
       const { data, error } = await supabase
         .from("envelopes")
         .select("id, status, signer_name, signer_email, booking_id, listing_id, signed_at, created_at, signing_token, payload")
@@ -76,11 +92,13 @@ export default function CustomerPortal() {
     }
     setSending(true);
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+
       // Check if any envelopes exist for this email
       const { count } = await supabase
         .from("envelopes")
         .select("id", { count: "exact", head: true })
-        .eq("signer_email", email.trim().toLowerCase());
+        .eq("signer_email", normalizedEmail);
 
       if (!count || count === 0) {
         toast.error("No waivers found for this email address");
@@ -88,15 +106,17 @@ export default function CustomerPortal() {
         return;
       }
 
-      // For now, just load directly (in production, send a magic link email)
+      // Load waivers — exclude signing_token from manual lookups for security
       const { data, error } = await supabase
         .from("envelopes")
-        .select("id, status, signer_name, signer_email, booking_id, listing_id, signed_at, created_at, signing_token, payload")
-        .eq("signer_email", email.trim().toLowerCase())
+        .select("id, status, signer_name, signer_email, booking_id, listing_id, signed_at, created_at, payload")
+        .eq("signer_email", normalizedEmail)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setWaivers(data || []);
+
+      // Map results to include empty signing_token (since we didn't fetch it)
+      setWaivers((data || []).map((w: any) => ({ ...w, signing_token: "" })));
       setVerified(true);
       toast.success("Waivers loaded");
     } catch (err: any) {
@@ -109,6 +129,8 @@ export default function CustomerPortal() {
   // Overall status summary
   const needsAction = waivers.filter((w) => w.status === "sent" || w.status === "viewed").length;
   const allGood = waivers.length > 0 && needsAction === 0 && waivers.some((w) => w.status === "completed" || w.status === "signed");
+  // Whether this session was verified via token (not manual email entry)
+  const isTokenVerified = !!(tokenParam && emailParam);
 
   if (loading) {
     return (
@@ -205,6 +227,8 @@ export default function CustomerPortal() {
               const Icon = config.icon;
               const listingTitle = (waiver.payload as any)?.listing_title;
               const needsSign = waiver.status === "sent" || waiver.status === "viewed";
+              // Only show "Sign Now" button if we have the signing token (token-verified sessions)
+              const canSign = needsSign && isTokenVerified && waiver.signing_token;
 
               return (
                 <Card key={waiver.id} className={needsSign ? "border-amber-300" : ""}>
@@ -226,13 +250,16 @@ export default function CustomerPortal() {
                       <span className={`text-xs font-medium ${config.color}`}>
                         {config.label}
                       </span>
-                      {needsSign && (
+                      {canSign && (
                         <Button
                           size="sm"
                           onClick={() => window.location.href = `/sign/${waiver.signing_token}`}
                         >
                           Sign Now
                         </Button>
+                      )}
+                      {needsSign && !canSign && (
+                        <span className="text-xs text-muted-foreground">Check your email</span>
                       )}
                     </div>
                   </CardContent>
