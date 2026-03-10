@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { CheckCircle, Loader2, Coins, AlertTriangle, Zap } from "lucide-react";
+import { CheckCircle, Loader2, Coins, AlertTriangle, Zap, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { CREDIT_PACKAGES, getCreditStatus, type PackageId } from "@/lib/credit-packages";
 import { CreditTransactionHistory } from "@/components/CreditTransactionHistory";
