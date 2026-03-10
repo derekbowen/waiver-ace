@@ -247,12 +247,12 @@ export default function MarketplaceIntegration() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Select value={defaultTemplateId} onValueChange={setDefaultTemplateId}>
+              <Select value={defaultTemplateId || "__none__"} onValueChange={(v) => setDefaultTemplateId(v === "__none__" ? "" : v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Auto-generate standard liability waiver" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Auto-generate standard liability waiver</SelectItem>
+                  <SelectItem value="__none__">Auto-generate standard liability waiver</SelectItem>
                   {templates.map((t) => (
                     <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                   ))}
