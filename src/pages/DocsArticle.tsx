@@ -70,7 +70,7 @@ function renderContent(content: string) {
       elements.push(
         <pre
           key={key++}
-          className="bg-slate-950 text-slate-50 rounded-lg p-4 text-xs overflow-x-auto font-mono my-4"
+          className="bg-foreground text-background rounded-lg p-4 text-xs overflow-x-auto font-mono my-4"
         >
           <code>{codeLines.join("\n")}</code>
         </pre>
