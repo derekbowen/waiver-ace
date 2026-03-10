@@ -96,9 +96,9 @@ serve(async (req) => {
 
     const origin = req.headers.get('origin') || 'https://rentalwaivers.com';
     const signingUrl = `${origin}/sign/${envelope.signing_token}`;
-    const displayName = envelope.signer_name || 'there';
-    const orgName = org?.name || 'Rental Waivers';
-    const templateName = (envelope.template_versions as any)?.content?.title || 'Waiver Agreement';
+    const displayName = escapeHtml(envelope.signer_name || 'there');
+    const orgName = escapeHtml(org?.name || 'Rental Waivers');
+    const templateName = escapeHtml((envelope.template_versions as any)?.content?.title || 'Waiver Agreement');
 
     const html = buildEmail({
       previewText: `${orgName} needs your signature on "${templateName}"`,
