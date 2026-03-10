@@ -136,6 +136,110 @@ serve(async (req: Request) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
 
+  // Handle kiosk actions (no API key required - public facing)
+  if (req.method === "POST") {
+    try {
+      const bodyClone = req.clone();
+      const body = await bodyClone.json();
+      
+      if (body.action === "kiosk_info" && body.template_id) {
+        const { data: template } = await supabase
+          .from("templates")
+          .select("id, name, org_id, is_active")
+          .eq("id", body.template_id)
+          .eq("is_active", true)
+          .single();
+
+        if (!template) {
+          return new Response(JSON.stringify({ error: "Template not found" }), {
+            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: org } = await supabase
+          .from("organizations")
+          .select("name")
+          .eq("id", template.org_id)
+          .single();
+
+        return new Response(JSON.stringify({
+          template_name: template.name,
+          org_name: org?.name || "",
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (body.action === "kiosk_create" && body.template_id) {
+        const { data: template } = await supabase
+          .from("templates")
+          .select("id, org_id, is_active")
+          .eq("id", body.template_id)
+          .eq("is_active", true)
+          .single();
+
+        if (!template) {
+          return new Response(JSON.stringify({ error: "Template not found" }), {
+            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: version } = await supabase
+          .from("template_versions")
+          .select("id")
+          .eq("template_id", template.id)
+          .eq("is_current", true)
+          .single();
+
+        if (!version) {
+          return new Response(JSON.stringify({ error: "No active version" }), {
+            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Deduct credit
+        const { data: creditResult } = await supabase.rpc("deduct_credit", {
+          p_org_id: template.org_id,
+          p_reference_id: `kiosk_${Date.now()}`,
+          p_type: "waiver_deduction",
+        });
+
+        if (!creditResult?.[0]?.success) {
+          return new Response(JSON.stringify({ error: "Organization has no credits remaining" }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: envelope, error } = await supabase
+          .from("envelopes")
+          .insert({
+            org_id: template.org_id,
+            template_version_id: version.id,
+            signer_email: "kiosk@placeholder.local",
+            signer_name: "Kiosk Guest",
+            status: "sent",
+            payload: { source: "kiosk" },
+          })
+          .select("signing_token")
+          .single();
+
+        if (error) throw error;
+
+        await supabase.from("envelope_events").insert({
+          envelope_id: envelope.signing_token, // will be looked up
+          event_type: "envelope.sent",
+          metadata: { source: "kiosk" },
+        });
+
+        return new Response(JSON.stringify({ signing_token: envelope.signing_token }), {
+          status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } catch (kioskErr) {
+      // Not a kiosk request, fall through to API key validation
+    }
+  }
+
   const url = new URL(req.url);
   const path = url.pathname.replace("/waiverflow-api", "");
   const apiKey = req.headers.get("x-api-key");

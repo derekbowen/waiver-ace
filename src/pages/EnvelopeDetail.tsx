@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatusBadge } from "@/components/StatusBadge";
+import { AuditTrailCard } from "@/components/AuditTrailCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users } from "lucide-react";
@@ -221,6 +222,10 @@ export default function EnvelopeDetail() {
               )}
             </CardContent>
           </Card>
+        )}
+
+        {["completed", "signed"].includes(envelope.status) && (
+          <AuditTrailCard envelope={envelope} />
         )}
 
         <Card className="mt-6">
