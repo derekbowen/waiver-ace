@@ -91,18 +91,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0 flex flex-col">
             <div className="flex h-14 items-center gap-2 border-b px-6">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <FileText className="h-4 w-4 text-primary-foreground" />
-              </div>
+              <img src="/logo.svg" alt="RentalWaivers" className="h-8 w-8" />
               <span className="font-heading text-lg font-bold tracking-tight">RentalWaivers</span>
             </div>
             <SidebarContent onNavigate={() => setOpen(false)} />
           </SheetContent>
         </Sheet>
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-            <FileText className="h-3.5 w-3.5 text-primary-foreground" />
-          </div>
+          <img src="/logo.svg" alt="RentalWaivers" className="h-7 w-7" />
           <span className="font-heading text-sm font-bold tracking-tight">RentalWaivers</span>
         </div>
       </header>
@@ -110,9 +106,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-50 hidden md:flex w-64 flex-col border-r bg-card">
         <div className="flex h-16 items-center gap-2 border-b px-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <FileText className="h-4 w-4 text-primary-foreground" />
-          </div>
+          <img src="/logo.svg" alt="RentalWaivers" className="h-8 w-8" />
           <span className="font-heading text-lg font-bold tracking-tight">RentalWaivers</span>
         </div>
         <SidebarContent />

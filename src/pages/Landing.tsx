@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FileText, Shield, Zap, Globe, ArrowRight, CheckCircle } from "lucide-react";
+import { Shield, Zap, Globe, ArrowRight, CheckCircle, FileText } from "lucide-react";
 
 const features = [
   {
@@ -42,9 +42,7 @@ export default function Landing() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-sm">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <FileText className="h-4 w-4 text-primary-foreground" />
-            </div>
+            <img src="/logo.svg" alt="RentalWaivers" className="h-8 w-8" />
             <span className="font-heading text-lg font-bold tracking-tight">RentalWaivers</span>
           </div>
           <div className="flex items-center gap-3">
@@ -142,9 +140,7 @@ export default function Landing() {
       <footer className="border-t py-8">
         <div className="container flex items-center justify-between text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-primary">
-              <FileText className="h-3 w-3 text-primary-foreground" />
-            </div>
+            <img src="/logo.svg" alt="RentalWaivers" className="h-6 w-6" />
             <span className="font-heading font-semibold text-foreground">RentalWaivers</span>
           </div>
           <p>&copy; {new Date().getFullYear()} RentalWaivers. All rights reserved.</p>

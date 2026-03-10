@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3a3f47"/>
+      <stop offset="100%" stop-color="#2d3139"/>
+    </linearGradient>
+    <linearGradient id="lock-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b0b5bc"/>
+      <stop offset="100%" stop-color="#8a9099"/>
+    </linearGradient>
+    <linearGradient id="folder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5c842"/>
+      <stop offset="100%" stop-color="#e8a817"/>
+    </linearGradient>
+  </defs>
+  <!-- Circle background -->
+  <circle cx="100" cy="100" r="90" fill="url(#bg)"/>
+  <!-- Lock shackle -->
+  <path d="M78 82 V68 C78 50 92 38 108 38 C120 38 130 46 133 58"
+        fill="none" stroke="#9ca3af" stroke-width="10" stroke-linecap="round"/>
+  <!-- Lock body -->
+  <rect x="68" y="82" width="55" height="52" rx="8" fill="url(#lock-body)"/>
+  <!-- Keyhole -->
+  <circle cx="95" cy="103" r="7" fill="#3a3f47"/>
+  <rect x="92" y="107" width="6" height="14" rx="2" fill="#3a3f47"/>
+  <!-- Yellow folder/document -->
+  <g transform="translate(95, 72)">
+    <path d="M0 16 C0 10 4 6 10 6 L30 6 L36 0 L62 0 C68 0 72 4 72 10 L72 72 C72 78 68 82 62 82 L10 82 C4 82 0 78 0 72 Z"
+          fill="url(#folder)" opacity="0.95"/>
+    <path d="M0 24 L72 24" stroke="#e8a817" stroke-width="1.5" opacity="0.5"/>
+  </g>
+</svg>
