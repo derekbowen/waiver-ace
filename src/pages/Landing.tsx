@@ -37,10 +37,10 @@ export default function Landing() {
             <Link to="/my-waivers" className="hidden md:inline-flex">
               <Button variant="ghost" size="sm">My Waivers</Button>
             </Link>
-            <Link to="/login" className="hidden sm:inline-flex">
+            <Link to="/login">
               <Button variant="ghost" size="sm">Sign in</Button>
             </Link>
-            <Link to="/login">
+            <Link to="/login" className="hidden sm:inline-flex">
               <Button size="sm">Get Started Free</Button>
             </Link>
           </div>
