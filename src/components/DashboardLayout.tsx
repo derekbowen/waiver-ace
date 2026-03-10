@@ -94,7 +94,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <FileText className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-heading text-lg font-bold tracking-tight">WaiverFlow</span>
+              <span className="font-heading text-lg font-bold tracking-tight">RentalWaivers</span>
             </div>
             <SidebarContent onNavigate={() => setOpen(false)} />
           </SheetContent>
@@ -103,7 +103,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
             <FileText className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
-          <span className="font-heading text-sm font-bold tracking-tight">WaiverFlow</span>
+          <span className="font-heading text-sm font-bold tracking-tight">RentalWaivers</span>
         </div>
       </header>
 
@@ -113,7 +113,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <FileText className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-heading text-lg font-bold tracking-tight">WaiverFlow</span>
+          <span className="font-heading text-lg font-bold tracking-tight">RentalWaivers</span>
         </div>
         <SidebarContent />
       </aside>

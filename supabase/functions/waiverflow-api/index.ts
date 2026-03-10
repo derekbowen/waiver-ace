@@ -30,7 +30,7 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   templateName?: string;
   organizationName?: string;
 }): string {
-  const orgName = organizationName || "WaiverFlow";
+  const orgName = organizationName || "RentalWaivers";
   const displayName = signerName || "there";
   const docName = templateName || "Waiver Agreement";
 
@@ -71,7 +71,7 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
 
   <p style="font-size: 12px; color: #94a3b8; text-align: center;">
-    This email was sent by ${orgName} via WaiverFlow.<br>
+    This email was sent by ${orgName} via RentalWaivers.<br>
     If you did not expect this email, please ignore it.
   </p>
 </body>
@@ -126,7 +126,7 @@ async function fireWebhooks(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-WaiverFlow-Signature": signature,
+          "X-RentalWaivers-Signature": signature,
         },
         body,
       });
@@ -306,7 +306,7 @@ serve(async (req: Request) => {
         listing_id: envelope.listing_id,
       });
 
-      const baseUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "https://waiverflow.app";
+      const baseUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
       const signingUrl = `${baseUrl}/sign/${envelope.signing_token}`;
 
       // Send email if requested
@@ -322,7 +322,7 @@ serve(async (req: Request) => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                from: "WaiverFlow <onboarding@resend.dev>",
+                from: "RentalWaivers <onboarding@resend.dev>",
                 to: [signer_email],
                 subject: `Action Required: Please sign "${template?.name || 'Waiver Agreement'}"`,
                 html: generateSigningEmailHtml({

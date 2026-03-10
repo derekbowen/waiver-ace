@@ -5,7 +5,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  * Sharetribe Integration Poller
  *
  * This edge function polls Sharetribe's Integration API for new transaction
- * events and automatically creates WaiverFlow envelopes + sends signing emails
+ * events and automatically creates RentalWaivers envelopes + sends signing emails
  * when a new booking is initiated.
  *
  * Designed to be called on a cron schedule (e.g., every 60 seconds via
@@ -17,7 +17,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  * Required per-org config stored in `integration_configs` table:
  *   - sharetribe_client_id
  *   - sharetribe_client_secret
- *   - sharetribe_template_id (which WaiverFlow template to use)
+ *   - sharetribe_template_id (which RentalWaivers template to use)
  *   - sharetribe_base_url (default: https://flex-api.sharetribe.com)
  *   - last_event_sequence_id (for polling cursor)
  */
@@ -235,7 +235,7 @@ serve(async (req: Request) => {
 
         if (!version) continue;
 
-        // Create WaiverFlow envelope
+        // Create RentalWaivers envelope
         const { data: envelope, error: envError } = await supabase
           .from("envelopes")
           .insert({
@@ -274,7 +274,7 @@ serve(async (req: Request) => {
         });
 
         // Send signing email via the send-signing-email function
-        const signingUrl = `${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app") || "https://waiverflow.app"}/sign/${envelope.signing_token}`;
+        const signingUrl = `${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app") || "https://rentalwaivers.com"}/sign/${envelope.signing_token}`;
 
         await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-signing-email`, {
           method: "POST",

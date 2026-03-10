@@ -218,7 +218,7 @@ export default function Integrations() {
             {provider === "custom" && (
               <div className="rounded-lg border border-dashed p-4">
                 <p className="text-sm text-muted-foreground">
-                  For custom marketplaces, use the WaiverFlow REST API directly.
+                  For custom marketplaces, use the RentalWaivers REST API directly.
                   Go to <strong>API Keys</strong> to create a key, then call{" "}
                   <code className="text-xs bg-accent px-1 py-0.5 rounded">POST /envelopes</code>{" "}
                   when a booking is created. See the API docs for details.
@@ -272,7 +272,7 @@ export default function Integrations() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">2</span>
-                <span>WaiverFlow detects the new transaction and creates a waiver envelope</span>
+                <span>RentalWaivers detects the new transaction and creates a waiver envelope</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">3</span>

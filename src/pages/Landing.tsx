@@ -45,7 +45,7 @@ export default function Landing() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <FileText className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-heading text-lg font-bold tracking-tight">WaiverFlow</span>
+            <span className="font-heading text-lg font-bold tracking-tight">RentalWaivers</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login">
@@ -145,9 +145,9 @@ export default function Landing() {
             <div className="flex h-6 w-6 items-center justify-center rounded bg-primary">
               <FileText className="h-3 w-3 text-primary-foreground" />
             </div>
-            <span className="font-heading font-semibold text-foreground">WaiverFlow</span>
+            <span className="font-heading font-semibold text-foreground">RentalWaivers</span>
           </div>
-          <p>&copy; {new Date().getFullYear()} WaiverFlow. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} RentalWaivers. All rights reserved.</p>
         </div>
       </footer>
     </div>

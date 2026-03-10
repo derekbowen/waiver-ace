@@ -82,7 +82,7 @@ export default function Webhooks() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>URL</Label>
-              <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://your-app.com/webhooks/waiverflow" />
+              <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://your-app.com/webhooks/rentalwaivers" />
             </div>
             <div className="space-y-2">
               <Label>Events</Label>

@@ -1,8 +1,8 @@
-# WaiverFlow — Technical Overview
+# RentalWaivers — Technical Overview
 
 ## What It Is
 
-WaiverFlow is a B2B SaaS platform that automates liability waiver collection for rental, event, and service marketplaces. It generates waivers from templates, collects legally-valid e-signatures with full audit trails, and optionally requires signing before booking confirmation — all via API, webhooks, and direct marketplace integrations.
+RentalWaivers is a B2B SaaS platform that automates liability waiver collection for rental, event, and service marketplaces. It generates waivers from templates, collects legally-valid e-signatures with full audit trails, and optionally requires signing before booking confirmation — all via API, webhooks, and direct marketplace integrations.
 
 **Target customers:** Marketplace operators using Sharetribe, Arcadier, or custom-built platforms who need liability waivers signed before or during bookings.
 
@@ -52,7 +52,7 @@ WaiverFlow is a B2B SaaS platform that automates liability waiver collection for
 │  ├── create-checkout     — Stripe Checkout session            │
 │  ├── customer-portal     — Stripe Customer Portal             │
 │  ├── send-signing-email  — Resend transactional email         │
-│  ├── waiverflow-api      — REST API for programmatic access   │
+│  ├── rentalwaivers-api      — REST API for programmatic access   │
 │  └── sharetribe-poller   — polls Sharetribe for new bookings  │
 │                                                               │
 │  Auth: Supabase Auth (email/password + Google + Apple OAuth)  │
@@ -182,7 +182,7 @@ WaiverFlow is a B2B SaaS platform that automates liability waiver collection for
 
 ## Competitive Positioning
 
-| Feature | WaiverFlow | DocuSign | HelloSign | WaiverForever |
+| Feature | RentalWaivers | DocuSign | HelloSign | WaiverForever |
 |---------|-----------|----------|-----------|---------------|
 | Built for marketplaces | Yes | No | No | Partial |
 | API-first | Yes | Yes | Yes | No |

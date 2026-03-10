@@ -86,7 +86,7 @@ export default function Login() {
             {isSignUp ? "Create your account" : "Welcome back"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {isSignUp ? "Start collecting e-signatures" : "Sign in to WaiverFlow"}
+            {isSignUp ? "Start collecting e-signatures" : "Sign in to RentalWaivers"}
           </p>
         </div>
 

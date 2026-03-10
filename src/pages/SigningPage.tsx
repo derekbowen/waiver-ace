@@ -272,8 +272,8 @@ export default function SigningPage() {
           <div className="flex h-7 w-7 items-center justify-center rounded bg-primary">
             <FileText className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
-          <span className="font-heading text-sm font-bold">WaiverFlow</span>
-          <span className="ml-auto text-xs text-muted-foreground">Powered by WaiverFlow</span>
+          <span className="font-heading text-sm font-bold">RentalWaivers</span>
+          <span className="ml-auto text-xs text-muted-foreground">Powered by RentalWaivers</span>
         </div>
       </header>
 
