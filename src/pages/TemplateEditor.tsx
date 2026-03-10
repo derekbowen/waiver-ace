@@ -71,6 +71,7 @@ export default function TemplateEditor() {
           org_id: profile.org_id,
           name: name.trim(),
           description: description.trim() || null,
+          require_signing: requireSigning,
           created_by: (await supabase.auth.getUser()).data.user?.id,
         })
         .select()
