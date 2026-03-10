@@ -163,7 +163,7 @@ export default function AdminCredits() {
               <div className="flex gap-2">
                 <div className="flex-1">
                   <Input
-                    placeholder="Search by organization name..."
+                    placeholder="Search by org name, user email, or user name..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
