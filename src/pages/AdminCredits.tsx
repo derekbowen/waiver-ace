@@ -33,25 +33,58 @@ export default function AdminCredits() {
     if (!search.trim()) return;
     setSearching(true);
     try {
-      const { data, error } = await supabase
+      const term = search.trim();
+
+      // Search orgs by name
+      const { data: orgsByName } = await supabase
         .from("organizations")
         .select("id, name, created_at")
-        .ilike("name", `%${search.trim()}%`)
+        .ilike("name", `%${term}%`)
         .limit(20);
 
-      if (error) throw error;
+      // Search profiles by email or name to find their org
+      const { data: profileMatches } = await supabase
+        .from("profiles")
+        .select("org_id, email, full_name")
+        .or(`email.ilike.%${term}%,full_name.ilike.%${term}%`)
+        .not("org_id", "is", null)
+        .limit(20);
+
+      // Collect unique org IDs from profile matches
+      const profileOrgIds = [...new Set(
+        (profileMatches || []).map(p => p.org_id).filter(Boolean)
+      )] as string[];
+
+      // Fetch org details for profile-matched orgs not already found
+      const existingOrgIds = new Set((orgsByName || []).map(o => o.id));
+      const missingOrgIds = profileOrgIds.filter(id => !existingOrgIds.has(id));
+
+      let extraOrgs: typeof orgsByName = [];
+      if (missingOrgIds.length > 0) {
+        const { data } = await supabase
+          .from("organizations")
+          .select("id, name, created_at")
+          .in("id", missingOrgIds);
+        extraOrgs = data || [];
+      }
+
+      const allOrgs = [...(orgsByName || []), ...extraOrgs];
 
       // Get wallet info for each org
       const orgsWithWallets: OrgResult[] = [];
-      for (const org of data || []) {
+      for (const org of allOrgs) {
         const { data: wallet } = await supabase
           .from("wallets")
           .select("credits")
           .eq("org_id", org.id)
           .single();
+        // Find matching profile info for display
+        const matchedProfile = (profileMatches || []).find(p => p.org_id === org.id);
         orgsWithWallets.push({
           ...org,
           wallet_credits: wallet?.credits ?? 0,
+          matched_email: matchedProfile?.email ?? undefined,
+          matched_name: matchedProfile?.full_name ?? undefined,
         });
       }
       setOrgs(orgsWithWallets);
