@@ -68,6 +68,27 @@ serve(async (req) => {
     else if (balance > -10) status = "overdraft";
     else status = "paused";
 
+    // Send low-credit alert email when balance drops to threshold levels
+    if (status === "low" || status === "overdraft") {
+      try {
+        const emailUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-credits-email`;
+        await fetch(emailUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+          },
+          body: JSON.stringify({
+            type: "credits_low",
+            org_id: profile.org_id,
+            new_balance: balance,
+          }),
+        });
+      } catch (emailErr) {
+        console.error("Non-fatal: Failed to send low-credits email:", emailErr);
+      }
+    }
+
     return new Response(JSON.stringify({
       credits: balance,
       status,
