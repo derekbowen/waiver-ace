@@ -164,7 +164,7 @@ export default function Landing() {
             {/* Security features grid */}
             <div className="space-y-4">
               {[
-                { icon: Fingerprint, title: "Drawn Signature", desc: "Guests sign with their finger or mouse — a unique, legally-recognized mark that's more personal than a typed name.", highlight: true },
+                { icon: PenLine, title: "Drawn Signature", desc: "Guests sign with their finger or mouse — a unique, legally-recognized mark that's more personal than a typed name.", highlight: true },
                 { icon: Globe, title: "IP Address Logging", desc: "We record the signer's IP address, proving where they were when they signed. Critical for dispute resolution." },
                 { icon: Clock, title: "Precise UTC Timestamps", desc: "Every action — sent, viewed, signed — is recorded to the exact second in UTC. No ambiguity about when consent was given." },
                 { icon: Smartphone, title: "Device & Browser Fingerprint", desc: "We capture the device type, operating system, and browser. Another layer of proof that a real person signed." },
