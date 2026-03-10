@@ -224,6 +224,10 @@ export default function EnvelopeDetail() {
           </Card>
         )}
 
+        {["completed", "signed"].includes(envelope.status) && (
+          <AuditTrailCard envelope={envelope} />
+        )}
+
         <Card className="mt-6">
           <CardHeader><CardTitle className="text-base">Event Timeline</CardTitle></CardHeader>
           <CardContent>

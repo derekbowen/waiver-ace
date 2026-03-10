@@ -45,9 +45,12 @@ export default function Templates() {
             <h1 className="font-heading text-2xl font-bold">Templates</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage your waiver templates</p>
           </div>
-          <Button onClick={() => navigate("/templates/new")} className="gap-2">
-            <Plus className="h-4 w-4" /> New Template
-          </Button>
+          <div className="flex gap-2">
+            <QrCodeDialog templates={templates} orgId={profile?.org_id || ""} />
+            <Button onClick={() => navigate("/templates/new")} className="gap-2">
+              <Plus className="h-4 w-4" /> New Template
+            </Button>
+          </div>
         </div>
 
         {loading ? (
