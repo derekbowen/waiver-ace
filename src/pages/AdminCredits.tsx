@@ -193,6 +193,12 @@ export default function AdminCredits() {
                               <Building2 className="h-4 w-4 text-muted-foreground" />
                               <div>
                                 <div className="font-medium">{org.name}</div>
+                                {org.matched_email && (
+                                  <div className="text-xs text-muted-foreground">{org.matched_email}</div>
+                                )}
+                                {org.matched_name && !org.matched_email && (
+                                  <div className="text-xs text-muted-foreground">{org.matched_name}</div>
+                                )}
                                 <div className="text-xs text-muted-foreground font-mono">{org.id.slice(0, 8)}...</div>
                               </div>
                             </div>
