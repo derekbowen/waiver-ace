@@ -1,0 +1,1 @@
+ALTER TABLE public.organizations ADD COLUMN tier_override text DEFAULT NULL;

@@ -1,1 +1,13 @@
 project_id = "sibwbzhpyiwmhigskgtr"
+
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.process-credit-purchase]
+    verify_jwt = false
+  [functions.send-signing-email]
+    verify_jwt = false
+  [functions.send-credits-email]
+    verify_jwt = false
+  [functions.verify-purchase]
+    verify_jwt = false

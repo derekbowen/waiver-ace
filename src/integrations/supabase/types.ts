@@ -58,6 +58,47 @@ export type Database = {
           },
         ]
       }
+      credit_transactions: {
+        Row: {
+          balance_after: number
+          created_at: string
+          credits_delta: number
+          id: string
+          notes: string | null
+          org_id: string
+          reference_id: string | null
+          type: string
+        }
+        Insert: {
+          balance_after: number
+          created_at?: string
+          credits_delta: number
+          id?: string
+          notes?: string | null
+          org_id: string
+          reference_id?: string | null
+          type: string
+        }
+        Update: {
+          balance_after?: number
+          created_at?: string
+          credits_delta?: number
+          id?: string
+          notes?: string | null
+          org_id?: string
+          reference_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       envelope_events: {
         Row: {
           created_at: string
@@ -102,9 +143,11 @@ export type Database = {
           created_at: string
           customer_id: string | null
           expires_at: string | null
+          group_token: string | null
           host_id: string | null
           id: string
           ip_address: string | null
+          is_group_waiver: boolean
           listing_id: string | null
           org_id: string
           payload: Json
@@ -126,9 +169,11 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           expires_at?: string | null
+          group_token?: string | null
           host_id?: string | null
           id?: string
           ip_address?: string | null
+          is_group_waiver?: boolean
           listing_id?: string | null
           org_id: string
           payload?: Json
@@ -150,9 +195,11 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           expires_at?: string | null
+          group_token?: string | null
           host_id?: string | null
           id?: string
           ip_address?: string | null
+          is_group_waiver?: boolean
           listing_id?: string | null
           org_id?: string
           payload?: Json
@@ -186,6 +233,107 @@ export type Database = {
           },
         ]
       }
+      group_signatures: {
+        Row: {
+          envelope_id: string
+          id: string
+          initials: string | null
+          ip_address: string | null
+          signature_data: Json | null
+          signed_at: string
+          signer_email: string | null
+          signer_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          envelope_id: string
+          id?: string
+          initials?: string | null
+          ip_address?: string | null
+          signature_data?: Json | null
+          signed_at?: string
+          signer_email?: string | null
+          signer_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          envelope_id?: string
+          id?: string
+          initials?: string | null
+          ip_address?: string | null
+          signature_data?: Json | null
+          signed_at?: string
+          signer_email?: string | null
+          signer_name?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_signatures_envelope_id_fkey"
+            columns: ["envelope_id"]
+            isOneToOne: false
+            referencedRelation: "envelopes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_integrations: {
+        Row: {
+          api_base_url: string | null
+          client_id: string | null
+          client_secret: string | null
+          created_at: string
+          default_template_id: string | null
+          id: string
+          is_active: boolean
+          org_id: string
+          platform: string
+          updated_at: string
+          webhook_secret: string | null
+        }
+        Insert: {
+          api_base_url?: string | null
+          client_id?: string | null
+          client_secret?: string | null
+          created_at?: string
+          default_template_id?: string | null
+          id?: string
+          is_active?: boolean
+          org_id: string
+          platform?: string
+          updated_at?: string
+          webhook_secret?: string | null
+        }
+        Update: {
+          api_base_url?: string | null
+          client_id?: string | null
+          client_secret?: string | null
+          created_at?: string
+          default_template_id?: string | null
+          id?: string
+          is_active?: boolean
+          org_id?: string
+          platform?: string
+          updated_at?: string
+          webhook_secret?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_integrations_default_template_id_fkey"
+            columns: ["default_template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_integrations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           created_at: string
@@ -194,6 +342,7 @@ export type Database = {
           logo_url: string | null
           name: string
           retention_years: number
+          tier_override: string | null
           updated_at: string
         }
         Insert: {
@@ -203,6 +352,7 @@ export type Database = {
           logo_url?: string | null
           name: string
           retention_years?: number
+          tier_override?: string | null
           updated_at?: string
         }
         Update: {
@@ -212,6 +362,7 @@ export type Database = {
           logo_url?: string | null
           name?: string
           retention_years?: number
+          tier_override?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -247,6 +398,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          id: string
+          invited_by: string
+          org_id: string
+          role: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          invited_by: string
+          org_id: string
+          role?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string
+          org_id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invites_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -351,6 +540,53 @@ export type Database = {
         }
         Relationships: []
       }
+      wallets: {
+        Row: {
+          auto_recharge_enabled: boolean
+          auto_recharge_package: string
+          auto_recharge_threshold: number
+          created_at: string
+          credits: number
+          id: string
+          org_id: string
+          stripe_customer_id: string | null
+          stripe_payment_method_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          auto_recharge_enabled?: boolean
+          auto_recharge_package?: string
+          auto_recharge_threshold?: number
+          created_at?: string
+          credits?: number
+          id?: string
+          org_id: string
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auto_recharge_enabled?: boolean
+          auto_recharge_package?: string
+          auto_recharge_threshold?: number
+          created_at?: string
+          credits?: number
+          id?: string
+          org_id?: string
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_deliveries: {
         Row: {
           attempt: number
@@ -451,6 +687,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_credits: {
+        Args: {
+          p_amount: number
+          p_notes?: string
+          p_org_id: string
+          p_reference_id: string
+          p_type: string
+        }
+        Returns: number
+      }
+      deduct_credit: {
+        Args: { p_org_id: string; p_reference_id: string; p_type?: string }
+        Returns: {
+          error_message: string
+          success: boolean
+        }[]
+      }
+      get_envelope_by_token: { Args: { p_token: string }; Returns: Json }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -458,6 +712,19 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      sign_envelope: {
+        Args: {
+          p_signature_data: Json
+          p_signer_name: string
+          p_token: string
+          p_user_agent?: string
+        }
+        Returns: Json
+      }
+      view_envelope: {
+        Args: { p_token: string; p_user_agent?: string }
+        Returns: undefined
       }
     }
     Enums: {

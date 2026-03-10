@@ -6,23 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
 };
 
-// Simple in-memory rate limiter: 60 requests per minute per API key prefix
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(keyPrefix: string): { allowed: boolean; remaining: number } {
-  const now = Date.now();
-  const limit = 60;
-  const windowMs = 60_000;
-
-  let entry = rateLimitMap.get(keyPrefix);
-  if (!entry || now > entry.resetAt) {
-    entry = { count: 0, resetAt: now + windowMs };
-    rateLimitMap.set(keyPrefix, entry);
-  }
-
-  entry.count++;
-  return { allowed: entry.count <= limit, remaining: Math.max(0, limit - entry.count) };
-}
+const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 function generateSigningEmailHtml({ signerName, signingUrl, templateName, organizationName }: {
   signerName?: string;
@@ -30,9 +14,9 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   templateName?: string;
   organizationName?: string;
 }): string {
-  const orgName = organizationName || "RentalWaivers";
-  const displayName = signerName || "there";
-  const docName = templateName || "Waiver Agreement";
+  const orgName = escapeHtml(organizationName || "RentalWaivers");
+  const displayName = escapeHtml(signerName || "there");
+  const docName = escapeHtml(templateName || "Waiver Agreement");
 
   return `
 <!DOCTYPE html>
@@ -45,31 +29,31 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   <div style="text-align: center; margin-bottom: 32px;">
     <h1 style="font-size: 24px; font-weight: 600; margin: 0;">${orgName}</h1>
   </div>
-
+  
   <p style="font-size: 16px; margin-bottom: 16px;">Hi ${displayName},</p>
-
+  
   <p style="font-size: 16px; margin-bottom: 24px;">
     You have a document that requires your signature: <strong>${docName}</strong>
   </p>
-
+  
   <p style="font-size: 16px; margin-bottom: 24px;">
     Please review and sign the document by clicking the button below:
   </p>
-
+  
   <div style="text-align: center; margin: 32px 0;">
     <a href="${signingUrl}" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;">
       Review & Sign Document
     </a>
   </div>
-
+  
   <p style="font-size: 14px; color: #64748b; margin-top: 32px;">
     If the button doesn't work, copy and paste this link into your browser:
     <br>
     <a href="${signingUrl}" style="color: #3b82f6; word-break: break-all;">${signingUrl}</a>
   </p>
-
+  
   <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
-
+  
   <p style="font-size: 12px; color: #94a3b8; text-align: center;">
     This email was sent by ${orgName} via RentalWaivers.<br>
     If you did not expect this email, please ignore it.
@@ -79,73 +63,68 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   `;
 }
 
-async function fireWebhooks(
-  supabase: ReturnType<typeof createClient>,
+async function dispatchWebhooks(
+  supabase: any,
   orgId: string,
   eventType: string,
-  envelopeId: string,
-  payload: Record<string, unknown>
+  payload: Record<string, any>
 ) {
-  const { data: endpoints } = await supabase
-    .from("webhook_endpoints")
-    .select("id, url, secret, events")
-    .eq("org_id", orgId)
-    .eq("is_active", true);
+  try {
+    const { data: endpoints } = await supabase
+      .from("webhook_endpoints")
+      .select("id, url, secret, events")
+      .eq("org_id", orgId);
 
-  if (!endpoints?.length) return;
+    if (!endpoints?.length) return;
 
-  for (const ep of endpoints) {
-    if (!(ep.events as string[])?.includes(eventType)) continue;
+    const body = JSON.stringify({ event: eventType, data: payload, timestamp: new Date().toISOString() });
 
-    const body = JSON.stringify({
-      event: eventType,
-      envelope_id: envelopeId,
-      timestamp: new Date().toISOString(),
-      data: payload,
-    });
+    for (const ep of endpoints) {
+      if (!(ep.events as string[])?.includes(eventType)) continue;
 
-    // Sign payload with HMAC-SHA256
-    const key = await crypto.subtle.importKey(
-      "raw",
-      new TextEncoder().encode(ep.secret),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["sign"]
-    );
-    const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body));
-    const signature = Array.from(new Uint8Array(sig))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+      // HMAC-SHA256 signature using the stored secret hash as the signing key
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(ep.secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      );
+      const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+      const signature = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
 
-    let responseStatus: number | null = null;
-    let responseBody: string | null = null;
-    let deliveredAt: string | null = null;
+      try {
+        const res = await fetch(ep.url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Webhook-Signature": `sha256=${signature}`,
+            "X-Webhook-Event": eventType,
+          },
+          body,
+        });
 
-    try {
-      const res = await fetch(ep.url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-RentalWaivers-Signature": signature,
-        },
-        body,
-      });
-      responseStatus = res.status;
-      responseBody = (await res.text()).slice(0, 1000);
-      if (res.ok) deliveredAt = new Date().toISOString();
-    } catch (err: unknown) {
-      responseBody = err instanceof Error ? err.message : "Delivery failed";
+        await supabase.from("webhook_deliveries").insert({
+          endpoint_id: ep.id,
+          event_type: eventType,
+          payload,
+          response_status: res.status,
+          success: res.ok,
+        });
+      } catch (err: any) {
+        await supabase.from("webhook_deliveries").insert({
+          endpoint_id: ep.id,
+          event_type: eventType,
+          payload,
+          response_status: 0,
+          success: false,
+          error_message: err.message,
+        });
+      }
     }
-
-    await supabase.from("webhook_deliveries").insert({
-      webhook_endpoint_id: ep.id,
-      envelope_id: envelopeId,
-      event_type: eventType,
-      payload: JSON.parse(body),
-      response_status: responseStatus,
-      response_body: responseBody,
-      delivered_at: deliveredAt,
-    });
+  } catch (e) {
+    console.error("Webhook dispatch error:", e);
   }
 }
 
@@ -159,6 +138,110 @@ serve(async (req: Request) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
 
+  // Handle kiosk actions (no API key required - public facing)
+  if (req.method === "POST") {
+    try {
+      const bodyClone = req.clone();
+      const body = await bodyClone.json();
+      
+      if (body.action === "kiosk_info" && body.template_id) {
+        const { data: template } = await supabase
+          .from("templates")
+          .select("id, name, org_id, is_active")
+          .eq("id", body.template_id)
+          .eq("is_active", true)
+          .single();
+
+        if (!template) {
+          return new Response(JSON.stringify({ error: "Template not found" }), {
+            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: org } = await supabase
+          .from("organizations")
+          .select("name")
+          .eq("id", template.org_id)
+          .single();
+
+        return new Response(JSON.stringify({
+          template_name: template.name,
+          org_name: org?.name || "",
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (body.action === "kiosk_create" && body.template_id) {
+        const { data: template } = await supabase
+          .from("templates")
+          .select("id, org_id, is_active")
+          .eq("id", body.template_id)
+          .eq("is_active", true)
+          .single();
+
+        if (!template) {
+          return new Response(JSON.stringify({ error: "Template not found" }), {
+            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: version } = await supabase
+          .from("template_versions")
+          .select("id")
+          .eq("template_id", template.id)
+          .eq("is_current", true)
+          .single();
+
+        if (!version) {
+          return new Response(JSON.stringify({ error: "No active version" }), {
+            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Deduct credit
+        const { data: creditResult } = await supabase.rpc("deduct_credit", {
+          p_org_id: template.org_id,
+          p_reference_id: `kiosk_${Date.now()}`,
+          p_type: "waiver_deduction",
+        });
+
+        if (!creditResult?.[0]?.success) {
+          return new Response(JSON.stringify({ error: "Organization has no credits remaining" }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: envelope, error } = await supabase
+          .from("envelopes")
+          .insert({
+            org_id: template.org_id,
+            template_version_id: version.id,
+            signer_email: "kiosk@placeholder.local",
+            signer_name: "Kiosk Guest",
+            status: "sent",
+            payload: { source: "kiosk" },
+          })
+          .select("signing_token")
+          .single();
+
+        if (error) throw error;
+
+        await supabase.from("envelope_events").insert({
+          envelope_id: envelope.signing_token, // will be looked up
+          event_type: "envelope.sent",
+          metadata: { source: "kiosk" },
+        });
+
+        return new Response(JSON.stringify({ signing_token: envelope.signing_token }), {
+          status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } catch (kioskErr) {
+      // Not a kiosk request, fall through to API key validation
+    }
+  }
+
   const url = new URL(req.url);
   const path = url.pathname.replace("/waiverflow-api", "");
   const apiKey = req.headers.get("x-api-key");
@@ -170,13 +253,7 @@ serve(async (req: Request) => {
     });
   }
 
-  // SHA-256 hash for secure key comparison
-  const encoded = new TextEncoder().encode(apiKey);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
-  const keyHash = Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-
+  const keyHash = btoa(apiKey);
   const { data: keyData } = await supabase
     .from("api_keys")
     .select("org_id, is_active")
@@ -191,21 +268,6 @@ serve(async (req: Request) => {
   }
 
   const orgId = keyData.org_id;
-
-  // Rate limiting
-  const keyPrefix = apiKey.slice(0, 10);
-  const rateCheck = checkRateLimit(keyPrefix);
-  if (!rateCheck.allowed) {
-    return new Response(JSON.stringify({ error: "Rate limit exceeded. Max 60 requests per minute." }), {
-      status: 429,
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-        "X-RateLimit-Remaining": String(rateCheck.remaining),
-        "Retry-After": "60",
-      },
-    });
-  }
 
   // Update last_used_at
   await supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("key_hash", keyHash);
@@ -243,33 +305,12 @@ serve(async (req: Request) => {
         .eq("id", template_id)
         .single();
 
-      // Get organization name and subscription tier
+      // Get organization name
       const { data: org } = await supabase
         .from("organizations")
-        .select("name, subscription_tier, tier_override")
+        .select("name")
         .eq("id", orgId)
         .single();
-
-      // Check usage limits (tier_override bypasses Stripe sync)
-      const tierLimits: Record<string, number> = { free: 5, starter: 15, growth: 50, business: 150 };
-      const currentTier = org?.tier_override || org?.subscription_tier || "free";
-      const limit = tierLimits[currentTier] ?? 5;
-
-      const { data: usageCount } = await supabase.rpc("get_org_monthly_usage", { p_org_id: orgId });
-      const usage = usageCount ?? 0;
-
-      if (usage >= limit && currentTier === "free") {
-        return new Response(JSON.stringify({
-          error: "Monthly waiver limit reached. Upgrade your plan to continue.",
-          usage,
-          limit,
-          tier: currentTier,
-        }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
       const { data: envelope, error } = await supabase
         .from("envelopes")
@@ -283,7 +324,6 @@ serve(async (req: Request) => {
           host_id: host_id || null,
           customer_id: customer_id || null,
           status: "sent",
-          expires_at: expiresAt,
           payload: payload || {},
         })
         .select()
@@ -291,19 +331,32 @@ serve(async (req: Request) => {
 
       if (error) throw error;
 
+      // Deduct credit from wallet (after successful envelope creation)
+      const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
+        p_org_id: orgId,
+        p_reference_id: envelope.id,
+        p_type: "waiver_deduction",
+      });
+
+      if (creditErr || !creditResult?.[0]?.success) {
+        // Credit deduction failed — cancel the envelope to avoid untracked usage
+        await supabase.from("envelopes").update({ status: "canceled" }).eq("id", envelope.id);
+        const credit = creditResult?.[0];
+        return new Response(JSON.stringify({
+          error: credit?.error_message || "Insufficient credits. Purchase more to continue.",
+          credits_remaining: credit?.new_balance ?? 0,
+        }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const credit = creditResult[0];
+
       // Log event
       await supabase.from("envelope_events").insert({
         envelope_id: envelope.id,
         event_type: "envelope.sent",
         metadata: { source: "api" },
-      });
-
-      // Fire webhooks
-      await fireWebhooks(supabase, orgId, "envelope.sent", envelope.id, {
-        signer_email: envelope.signer_email,
-        signer_name: envelope.signer_name,
-        booking_id: envelope.booking_id,
-        listing_id: envelope.listing_id,
       });
 
       const baseUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
@@ -322,7 +375,7 @@ serve(async (req: Request) => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                from: "RentalWaivers <onboarding@resend.dev>",
+                from: "WaiverFlow <onboarding@resend.dev>",
                 to: [signer_email],
                 subject: `Action Required: Please sign "${template?.name || 'Waiver Agreement'}"`,
                 html: generateSigningEmailHtml({
@@ -344,6 +397,28 @@ serve(async (req: Request) => {
         }
       }
 
+      // Dispatch webhook
+      await dispatchWebhooks(supabase, orgId, "envelope.sent", {
+        id: envelope.id, status: "sent", signer_email, signing_url: signingUrl,
+      });
+
+      // Trigger auto-recharge if needed
+      if (credit?.needs_recharge) {
+        try {
+          const autoRechargeUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/auto-recharge`;
+          fetch(autoRechargeUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            },
+            body: JSON.stringify({ org_id: orgId }),
+          }).catch(err => console.error("Auto-recharge trigger failed:", err));
+        } catch (e) {
+          console.error("Auto-recharge trigger error:", e);
+        }
+      }
+
       return new Response(JSON.stringify({
         id: envelope.id,
         status: envelope.status,
@@ -351,9 +426,7 @@ serve(async (req: Request) => {
         signing_token: envelope.signing_token,
         created_at: envelope.created_at,
         email_sent: emailSent,
-        usage: usage + 1,
-        limit,
-        tier: currentTier,
+        credits_remaining: credit?.new_balance,
       }), {
         status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -397,22 +470,65 @@ serve(async (req: Request) => {
         metadata: { source: "api" },
       });
 
-      await fireWebhooks(supabase, orgId, "envelope.canceled", envelopeId, {});
+      await dispatchWebhooks(supabase, orgId, "envelope.canceled", { id: envelopeId });
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // GET /templates - List templates
-    if (req.method === "GET" && (path === "/templates" || path === "/templates/")) {
-      const { data: templates } = await supabase
-        .from("templates")
-        .select("id, name, description, is_active, created_at")
-        .eq("org_id", orgId)
-        .order("created_at", { ascending: false });
+    // GET /envelopes - List envelopes with pagination
+    if (req.method === "GET" && (path === "/envelopes" || path === "/envelopes/")) {
+      const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
+      const pageSize = Math.min(100, Math.max(1, parseInt(url.searchParams.get("page_size") || "20")));
+      const status = url.searchParams.get("status");
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
 
-      return new Response(JSON.stringify(templates || []), {
+      let query = supabase
+        .from("envelopes")
+        .select("id, status, signer_email, signer_name, booking_id, listing_id, signed_at, created_at", { count: "exact" })
+        .eq("org_id", orgId)
+        .order("created_at", { ascending: false })
+        .range(from, to);
+
+      if (status) query = query.eq("status", status);
+
+      const { data, count, error } = await query;
+      if (error) throw error;
+
+      return new Response(JSON.stringify({
+        data: data || [],
+        total: count || 0,
+        page,
+        page_size: pageSize,
+        total_pages: Math.ceil((count || 0) / pageSize),
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // GET /templates - List templates with pagination
+    if (req.method === "GET" && (path === "/templates" || path === "/templates/")) {
+      const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
+      const pageSize = Math.min(100, Math.max(1, parseInt(url.searchParams.get("page_size") || "20")));
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data: templates, count } = await supabase
+        .from("templates")
+        .select("id, name, description, is_active, created_at", { count: "exact" })
+        .eq("org_id", orgId)
+        .order("created_at", { ascending: false })
+        .range(from, to);
+
+      return new Response(JSON.stringify({
+        data: templates || [],
+        total: count || 0,
+        page,
+        page_size: pageSize,
+        total_pages: Math.ceil((count || 0) / pageSize),
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -421,9 +537,9 @@ serve(async (req: Request) => {
       status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return new Response(JSON.stringify({ error: message }), {
+  } catch (err: any) {
+    console.error("waiverflow-api error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

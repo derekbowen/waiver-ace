@@ -17,6 +17,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
+  const [showResend, setShowResend] = useState(false);
+  const [resending, setResending] = useState(false);
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
@@ -47,9 +49,27 @@ export default function Login() {
     }
   };
 
+  const handleResendConfirmation = async () => {
+    setResending(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) throw error;
+      toast.success("Confirmation email sent! Check your inbox.");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setResending(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setShowResend(false);
 
     try {
       if (isSignUp) {
@@ -65,7 +85,12 @@ export default function Login() {
         toast.success("Check your email to confirm your account");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (error.message === "Email not confirmed") {
+            setShowResend(true);
+          }
+          throw error;
+        }
         navigate("/dashboard");
       }
     } catch (err: any) {
@@ -108,6 +133,21 @@ export default function Login() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Loading..." : isSignUp ? "Create account" : "Sign in"}
           </Button>
+
+          {showResend && (
+            <div className="mt-3 rounded-md border border-yellow-500/30 bg-yellow-500/10 p-3 text-center">
+              <p className="text-sm text-muted-foreground mb-2">Your email hasn't been confirmed yet.</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleResendConfirmation}
+                disabled={resending}
+              >
+                {resending ? "Sending..." : "Resend confirmation email"}
+              </Button>
+            </div>
+          )}
         </form>
 
         <div className="my-6 flex items-center gap-3">
