@@ -143,9 +143,11 @@ export type Database = {
           created_at: string
           customer_id: string | null
           expires_at: string | null
+          group_token: string | null
           host_id: string | null
           id: string
           ip_address: string | null
+          is_group_waiver: boolean
           listing_id: string | null
           org_id: string
           payload: Json
@@ -167,9 +169,11 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           expires_at?: string | null
+          group_token?: string | null
           host_id?: string | null
           id?: string
           ip_address?: string | null
+          is_group_waiver?: boolean
           listing_id?: string | null
           org_id: string
           payload?: Json
@@ -191,9 +195,11 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           expires_at?: string | null
+          group_token?: string | null
           host_id?: string | null
           id?: string
           ip_address?: string | null
+          is_group_waiver?: boolean
           listing_id?: string | null
           org_id?: string
           payload?: Json
@@ -223,6 +229,50 @@ export type Database = {
             columns: ["template_version_id"]
             isOneToOne: false
             referencedRelation: "template_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_signatures: {
+        Row: {
+          envelope_id: string
+          id: string
+          initials: string | null
+          ip_address: string | null
+          signature_data: Json | null
+          signed_at: string
+          signer_email: string | null
+          signer_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          envelope_id: string
+          id?: string
+          initials?: string | null
+          ip_address?: string | null
+          signature_data?: Json | null
+          signed_at?: string
+          signer_email?: string | null
+          signer_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          envelope_id?: string
+          id?: string
+          initials?: string | null
+          ip_address?: string | null
+          signature_data?: Json | null
+          signed_at?: string
+          signer_email?: string | null
+          signer_name?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_signatures_envelope_id_fkey"
+            columns: ["envelope_id"]
+            isOneToOne: false
+            referencedRelation: "envelopes"
             referencedColumns: ["id"]
           },
         ]
@@ -551,6 +601,13 @@ export type Database = {
           p_type: string
         }
         Returns: number
+      }
+      deduct_credit: {
+        Args: { p_org_id: string; p_reference_id: string; p_type?: string }
+        Returns: {
+          error_message: string
+          success: boolean
+        }[]
       }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       has_role: {

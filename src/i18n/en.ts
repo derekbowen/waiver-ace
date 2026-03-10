@@ -1,4 +1,4 @@
-export const en = {
+export const en: Record<string, Record<string, string>> = {
   common: {
     save: "Save",
     cancel: "Cancel",
