@@ -5,8 +5,9 @@ import {
   Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock,
   Smartphone, Droplets, Home, Wrench, PartyPopper, Zap, Globe,
   Code, Webhook, DollarSign, X, BadgeCheck, TrendingDown, Lock,
-  BarChart3, Bell, CreditCard
+  BarChart3, Bell, CreditCard, Info
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { CREDIT_PACKAGES } from "@/lib/credit-packages";
 import logo from "@/assets/logo.png";
