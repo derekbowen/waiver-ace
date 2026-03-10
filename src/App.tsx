@@ -28,6 +28,7 @@ import Pricing from "./pages/Pricing";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Docs from "./pages/Docs";
+import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
 import MarketplaceIntegration from "./pages/MarketplaceIntegration";
 import NotFound from "./pages/NotFound";
