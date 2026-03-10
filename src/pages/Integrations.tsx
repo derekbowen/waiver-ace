@@ -37,7 +37,7 @@ export default function Integrations() {
         .select("*")
         .eq("org_id", profile.org_id)
         .limit(1)
-        .single(),
+        .maybeSingle(),
       supabase
         .from("templates")
         .select("id, name")
@@ -53,6 +53,8 @@ export default function Integrations() {
         setTemplateId((c.settings as Record<string, string>)?.template_id || "");
       }
       setTemplates(templatesRes.data || []);
+      setLoading(false);
+    }).catch(() => {
       setLoading(false);
     });
   }, [profile?.org_id]);
@@ -100,6 +102,16 @@ export default function Integrations() {
   };
 
   const isConnected = config?.is_active && clientId && clientSecret && templateId;
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
