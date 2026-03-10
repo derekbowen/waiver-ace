@@ -19,6 +19,7 @@ export default function Pricing() {
   const { user, wallet, refreshWallet, profile } = useAuth();
   const navigate = useNavigate();
   const [loadingPkg, setLoadingPkg] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState(false);
 
   const handleCheckout = async (packageId: string) => {
     if (!user) {
