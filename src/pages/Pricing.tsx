@@ -241,13 +241,42 @@ export default function Pricing() {
           </div>
         )}
 
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-3">
           <p className="text-sm text-muted-foreground">
             Credits are deducted when you send a waiver (1 credit per signer). Your account can go up to -10 credits before sending is paused.
           </p>
-          <Button variant="ghost" size="sm" onClick={refreshWallet}>
-            Refresh credit balance
-          </Button>
+          <div className="flex items-center justify-center gap-3">
+            <Button variant="ghost" size="sm" onClick={refreshWallet}>
+              Refresh credit balance
+            </Button>
+            {user && (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={verifying}
+                onClick={async () => {
+                  setVerifying(true);
+                  try {
+                    const { data, error } = await supabase.functions.invoke("verify-purchase");
+                    if (error) throw error;
+                    if (data?.recovered > 0) {
+                      toast.success(data.message);
+                      await refreshWallet();
+                    } else {
+                      toast.info(data?.message || "All purchases are accounted for.");
+                    }
+                  } catch (err: any) {
+                    toast.error(err.message || "Failed to verify purchases");
+                  } finally {
+                    setVerifying(false);
+                  }
+                }}
+              >
+                {verifying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
+                Verify Purchase
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </DashboardLayout>
