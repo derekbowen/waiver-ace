@@ -66,6 +66,9 @@ serve(async (req) => {
       .from("user_roles")
       .insert({ user_id: user.id, role: "admin" });
     if (roleErr && !roleErr.message.includes("duplicate")) {
+      // Rollback: unlink profile and delete org
+      await supabaseClient.from("profiles").update({ org_id: null }).eq("user_id", user.id);
+      await supabaseClient.from("organizations").delete().eq("id", org.id);
       throw new Error(`Failed to assign admin role: ${roleErr.message}`);
     }
 
