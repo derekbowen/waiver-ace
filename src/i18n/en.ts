@@ -1,4 +1,4 @@
-export const en = {
+export const en: Record<string, Record<string, string>> = {
   common: {
     save: "Save",
     cancel: "Cancel",
@@ -94,6 +94,10 @@ export const en = {
     switchPlan: "Switch Plan",
     downgrade: "Downgrade",
   },
-} as const;
+};
 
-export type TranslationKeys = typeof en;
+type DeepStringRecord<T> = {
+  [K in keyof T]: T[K] extends Record<string, any> ? DeepStringRecord<T[K]> : string;
+};
+
+export type TranslationKeys = DeepStringRecord<typeof en>;
