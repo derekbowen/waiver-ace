@@ -28,16 +28,16 @@ export default function Landing() {
             <span className="font-heading text-lg font-bold tracking-tight">Rental Waivers</span>
           </div>
           <div className="flex items-center gap-2">
-            <a href="#pricing">
+            <a href="#pricing" className="hidden sm:inline-flex">
               <Button variant="ghost" size="sm">Pricing</Button>
             </a>
-            <Link to="/docs">
+            <Link to="/docs" className="hidden md:inline-flex">
               <Button variant="ghost" size="sm">API Docs</Button>
             </Link>
-            <Link to="/my-waivers">
+            <Link to="/my-waivers" className="hidden md:inline-flex">
               <Button variant="ghost" size="sm">My Waivers</Button>
             </Link>
-            <Link to="/login">
+            <Link to="/login" className="hidden sm:inline-flex">
               <Button variant="ghost" size="sm">Sign in</Button>
             </Link>
             <Link to="/login">
