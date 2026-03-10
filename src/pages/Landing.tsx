@@ -5,8 +5,9 @@ import {
   Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock,
   Smartphone, Droplets, Home, Wrench, PartyPopper, Zap, Globe,
   Code, Webhook, DollarSign, X, BadgeCheck, TrendingDown, Lock,
-  BarChart3, Bell, CreditCard
+  BarChart3, Bell, CreditCard, Info
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { CREDIT_PACKAGES } from "@/lib/credit-packages";
 import logo from "@/assets/logo.png";
@@ -37,10 +38,10 @@ export default function Landing() {
             <Link to="/my-waivers" className="hidden md:inline-flex">
               <Button variant="ghost" size="sm">My Waivers</Button>
             </Link>
-            <Link to="/login" className="hidden sm:inline-flex">
+            <Link to="/login">
               <Button variant="ghost" size="sm">Sign in</Button>
             </Link>
-            <Link to="/login">
+            <Link to="/login" className="hidden sm:inline-flex">
               <Button size="sm">Get Started Free</Button>
             </Link>
           </div>
@@ -367,29 +368,43 @@ export default function Landing() {
             Other platforms lock features behind premium tiers. We don't.
           </p>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[
-              { icon: Zap, title: "Marketplace integration", desc: "Auto-send waivers when bookings come in. ShareTribe, custom platforms, anything with a webhook." },
-              { icon: Users, title: "Unlimited group waivers", desc: "One link, unlimited signers. No per-signer charges." },
-              { icon: Shield, title: "Legally defensible signatures", desc: "Drawn signatures, timestamps, IP addresses, device info. Full audit trail." },
-              { icon: Code, title: "Full REST API", desc: "Create envelopes, manage templates, check statuses. No premium tier needed." },
-              { icon: Webhook, title: "Real-time webhooks", desc: "Get notified on every event: viewed, signed, expired. Build automations." },
-              { icon: Bell, title: "Auto-reminders", desc: "Unsigned waivers get automatic reminder emails. Set your own cadence." },
-              { icon: BarChart3, title: "Analytics dashboard", desc: "See signing rates, response times, and team activity at a glance." },
-              { icon: Lock, title: "Team roles & API keys", desc: "Add your whole team. Role-based access. Multiple API keys." },
-              { icon: CreditCard, title: "Auto-recharge", desc: "Set a threshold and package. Credits refill automatically when you run low." },
-            ].map((f) => (
-              <div key={f.title} className="flex items-start gap-4 rounded-xl border bg-card p-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                  <f.icon className="h-5 w-5 text-primary" />
+          <TooltipProvider delayDuration={200}>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {[
+                { icon: Zap, title: "Marketplace integration", desc: "Auto-send waivers when bookings come in. ShareTribe, custom platforms, anything with a webhook.", tooltip: "A marketplace integration connects your booking platform (like Swimply, ShareTribe, or your own website) so waivers are sent automatically when someone books — zero manual work." },
+                { icon: Users, title: "Unlimited group waivers", desc: "One link, unlimited signers. No per-signer charges.", tooltip: "Group waivers let you send a single link to a party or family. Each person signs individually on their own phone. Great for pool parties, tours, and events." },
+                { icon: Shield, title: "Legally defensible signatures", desc: "Drawn signatures, timestamps, IP addresses, device info. Full audit trail.", tooltip: "Every signature captures the signer's full name, drawn signature, IP address, device type, and exact timestamp — creating evidence that holds up in legal disputes." },
+                { icon: Code, title: "Full REST API", desc: "Create envelopes, manage templates, check statuses. No premium tier needed.", tooltip: "An API (Application Programming Interface) lets your own software or website create and manage waivers programmatically — no manual clicking needed. Think of it as a way for your systems to talk to ours." },
+                { icon: Webhook, title: "Real-time webhooks", desc: "Get notified on every event: viewed, signed, expired. Build automations.", tooltip: "A webhook is an automatic notification. When a guest views or signs a waiver, we instantly notify your system — so you can trigger next steps like sending check-in instructions or updating your calendar." },
+                { icon: Bell, title: "Auto-reminders", desc: "Unsigned waivers get automatic reminder emails. Set your own cadence.", tooltip: "If a guest hasn't signed their waiver, the system automatically sends them a friendly reminder email. You set how often — so you never have to manually follow up." },
+                { icon: BarChart3, title: "Analytics dashboard", desc: "See signing rates, response times, and team activity at a glance.", tooltip: "Your dashboard shows you key metrics: how many waivers were sent, viewed, and signed, plus average signing times and team member activity." },
+                { icon: Lock, title: "Team roles & API keys", desc: "Add your whole team. Role-based access. Multiple API keys.", tooltip: "Invite team members with different permission levels. Admins manage everything; hosts can view and send waivers. API keys let different integrations connect securely." },
+                { icon: CreditCard, title: "Auto-recharge", desc: "Set a threshold and package. Credits refill automatically when you run low.", tooltip: "Never run out of credits mid-season. Set a minimum balance (like 50 credits), and when you drop below it, your account automatically purchases more using your saved payment method." },
+              ].map((f) => (
+                <div key={f.title} className="flex items-start gap-4 rounded-xl border bg-card p-5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <f.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <h3 className="font-heading font-semibold">{f.title}</h3>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                            <Info className="h-3.5 w-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+                          {f.tooltip}
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-heading font-semibold mb-1">{f.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </TooltipProvider>
         </div>
       </section>
 
