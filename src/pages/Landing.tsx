@@ -49,34 +49,34 @@ export default function Landing() {
       </header>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* HERO — Bold, competitive, numbers-driven               */}
+      {/* HERO — Peace of mind, trust-first                       */}
       {/* ═══════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden">
-        {/* Subtle grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+        {/* Radial glow behind hero */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,hsl(var(--primary)/0.08),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.4)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.4)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 
-        <div className="container relative pt-32 pb-24">
+        <div className="container relative pt-32 pb-20">
           <div className="mx-auto max-w-4xl text-center animate-fade-in">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8">
-              <TrendingDown className="h-4 w-4" />
-              The lowest-cost waiver platform on the market
+              <Shield className="h-4 w-4" />
+              Legally-binding e-signatures with full audit trails
             </div>
 
             <h1 className="font-heading text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
-              Stop overpaying
+              Every signature.
               <br />
-              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">for digital waivers</span>
+              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Every detail. Protected.</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-2xl mx-auto leading-relaxed">
-              No monthly subscription. No per-seat fees. Just credits.
-              <br className="hidden sm:block" />
-              <strong className="text-foreground">Starting at 6¢ per waiver.</strong>
+              Digital waivers that capture drawn signatures, IP addresses, timestamps, and device info — 
+              <strong className="text-foreground"> evidence that holds up when it matters.</strong>
             </p>
 
             <p className="text-base text-muted-foreground mb-10 max-w-xl mx-auto">
-              Full API access. Webhooks. Marketplace integrations. Group waivers.
-              Everything the big platforms charge $50/mo for — without the $50/mo.
+              No monthly fees. No per-seat pricing. Just pay per waiver starting at 6¢.
+              Full API access, webhooks, and group waivers included.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
@@ -85,11 +85,114 @@ export default function Landing() {
                   Start for Free <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
-              <a href="#how-it-works">
-                <Button variant="outline" size="lg" className="text-base px-8 py-6">See How It Works</Button>
+              <a href="#trust">
+                <Button variant="outline" size="lg" className="text-base px-8 py-6 gap-2">
+                  <Shield className="h-4 w-4" /> See What We Capture
+                </Button>
               </a>
             </div>
-            <p className="text-sm text-muted-foreground">5 free credits included. No credit card required.</p>
+            <p className="text-sm text-muted-foreground">5 free credits included · No credit card required</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* TRUSTED BY                                              */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <section className="border-y bg-muted/30 py-6">
+        <div className="container">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+            <span className="text-xs uppercase tracking-widest text-muted-foreground/60 font-medium">Trusted by</span>
+            <div className="flex items-center gap-8">
+              <a href="https://poolrentalnearme.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group">
+                <Droplets className="h-5 w-5 text-primary/60 group-hover:text-primary transition-colors" />
+                <span className="font-heading font-semibold text-sm tracking-tight">poolrentalnearme.com</span>
+                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* TRUST & SECURITY — What we capture on every signature   */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <section id="trust" className="py-20">
+        <div className="container max-w-5xl">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary mb-4">
+              <Lock className="h-4 w-4" /> Built for legal defensibility
+            </div>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">
+              More evidence than a paper waiver could ever provide
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Every signature on Rental Waivers generates a comprehensive, tamper-proof record. Here's exactly what we capture — automatically.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Live audit trail mockup */}
+            <div className="rounded-2xl border-2 border-primary/20 bg-card p-6 md:p-8">
+              <h3 className="font-heading font-semibold text-sm uppercase tracking-wider text-primary mb-6 flex items-center gap-2">
+                <FileText className="h-4 w-4" /> Sample Audit Trail
+              </h3>
+              <div className="space-y-4">
+                {[
+                  { time: "Mar 10, 2026 · 2:14:03 PM UTC", event: "Waiver sent", detail: "guest@email.com", icon: Send },
+                  { time: "Mar 10, 2026 · 2:15:41 PM UTC", event: "Waiver viewed", detail: "IP: 172.58.xxx.xxx · iPhone 15 · Safari", icon: Smartphone },
+                  { time: "Mar 10, 2026 · 2:16:28 PM UTC", event: "Waiver signed", detail: "Jane Doe · Drawn signature captured", icon: CheckCircle },
+                  { time: "Mar 10, 2026 · 2:16:29 PM UTC", event: "PDF generated", detail: "SHA-256: a3f8c2...d94e1b", icon: Shield },
+                ].map((entry, i) => (
+                  <div key={i} className="flex gap-3">
+                    <div className="flex flex-col items-center">
+                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${i === 3 ? 'bg-primary text-primary-foreground' : 'bg-accent'}`}>
+                        <entry.icon className={`h-4 w-4 ${i === 3 ? '' : 'text-muted-foreground'}`} />
+                      </div>
+                      {i < 3 && <div className="w-px h-full bg-border mt-1" />}
+                    </div>
+                    <div className="pb-4">
+                      <p className="text-xs text-muted-foreground font-mono">{entry.time}</p>
+                      <p className="text-sm font-medium">{entry.event}</p>
+                      <p className="text-xs text-muted-foreground">{entry.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Security features grid */}
+            <div className="space-y-4">
+              {[
+                { icon: Fingerprint, title: "Drawn Signature", desc: "Guests sign with their finger or mouse — a unique, legally-recognized mark that's more personal than a typed name.", highlight: true },
+                { icon: Globe, title: "IP Address Logging", desc: "We record the signer's IP address, proving where they were when they signed. Critical for dispute resolution." },
+                { icon: Clock, title: "Precise UTC Timestamps", desc: "Every action — sent, viewed, signed — is recorded to the exact second in UTC. No ambiguity about when consent was given." },
+                { icon: Smartphone, title: "Device & Browser Fingerprint", desc: "We capture the device type, operating system, and browser. Another layer of proof that a real person signed." },
+                { icon: Lock, title: "SHA-256 Document Hash", desc: "Every signed PDF gets a cryptographic hash. If even one pixel changes, the hash breaks — proving the document hasn't been tampered with." },
+                { icon: Shield, title: "7-Year Secure Storage", desc: "Signed waivers are stored as encrypted, tamper-proof PDFs for 7+ years. Configurable up to 99 years." },
+              ].map((item) => (
+                <div key={item.title} className={`flex items-start gap-4 rounded-xl p-4 ${item.highlight ? 'bg-primary/5 border border-primary/15' : 'border bg-card'}`}>
+                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${item.highlight ? 'bg-primary text-primary-foreground' : 'bg-accent'}`}>
+                    <item.icon className={`h-4 w-4 ${item.highlight ? '' : 'text-muted-foreground'}`} />
+                  </div>
+                  <div>
+                    <h3 className="font-heading font-semibold text-sm mb-0.5">{item.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-10 text-center">
+            <p className="text-sm text-muted-foreground mb-4">
+              All signatures comply with the <strong className="text-foreground">ESIGN Act</strong> and <strong className="text-foreground">UETA</strong> — legally binding in all 50 US states.
+            </p>
+            <Link to="/login">
+              <Button className="gap-2">
+                Start Protecting Your Business <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
