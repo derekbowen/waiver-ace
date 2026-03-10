@@ -6,20 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Save, Globe, ExternalLink, Loader2, CreditCard, Zap } from "lucide-react";
+import { Save, Globe, ExternalLink, Loader2, CreditCard, Zap, Coins } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useI18n } from "@/i18n";
-import { TIERS } from "@/lib/stripe-tiers";
 
 export default function Settings() {
-  const { profile, user, subscription } = useAuth();
+  const { profile, user, wallet } = useAuth();
   const { locale } = useI18n();
   const [orgName, setOrgName] = useState("");
   const [retentionYears, setRetentionYears] = useState(7);
   const [saving, setSaving] = useState(false);
   const [hasOrg, setHasOrg] = useState(false);
-  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     if (!profile?.org_id) return;
@@ -36,21 +34,6 @@ export default function Settings() {
         }
       });
   }, [profile?.org_id]);
-
-  const handleManageSubscription = async () => {
-    setPortalLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("customer-portal");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to open subscription management");
-    } finally {
-      setPortalLoading(false);
-    }
-  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -157,30 +140,19 @@ export default function Settings() {
           {hasOrg && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Subscription</CardTitle>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-primary" />
+                  Credits
+                </CardTitle>
                 <CardDescription>
-                  {subscription.subscribed
-                    ? `You are on the ${TIERS[subscription.tier]?.name || subscription.tier} plan`
-                    : "You are on the Free plan"}
+                  {wallet.credits} credits remaining
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                {subscription.subscribed ? (
-                  <>
-                    <Button variant="outline" className="gap-2" onClick={handleManageSubscription} disabled={portalLoading}>
-                      {portalLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />}
-                      Manage Subscription
-                    </Button>
-                    <Button variant="ghost" className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={handleManageSubscription} disabled={portalLoading}>
-                      Cancel Plan
-                    </Button>
-                  </>
-                ) : (
-                  <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/pricing"}>
-                    <CreditCard className="h-4 w-4" />
-                    View Plans
-                  </Button>
-                )}
+              <CardContent>
+                <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/pricing"}>
+                  <CreditCard className="h-4 w-4" />
+                  Buy Credits
+                </Button>
               </CardContent>
             </Card>
           )}

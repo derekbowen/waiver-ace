@@ -468,6 +468,97 @@ export type Database = {
           },
         ]
       }
+      wallets: {
+        Row: {
+          id: string
+          org_id: string
+          credits_remaining: number
+          overdraft_limit: number
+          auto_recharge_enabled: boolean
+          auto_recharge_threshold: number
+          auto_recharge_package: string | null
+          stripe_customer_id: string | null
+          stripe_payment_method_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          org_id: string
+          credits_remaining?: number
+          overdraft_limit?: number
+          auto_recharge_enabled?: boolean
+          auto_recharge_threshold?: number
+          auto_recharge_package?: string | null
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          org_id?: string
+          credits_remaining?: number
+          overdraft_limit?: number
+          auto_recharge_enabled?: boolean
+          auto_recharge_threshold?: number
+          auto_recharge_package?: string | null
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_transactions: {
+        Row: {
+          id: string
+          org_id: string
+          type: Database["public"]["Enums"]["credit_transaction_type"]
+          credits_delta: number
+          balance_after: number
+          reference_id: string | null
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          org_id: string
+          type: Database["public"]["Enums"]["credit_transaction_type"]
+          credits_delta: number
+          balance_after: number
+          reference_id?: string | null
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          org_id?: string
+          type?: Database["public"]["Enums"]["credit_transaction_type"]
+          credits_delta?: number
+          balance_after?: number
+          reference_id?: string | null
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_endpoints: {
         Row: {
           created_at: string
@@ -525,6 +616,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "host" | "customer"
+      credit_transaction_type:
+        | "purchase"
+        | "waiver_deduction"
+        | "group_deduction"
+        | "admin_adjustment"
+        | "refund"
+        | "starter_bonus"
       envelope_status:
         | "draft"
         | "sent"
@@ -661,6 +759,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "host", "customer"],
+      credit_transaction_type: [
+        "purchase",
+        "waiver_deduction",
+        "group_deduction",
+        "admin_adjustment",
+        "refund",
+        "starter_bonus",
+      ],
       envelope_status: [
         "draft",
         "sent",

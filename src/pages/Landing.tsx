@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock, Smartphone, Droplets, Home, Wrench, PartyPopper, Zap, Globe } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { TIERS } from "@/lib/stripe-tiers";
+import { CREDIT_PACKAGES } from "@/lib/credit-packages";
 import logo from "@/assets/logo.png";
 
 export default function Landing() {
@@ -66,7 +66,7 @@ export default function Landing() {
               <Button variant="outline" size="lg" className="text-base px-8 py-6">See How It Works</Button>
             </a>
           </div>
-          <p className="text-sm text-muted-foreground mt-4">Free plan includes 5 waivers/month. No credit card required.</p>
+          <p className="text-sm text-muted-foreground mt-4">5 free credits to start. No subscription required.</p>
         </div>
       </section>
 
@@ -477,32 +477,28 @@ export default function Landing() {
 
       {/* Pricing */}
       <section className="border-t bg-secondary/30 py-20">
-        <div className="container max-w-3xl">
+        <div className="container max-w-4xl">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-center mb-4">
-            Simple pricing
+            Simple credit-based pricing
           </h2>
           <p className="text-center text-lg text-muted-foreground mb-12">
-            Start free. Upgrade when you need more waivers.
+            No monthly subscription. Buy credits, use them whenever. 1 waiver = 1 credit.
           </p>
 
-          <div className="grid gap-4 md:grid-cols-4">
-            {[
-              { name: TIERS.free.name, price: `$${TIERS.free.price}`, waivers: `${TIERS.free.waiver_limit}/month`, highlight: false },
-              { name: TIERS.starter.name, price: `$${TIERS.starter.price}`, waivers: `${TIERS.starter.waiver_limit}/month`, highlight: false },
-              { name: TIERS.growth.name, price: `$${TIERS.growth.price}`, waivers: `${TIERS.growth.waiver_limit}/month`, highlight: true },
-              { name: TIERS.business.name, price: `$${TIERS.business.price}`, waivers: `${TIERS.business.waiver_limit}/month`, highlight: false },
-            ].map((p) => (
-              <div key={p.name} className={`rounded-xl border p-6 text-center ${p.highlight ? "border-primary border-2 bg-card relative" : "bg-card"}`}>
-                {p.highlight && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">POPULAR</div>}
-                <p className="text-sm text-muted-foreground mb-1">{p.name}</p>
-                <p className="font-heading text-3xl font-bold mb-1">{p.price}</p>
-                <p className="text-sm text-muted-foreground">{p.waivers}</p>
+          <div className="grid gap-4 md:grid-cols-5">
+            {CREDIT_PACKAGES.map((pkg) => (
+              <div key={pkg.id} className={`rounded-xl border p-6 text-center ${pkg.popular ? "border-primary border-2 bg-card relative" : "bg-card"}`}>
+                {pkg.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">BEST VALUE</div>}
+                <p className="font-heading text-2xl font-bold mb-1">{pkg.credits.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mb-2">credits</p>
+                <p className="font-heading text-3xl font-bold mb-1">${pkg.price}</p>
+                <p className="text-xs text-muted-foreground">{pkg.perWaiver}/waiver</p>
               </div>
             ))}
           </div>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            All plans include marketplace integration, group waivers, templates, notifications, and PDF downloads.
+            5 free credits to start. All features included with every purchase. Credits never expire.
           </p>
         </div>
       </section>

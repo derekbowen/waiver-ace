@@ -10,12 +10,17 @@ export default function Privacy() {
           <ArrowLeft className="h-4 w-4" /> Back to home
         </Link>
         <h1 className="font-heading text-4xl font-bold tracking-tight mb-2">Privacy Policy</h1>
-        <p className="text-sm text-muted-foreground mb-10">Last updated: March 8, 2026</p>
+        <p className="text-sm text-muted-foreground mb-10">Last updated: March 9, 2026</p>
 
         <div className="prose prose-neutral max-w-none space-y-6 text-sm leading-relaxed text-muted-foreground">
           <section>
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">1. Information We Collect</h2>
-            <p>We collect information you provide directly, such as your name, email address, and organization details when you create an account. We also collect signer information (name, email, IP address, user agent) when documents are signed.</p>
+            <p>We collect information you provide directly, such as your name, email address, and organization details when you create an account. We also collect signer information (name, email, IP address, user agent) when documents are signed. Additional data we collect includes:</p>
+            <ul className="list-disc pl-6 mt-2 space-y-1">
+              <li><strong>Wallet and credit data:</strong> Credit purchase history, transaction records, payment method identifiers (stored securely via Stripe), auto-recharge preferences, and credit balance information.</li>
+              <li><strong>Marketplace integration data:</strong> When you connect a marketplace (e.g., ShareTribe), we receive customer information from booking webhooks including customer names, email addresses, booking IDs, listing details, and booking dates as transmitted by the marketplace platform.</li>
+              <li><strong>Customer portal lookups:</strong> When customers use the /my-waivers portal, we process the email address they enter to look up their waiver status. We do not store portal access logs beyond standard server logs.</li>
+            </ul>
           </section>
 
           <section>
@@ -30,7 +35,13 @@ export default function Privacy() {
 
           <section>
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">4. Data Sharing</h2>
-            <p>We do not sell your personal information. We may share data with service providers who help us operate the platform, and as required by law or to protect our rights.</p>
+            <p>We do not sell your personal information. We may share data with:</p>
+            <ul className="list-disc pl-6 mt-2 space-y-1">
+              <li><strong>Stripe:</strong> Payment processing for credit purchases and auto-recharge. Stripe receives payment card details directly; we store only Stripe customer IDs and payment method identifiers.</li>
+              <li><strong>Resend:</strong> Email delivery service for sending waiver signing requests and notifications.</li>
+              <li><strong>Connected marketplaces:</strong> If you use our marketplace integration, waiver status information may be returned to the marketplace via our status API when they query using their API key.</li>
+              <li>As required by law or to protect our rights.</li>
+            </ul>
           </section>
 
           <section>
@@ -44,22 +55,27 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">7. Your Rights</h2>
+            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">7. Data Retention for Credits</h2>
+            <p>Credit transaction history (purchases, deductions, adjustments) is retained indefinitely for accounting, audit, and dispute resolution purposes. Wallet balances are maintained as long as your organization account is active.</p>
+          </section>
+
+          <section>
+            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">8. Your Rights</h2>
             <p>Depending on your jurisdiction, you may have the right to access, correct, delete, or export your personal data. Contact us to exercise these rights.</p>
           </section>
 
           <section>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">8. Children's Privacy</h2>
+            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">9. Children's Privacy</h2>
             <p>The Service is not intended for individuals under 18. We do not knowingly collect information from children.</p>
           </section>
 
           <section>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">9. Changes to This Policy</h2>
+            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">10. Changes to This Policy</h2>
             <p>We may update this Privacy Policy periodically. We will notify you of material changes via email or through the Service.</p>
           </section>
 
           <section>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">10. Contact</h2>
+            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">11. Contact</h2>
             <p>For privacy-related inquiries, contact us at <a href="mailto:hello@rentalwaivers.com" className="text-primary underline">hello@rentalwaivers.com</a>.</p>
             <p className="mt-2">Rental Waivers · Riverside, CA</p>
           </section>

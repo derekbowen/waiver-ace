@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUsage } from "@/hooks/useUsage";
+import { useWallet } from "@/hooks/useWallet";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 export default function NewEnvelope() {
   const { profile } = useAuth();
-  const { used, limit, isOverLimit } = useUsage();
+  const { credits, isPaused, isLow, isOverdraft, status } = useWallet();
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<any[]>([]);
   const [templateId, setTemplateId] = useState("");
@@ -112,15 +112,30 @@ export default function NewEnvelope() {
         </div>
 
         <div className="space-y-6">
-          {isOverLimit && (
+          {isPaused && (
+            <Card className="border-destructive/50 bg-destructive/5">
+              <CardContent className="pt-6 flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">Waiver collection is paused</p>
+                  <p className="text-sm text-muted-foreground">
+                    Your credit balance has been exhausted.{" "}
+                    <a href="/pricing" className="text-primary underline">Add credits</a> to continue sending waivers.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {!isPaused && (isLow || isOverdraft) && (
             <Card className="border-warning/50 bg-warning/5">
               <CardContent className="pt-6 flex items-start gap-3">
                 <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium">Monthly waiver limit reached</p>
+                  <p className="text-sm font-medium">{credits} credits remaining</p>
                   <p className="text-sm text-muted-foreground">
-                    You've used {used}/{limit} waivers this month.{" "}
-                    <a href="/pricing" className="text-primary underline">Upgrade your plan</a> to send more.
+                    {isOverdraft ? "You're in overdraft. " : "Running low. "}
+                    <a href="/pricing" className="text-primary underline">Add credits</a> to keep sending.
                   </p>
                 </div>
               </CardContent>
@@ -250,7 +265,7 @@ export default function NewEnvelope() {
 
           <div className="flex justify-end gap-3">
             <Button variant="outline" onClick={() => navigate("/envelopes")}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={saving || isOverLimit} className="gap-2">
+            <Button onClick={handleCreate} disabled={saving || isPaused} className="gap-2">
               <Send className="h-4 w-4" /> {saving ? "Creating..." : isGroupWaiver ? "Create Group Waiver" : "Create & Send"}
             </Button>
           </div>

@@ -178,19 +178,21 @@ serve(async (req: Request) => {
         });
       }
 
-      // Enforce tier waiver limits
-      const tierLimits: Record<string, number> = { free: 5, starter: 15, growth: 50, business: 150 };
-      const { data: orgRow } = await supabase.from("organizations").select("tier_override").eq("id", orgId).single();
-      const orgTier = orgRow?.tier_override || "free";
-      const monthlyLimit = tierLimits[orgTier] ?? 5;
-      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-      const { count: monthlyUsed } = await supabase
-        .from("envelopes")
-        .select("id", { count: "exact", head: true })
-        .eq("org_id", orgId)
-        .gte("created_at", startOfMonth);
-      if ((monthlyUsed ?? 0) >= monthlyLimit) {
-        return new Response(JSON.stringify({ error: "Monthly waiver limit reached. Upgrade your plan.", used: monthlyUsed, limit: monthlyLimit }), {
+      // Deduct credit from wallet
+      const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
+        p_org_id: orgId,
+        p_reference_id: null, // will be set after envelope creation
+        p_type: "waiver_deduction",
+      });
+
+      if (creditErr) throw creditErr;
+
+      const credit = creditResult?.[0];
+      if (!credit?.success) {
+        return new Response(JSON.stringify({
+          error: credit?.error_message || "Insufficient credits. Purchase more to continue.",
+          credits_remaining: credit?.new_balance ?? 0,
+        }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -292,6 +294,23 @@ serve(async (req: Request) => {
         id: envelope.id, status: "sent", signer_email, signing_url: signingUrl,
       });
 
+      // Trigger auto-recharge if needed
+      if (credit?.needs_recharge) {
+        try {
+          const autoRechargeUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/auto-recharge`;
+          fetch(autoRechargeUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            },
+            body: JSON.stringify({ org_id: orgId }),
+          }).catch(err => console.error("Auto-recharge trigger failed:", err));
+        } catch (e) {
+          console.error("Auto-recharge trigger error:", e);
+        }
+      }
+
       return new Response(JSON.stringify({
         id: envelope.id,
         status: envelope.status,
@@ -299,6 +318,7 @@ serve(async (req: Request) => {
         signing_token: envelope.signing_token,
         created_at: envelope.created_at,
         email_sent: emailSent,
+        credits_remaining: credit?.new_balance,
       }), {
         status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

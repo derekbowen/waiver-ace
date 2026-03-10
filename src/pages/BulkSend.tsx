@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUsage } from "@/hooks/useUsage";
+import { useWallet } from "@/hooks/useWallet";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +20,7 @@ interface BulkResult {
 
 export default function BulkSend() {
   const { profile } = useAuth();
-  const { used, limit, isOverLimit, remaining } = useUsage();
+  const { credits, isPaused, isLow, isOverdraft } = useWallet();
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<any[]>([]);
   const [templateId, setTemplateId] = useState("");
@@ -57,8 +57,14 @@ export default function BulkSend() {
       return;
     }
 
-    if (emails.length > remaining) {
-      toast.error(`You can only send ${remaining} more waivers this month. Upgrade your plan for more.`);
+    if (isPaused) {
+      toast.error("Credit balance exhausted. Add credits to continue sending.");
+      return;
+    }
+
+    // Allow sending up to credits + overdraft buffer (10)
+    if (emails.length > credits + 10) {
+      toast.error(`Not enough credits. You have ${credits} credits (with overdraft buffer). Add more credits.`);
       return;
     }
 
@@ -129,14 +135,14 @@ export default function BulkSend() {
           </div>
         </div>
 
-        {isOverLimit && (
-          <Card className="mb-6 border-warning/50 bg-warning/5">
+        {isPaused && (
+          <Card className="mb-6 border-destructive/50 bg-destructive/5">
             <CardContent className="pt-6 flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+              <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium">Monthly limit reached ({used}/{limit})</p>
+                <p className="text-sm font-medium">Waiver collection paused</p>
                 <p className="text-sm text-muted-foreground">
-                  <a href="/pricing" className="text-primary underline">Upgrade your plan</a> to send more waivers.
+                  <a href="/pricing" className="text-primary underline">Add credits</a> to resume sending waivers.
                 </p>
               </div>
             </CardContent>
@@ -171,7 +177,7 @@ export default function BulkSend() {
                 className="min-h-[150px] font-mono text-sm"
               />
               <p className="text-xs text-muted-foreground mt-2">
-                {emailCount} email{emailCount !== 1 ? "s" : ""} detected · {remaining} remaining this month
+                {emailCount} email{emailCount !== 1 ? "s" : ""} detected · {credits} credits remaining
               </p>
             </CardContent>
           </Card>
@@ -201,7 +207,7 @@ export default function BulkSend() {
             <Button variant="outline" onClick={() => navigate("/envelopes")}>Cancel</Button>
             <Button
               onClick={handleBulkSend}
-              disabled={sending || isOverLimit || emailCount === 0 || !templateId}
+              disabled={sending || isPaused || emailCount === 0 || !templateId}
               className="gap-2"
             >
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

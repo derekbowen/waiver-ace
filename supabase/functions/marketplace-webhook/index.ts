@@ -199,6 +199,26 @@ serve(async (req: Request) => {
         }
       }
 
+      // Deduct credit from wallet
+      const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
+        p_org_id: orgId,
+        p_reference_id: null,
+        p_type: "waiver_deduction",
+      });
+
+      if (creditErr) throw creditErr;
+
+      const credit = creditResult?.[0];
+      if (!credit?.success) {
+        return new Response(
+          JSON.stringify({
+            error: credit?.error_message || "Insufficient credits",
+            credits_remaining: credit?.new_balance ?? 0,
+          }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       // Create the envelope
       const { data: envelope, error: envErr } = await supabase
         .from("envelopes")
@@ -269,12 +289,30 @@ serve(async (req: Request) => {
         }
       }
 
+      // Trigger auto-recharge if needed
+      if (credit?.needs_recharge) {
+        try {
+          const autoRechargeUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/auto-recharge`;
+          fetch(autoRechargeUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            },
+            body: JSON.stringify({ org_id: orgId }),
+          }).catch(err => console.error("Auto-recharge trigger failed:", err));
+        } catch (e) {
+          console.error("Auto-recharge trigger error:", e);
+        }
+      }
+
       return new Response(
         JSON.stringify({
           success: true,
           envelope_id: envelope.id,
           signing_url: signingUrl,
           email_sent: emailSent,
+          credits_remaining: credit?.new_balance,
         }),
         { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
