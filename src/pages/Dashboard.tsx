@@ -1,13 +1,18 @@
 import { useEffect, useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWallet } from "@/hooks/useWallet";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Mail, CheckCircle, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { FileText, Mail, CheckCircle, Clock, Coins, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Dashboard() {
   const { profile } = useAuth();
+  const { credits, status, isPaused, isLow, isOverdraft, loading: walletLoading } = useWallet();
   const [stats, setStats] = useState({ templates: 0, sent: 0, completed: 0, pending: 0 });
 
   const fetchStats = useCallback(async () => {
@@ -78,6 +83,49 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
+
+        {/* Credit balance warning */}
+        {profile?.org_id && !walletLoading && (isPaused || isOverdraft || isLow) && (
+          <Card className={`mb-6 ${isPaused ? "border-destructive/50 bg-destructive/5" : "border-warning/50 bg-warning/5"}`}>
+            <CardContent className="pt-6 flex items-start gap-3">
+              <AlertTriangle className={`h-5 w-5 shrink-0 mt-0.5 ${isPaused ? "text-destructive" : "text-warning"}`} />
+              <div className="flex-1">
+                <p className="text-sm font-medium">
+                  {isPaused ? "Waiver collection is paused" : isOverdraft ? "Credit balance in overdraft" : "Credit balance is low"}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {isPaused
+                    ? "You've reached the overdraft limit. Add credits to resume sending waivers."
+                    : `You have ${credits} credits remaining.`}{" "}
+                  <Link to="/pricing" className="text-primary underline">Add credits</Link>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Credit balance card + stat cards */}
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-5 mb-6">
+          {profile?.org_id && (
+            <Card className={`col-span-2 lg:col-span-1 ${
+              isPaused ? "border-destructive/30" : isLow || isOverdraft ? "border-warning/30" : "border-primary/20"
+            }`}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6 md:pb-2">
+                <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Credits</CardTitle>
+                <Coins className="h-4 w-4 text-primary" />
+              </CardHeader>
+              <CardContent className="p-4 pt-0 md:p-6 md:pt-0">
+                <div className="text-2xl md:text-3xl font-heading font-bold">{credits}</div>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={status === "healthy" ? "default" : status === "paused" ? "destructive" : "secondary"} className="text-[10px]">
+                    {status === "healthy" ? "Healthy" : status === "low" ? "Low" : status === "overdraft" ? "Overdraft" : "Paused"}
+                  </Badge>
+                  <Link to="/pricing" className="text-xs text-primary hover:underline">Add more</Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
           {statCards.map((s) => (

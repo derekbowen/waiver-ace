@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUsage } from "@/hooks/useUsage";
+import { useWallet } from "@/hooks/useWallet";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function Analytics() {
   const { profile } = useAuth();
-  const { used, limit } = useUsage();
+  const { credits, status } = useWallet();
   const [dailyData, setDailyData] = useState<any[]>([]);
   const [statusData, setStatusData] = useState<any[]>([]);
   const [envelopes, setEnvelopes] = useState<any[]>([]);
@@ -123,8 +123,8 @@ export default function Analytics() {
                 <CardContent><div className="text-3xl font-heading font-bold">{completionRate}%</div></CardContent>
               </Card>
               <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Monthly Usage</CardTitle></CardHeader>
-                <CardContent><div className="text-3xl font-heading font-bold">{used}<span className="text-lg text-muted-foreground">/{limit}</span></div></CardContent>
+                <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Credits</CardTitle></CardHeader>
+                <CardContent><div className="text-3xl font-heading font-bold">{credits}<span className="text-lg text-muted-foreground ml-1 capitalize">{status}</span></div></CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle></CardHeader>
