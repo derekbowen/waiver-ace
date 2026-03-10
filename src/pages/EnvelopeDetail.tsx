@@ -1,103 +1,40 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, Copy, Send, XCircle, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import type { Tables } from "@/integrations/supabase/types";
 
 export default function EnvelopeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [envelope, setEnvelope] = useState<any>(null);
-  const [events, setEvents] = useState<any[]>([]);
-  const [groupSigs, setGroupSigs] = useState<any[]>([]);
+  const [envelope, setEnvelope] = useState<Tables<"envelopes"> | null>(null);
+  const [events, setEvents] = useState<Tables<"envelope_events">[]>([]);
   const [loading, setLoading] = useState(true);
-  const [pdfLoading, setPdfLoading] = useState(false);
 
-  const fetchDetail = useCallback(async () => {
-    const [envRes, eventsRes] = await Promise.all([
-      supabase.from("envelopes").select("*").eq("id", id).single(),
-      supabase.from("envelope_events").select("*").eq("envelope_id", id).order("created_at", { ascending: true }),
-    ]);
-    setEnvelope(envRes.data);
-    setEvents(eventsRes.data || []);
-
-    // Fetch group signatures if applicable
-    if (envRes.data?.is_group_waiver) {
-      const { data: sigs } = await supabase
-        .from("group_signatures")
-        .select("*")
-        .eq("envelope_id", id!)
-        .order("signed_at", { ascending: true });
-      setGroupSigs(sigs || []);
-    }
-
-    setLoading(false);
+  useEffect(() => {
+    const fetch = async () => {
+      const [envRes, eventsRes] = await Promise.all([
+        supabase.from("envelopes").select("*").eq("id", id).single(),
+        supabase.from("envelope_events").select("*").eq("envelope_id", id).order("created_at", { ascending: true }),
+      ]);
+      setEnvelope(envRes.data);
+      setEvents(eventsRes.data || []);
+      setLoading(false);
+    };
+    fetch();
   }, [id]);
-
-  useEffect(() => {
-    fetchDetail();
-  }, [fetchDetail]);
-
-  // Realtime: update when this envelope or its events change
-  useEffect(() => {
-    if (!id) return;
-    const channel = supabase
-      .channel(`envelope-${id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "envelopes", filter: `id=eq.${id}` },
-        () => fetchDetail()
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "envelope_events", filter: `envelope_id=eq.${id}` },
-        () => fetchDetail()
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "group_signatures", filter: `envelope_id=eq.${id}` },
-        () => fetchDetail()
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [id, fetchDetail]);
 
   const copySigningLink = () => {
     if (!envelope) return;
-    const url = envelope.is_group_waiver
-      ? `${window.location.origin}/waiver/${envelope.group_token}`
-      : `${window.location.origin}/sign/${envelope.signing_token}`;
+    const url = `${window.location.origin}/sign/${envelope.signing_token}`;
     navigator.clipboard.writeText(url);
     toast.success("Signing link copied");
-  };
-
-  const downloadPdf = async () => {
-    setPdfLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("generate-pdf", {
-        body: { envelope_id: id },
-      });
-      if (error) throw error;
-
-      // data is already an ArrayBuffer or Blob
-      const blob = data instanceof Blob ? data : new Blob([data], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `waiver-${id?.slice(0, 8)}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to generate PDF");
-    } finally {
-      setPdfLoading(false);
-    }
   };
 
   const cancelEnvelope = async () => {
@@ -133,30 +70,20 @@ export default function EnvelopeDetail() {
   return (
     <DashboardLayout>
       <div className="animate-fade-in max-w-4xl">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/envelopes")}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="font-heading text-2xl font-bold">Envelope</h1>
-              <StatusBadge status={envelope.status} />
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={() => navigate("/envelopes")}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="min-w-0">
+              <div className="flex items-center gap-3">
+                <h1 className="font-heading text-2xl font-bold">Envelope</h1>
+                <StatusBadge status={envelope.status} />
+              </div>
+              <p className="text-sm text-muted-foreground mt-1 font-mono truncate">{envelope.id}</p>
             </div>
-            <p className="text-sm text-muted-foreground mt-1 font-mono">{envelope.id}</p>
           </div>
-          <div className="flex gap-2">
-            {["completed", "signed"].includes(envelope.status) && (
-              <>
-                <Link to={`/envelopes/${id}/certificate`}>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Shield className="h-3 w-3" /> Certificate
-                  </Button>
-                </Link>
-                <Button variant="outline" size="sm" onClick={downloadPdf} disabled={pdfLoading} className="gap-2">
-                  {pdfLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />} Download PDF
-                </Button>
-              </>
-            )}
+          <div className="flex gap-2 sm:shrink-0">
             {["draft", "sent", "viewed"].includes(envelope.status) && (
               <>
                 <Button variant="outline" size="sm" onClick={copySigningLink} className="gap-2">
@@ -191,37 +118,6 @@ export default function EnvelopeDetail() {
             </CardContent>
           </Card>
         </div>
-
-        {envelope.is_group_waiver && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Users className="h-4 w-4" /> Group Signatures ({groupSigs.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {groupSigs.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No one has signed yet. Share the link with your group.</p>
-              ) : (
-                <div className="space-y-3">
-                  {groupSigs.map((sig) => (
-                    <div key={sig.id} className="flex items-center justify-between rounded-lg border p-3">
-                      <div>
-                        <p className="text-sm font-medium">{sig.signer_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {sig.signer_email || "No email provided"} · Signed {format(new Date(sig.signed_at), "PPpp")}
-                        </p>
-                      </div>
-                      {sig.signature_image && (
-                        <img src={sig.signature_image} alt="Signature" className="h-8 max-w-[120px] object-contain" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
 
         <Card className="mt-6">
           <CardHeader><CardTitle className="text-base">Event Timeline</CardTitle></CardHeader>

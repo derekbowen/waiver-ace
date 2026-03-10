@@ -9,9 +9,26 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Plus, Key, Copy, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+async function sha256Hash(input: string): Promise<string> {
+  const encoded = new TextEncoder().encode(input);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+interface ApiKey {
+  id: string;
+  name: string;
+  key_prefix: string;
+  is_active: boolean;
+  created_at: string;
+  last_used_at: string | null;
+}
+
 export default function ApiKeys() {
   const { profile } = useAuth();
-  const [keys, setKeys] = useState<any[]>([]);
+  const [keys, setKeys] = useState<ApiKey[]>([]);
   const [newKeyName, setNewKeyName] = useState("");
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,15 +40,14 @@ export default function ApiKeys() {
       .select("*")
       .eq("org_id", profile.org_id)
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => { if (!error) setKeys(data || []); setLoading(false); });
+      .then(({ data }) => { setKeys(data || []); setLoading(false); });
   }, [profile?.org_id]);
 
   const createKey = async () => {
     if (!profile?.org_id || !newKeyName.trim()) return;
     const rawKey = `wf_${crypto.randomUUID().replace(/-/g, "")}`;
     const prefix = rawKey.slice(0, 10);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawKey));
-    const hash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+    const hash = await sha256Hash(rawKey);
 
     const { data, error } = await supabase
       .from("api_keys")
@@ -53,8 +69,7 @@ export default function ApiKeys() {
   };
 
   const deleteKey = async (id: string) => {
-    const { error } = await supabase.from("api_keys").delete().eq("id", id);
-    if (error) { toast.error(error.message); return; }
+    await supabase.from("api_keys").delete().eq("id", id);
     setKeys(keys.filter((k) => k.id !== id));
     toast.success("API key deleted");
   };

@@ -1,16 +1,15 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
-import { getCreditStatus, type CreditStatus } from "@/lib/credit-packages";
+import { getTierByProductId, type TierKey } from "@/lib/stripe-tiers";
 
-interface WalletState {
-  credits: number;
-  overdraftLimit: number;
-  status: CreditStatus;
-  autoRechargeEnabled: boolean;
-  autoRechargeThreshold: number;
-  autoRechargePackage: string | null;
+interface SubscriptionState {
+  subscribed: boolean;
+  tier: TierKey;
+  subscriptionEnd: string | null;
   loading: boolean;
+  usage: number;
+  waiverLimit: number;
 }
 
 interface AuthContextType {
@@ -19,15 +18,15 @@ interface AuthContextType {
   loading: boolean;
   profile: { id: string; full_name: string | null; email: string | null; org_id: string | null } | null;
   roles: string[];
-  wallet: WalletState;
-  refreshWallet: () => Promise<void>;
+  subscription: SubscriptionState;
+  refreshSubscription: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null, session: null, loading: true, profile: null, roles: [],
-  wallet: { credits: 0, overdraftLimit: -10, status: "paused", autoRechargeEnabled: false, autoRechargeThreshold: 10, autoRechargePackage: null, loading: true },
-  refreshWallet: async () => {},
+  subscription: { subscribed: false, tier: "free", subscriptionEnd: null, loading: true, usage: 0, waiverLimit: 5 },
+  refreshSubscription: async () => {},
   signOut: async () => {},
 });
 
@@ -39,75 +38,81 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<AuthContextType["profile"]>(null);
   const [roles, setRoles] = useState<string[]>([]);
-  const [wallet, setWallet] = useState<WalletState>({
-    credits: 0, overdraftLimit: -10, status: "paused", autoRechargeEnabled: false, autoRechargeThreshold: 10, autoRechargePackage: null, loading: true,
+  const [subscription, setSubscription] = useState<SubscriptionState>({
+    subscribed: false, tier: "free", subscriptionEnd: null, loading: true, usage: 0, waiverLimit: 5,
   });
 
-  const checkWallet = useCallback(async () => {
+  const checkSubscription = useCallback(async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("check-wallet");
+      const { data, error } = await supabase.functions.invoke("check-subscription");
       if (error) throw error;
-      setWallet({
-        credits: data.credits ?? 0,
-        overdraftLimit: data.overdraft_limit ?? -10,
-        status: getCreditStatus(data.credits ?? 0),
-        autoRechargeEnabled: data.auto_recharge_enabled ?? false,
-        autoRechargeThreshold: data.auto_recharge_threshold ?? 10,
-        autoRechargePackage: data.auto_recharge_package ?? null,
+      setSubscription({
+        subscribed: data.subscribed ?? false,
+        tier: data.tier ? (data.tier as TierKey) : getTierByProductId(data.product_id),
+        subscriptionEnd: data.subscription_end ?? null,
         loading: false,
+        usage: data.usage ?? 0,
+        waiverLimit: data.waiver_limit ?? 5,
       });
     } catch {
-      setWallet(prev => ({ ...prev, loading: false }));
+      setSubscription(prev => ({ ...prev, loading: false }));
     }
   }, []);
 
   useEffect(() => {
-    const {
-      data: { subscription: authSub },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
-
-      if (nextSession?.user) {
+    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
         setTimeout(() => {
-          fetchProfile(nextSession.user.id);
-          fetchRoles(nextSession.user.id);
-          checkWallet();
+          fetchProfile(session.user.id);
+          fetchRoles(session.user.id);
+          checkSubscription();
         }, 0);
       } else {
         setProfile(null);
         setRoles([]);
-        setWallet({ credits: 0, overdraftLimit: -10, status: "paused", autoRechargeEnabled: false, autoRechargeThreshold: 10, autoRechargePackage: null, loading: false });
+        setSubscription({ subscribed: false, tier: "free", subscriptionEnd: null, loading: false, usage: 0, waiverLimit: 5 });
       }
+      setLoading(false);
+    });
 
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+        fetchRoles(session.user.id);
+        checkSubscription();
+      }
       setLoading(false);
     });
 
     return () => authSub.unsubscribe();
-  }, [checkWallet]);
+  }, [checkSubscription]);
 
-  // Auto-refresh wallet every 60s
+  // Auto-refresh subscription every 60s
   useEffect(() => {
     if (!user) return;
-    const interval = setInterval(checkWallet, 60000);
+    const interval = setInterval(checkSubscription, 60000);
     return () => clearInterval(interval);
-  }, [user, checkWallet]);
+  }, [user, checkSubscription]);
 
   const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
       .select("id, full_name, email, org_id")
       .eq("user_id", userId)
       .single();
-    if (!error) setProfile(data);
+    setProfile(data);
   };
 
   const fetchRoles = async (userId: string) => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId);
-    if (!error) setRoles(data?.map((r: any) => r.role) ?? []);
+    setRoles(data?.map((r) => r.role) ?? []);
   };
 
   const signOut = async () => {
@@ -115,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, profile, roles, wallet, refreshWallet: checkWallet, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, profile, roles, subscription, refreshSubscription: checkSubscription, signOut }}>
       {children}
     </AuthContext.Provider>
   );
