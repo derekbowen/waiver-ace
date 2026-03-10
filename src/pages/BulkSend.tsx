@@ -171,7 +171,7 @@ export default function BulkSend() {
               <Select value={templateId} onValueChange={setTemplateId}>
                 <SelectTrigger><SelectValue placeholder="Select a template" /></SelectTrigger>
                 <SelectContent>
-                  {templates.map((t) => (
+                {templates.filter((t) => t.id).map((t) => (
                     <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                   ))}
                 </SelectContent>
