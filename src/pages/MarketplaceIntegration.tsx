@@ -253,7 +253,7 @@ export default function MarketplaceIntegration() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__none__">Auto-generate standard liability waiver</SelectItem>
-                  {templates.map((t) => (
+                  {templates.filter((t) => t.id).map((t) => (
                     <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                   ))}
                 </SelectContent>
