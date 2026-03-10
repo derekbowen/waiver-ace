@@ -58,6 +58,47 @@ export type Database = {
           },
         ]
       }
+      credit_transactions: {
+        Row: {
+          balance_after: number
+          created_at: string
+          credits_delta: number
+          id: string
+          notes: string | null
+          org_id: string
+          reference_id: string | null
+          type: string
+        }
+        Insert: {
+          balance_after: number
+          created_at?: string
+          credits_delta: number
+          id?: string
+          notes?: string | null
+          org_id: string
+          reference_id?: string | null
+          type: string
+        }
+        Update: {
+          balance_after?: number
+          created_at?: string
+          credits_delta?: number
+          id?: string
+          notes?: string | null
+          org_id?: string
+          reference_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       envelope_events: {
         Row: {
           created_at: string
@@ -354,6 +395,53 @@ export type Database = {
         }
         Relationships: []
       }
+      wallets: {
+        Row: {
+          auto_recharge_enabled: boolean
+          auto_recharge_package: string
+          auto_recharge_threshold: number
+          created_at: string
+          credits: number
+          id: string
+          org_id: string
+          stripe_customer_id: string | null
+          stripe_payment_method_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          auto_recharge_enabled?: boolean
+          auto_recharge_package?: string
+          auto_recharge_threshold?: number
+          created_at?: string
+          credits?: number
+          id?: string
+          org_id: string
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auto_recharge_enabled?: boolean
+          auto_recharge_package?: string
+          auto_recharge_threshold?: number
+          created_at?: string
+          credits?: number
+          id?: string
+          org_id?: string
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_deliveries: {
         Row: {
           attempt: number
@@ -454,6 +542,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_credits: {
+        Args: {
+          p_amount: number
+          p_notes?: string
+          p_org_id: string
+          p_reference_id: string
+          p_type: string
+        }
+        Returns: number
+      }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
