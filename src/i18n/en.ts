@@ -94,6 +94,10 @@ export const en: Record<string, Record<string, string>> = {
     switchPlan: "Switch Plan",
     downgrade: "Downgrade",
   },
-} as const;
+};
 
-export type TranslationKeys = typeof en;
+type DeepStringRecord<T> = {
+  [K in keyof T]: T[K] extends Record<string, any> ? DeepStringRecord<T[K]> : string;
+};
+
+export type TranslationKeys = DeepStringRecord<typeof en>;
