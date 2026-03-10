@@ -6,15 +6,17 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
 };
 
+const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 function generateSigningEmailHtml({ signerName, signingUrl, templateName, organizationName }: {
   signerName?: string;
   signingUrl: string;
   templateName?: string;
   organizationName?: string;
 }): string {
-  const orgName = organizationName || "Rental Waivers";
-  const displayName = signerName || "there";
-  const docName = templateName || "Waiver Agreement";
+  const orgName = escapeHtml(organizationName || "Rental Waivers");
+  const displayName = escapeHtml(signerName || "there");
+  const docName = escapeHtml(templateName || "Waiver Agreement");
 
   return `
 <!DOCTYPE html>
@@ -536,7 +538,8 @@ serve(async (req: Request) => {
     });
 
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("waiverflow-api error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

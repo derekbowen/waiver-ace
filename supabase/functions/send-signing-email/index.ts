@@ -12,6 +12,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
   try {
     // Authenticate the caller
     const authHeader = req.headers.get('Authorization');
@@ -94,9 +96,9 @@ serve(async (req) => {
 
     const origin = req.headers.get('origin') || 'https://rentalwaivers.com';
     const signingUrl = `${origin}/sign/${envelope.signing_token}`;
-    const displayName = envelope.signer_name || 'there';
-    const orgName = org?.name || 'Rental Waivers';
-    const templateName = (envelope.template_versions as any)?.content?.title || 'Waiver Agreement';
+    const displayName = escapeHtml(envelope.signer_name || 'there');
+    const orgName = escapeHtml(org?.name || 'Rental Waivers');
+    const templateName = escapeHtml((envelope.template_versions as any)?.content?.title || 'Waiver Agreement');
 
     const html = buildEmail({
       previewText: `${orgName} needs your signature on "${templateName}"`,
@@ -150,7 +152,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Error sending email:', error);
-    return new Response(JSON.stringify({ error: (error as Error).message }), {
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

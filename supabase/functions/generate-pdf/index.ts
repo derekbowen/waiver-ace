@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 // Minimal PDF generation without external libraries.
-// Produces a valid single-page PDF with the waiver text and signature info.
 function buildPdf(lines: string[]): Uint8Array {
   const enc = (s: string) => new TextEncoder().encode(s);
 
@@ -70,12 +69,45 @@ serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-  );
-
   try {
+    // Authenticate the caller
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const anonClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+    );
+    const token = authHeader.replace("Bearer ", "");
+    const { data: authData, error: authError } = await anonClient.auth.getUser(token);
+    if (authError || !authData.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Get caller's org
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("org_id")
+      .eq("user_id", authData.user.id)
+      .single();
+
+    if (!profile?.org_id) {
+      return new Response(JSON.stringify({ error: "No organization found" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { envelope_id } = await req.json();
     if (!envelope_id) {
       return new Response(JSON.stringify({ error: "envelope_id required" }), {
@@ -93,6 +125,13 @@ serve(async (req: Request) => {
     if (envErr || !envelope) {
       return new Response(JSON.stringify({ error: "Envelope not found" }), {
         status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Verify org ownership
+    if (envelope.org_id !== profile.org_id) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -199,7 +238,8 @@ serve(async (req: Request) => {
       },
     });
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("generate-pdf error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
