@@ -704,6 +704,7 @@ export type Database = {
           success: boolean
         }[]
       }
+      get_envelope_by_token: { Args: { p_token: string }; Returns: Json }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -711,6 +712,19 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      sign_envelope: {
+        Args: {
+          p_signature_data: Json
+          p_signer_name: string
+          p_token: string
+          p_user_agent?: string
+        }
+        Returns: Json
+      }
+      view_envelope: {
+        Args: { p_token: string; p_user_agent?: string }
+        Returns: undefined
       }
     }
     Enums: {
