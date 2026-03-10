@@ -233,6 +233,13 @@ export default function Pricing() {
           </Card>
         )}
 
+        {/* Transaction History */}
+        {user && profile?.org_id && (
+          <div className="mb-8">
+            <CreditTransactionHistory />
+          </div>
+        )}
+
         <div className="text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             Credits are deducted when you send a waiver (1 credit per signer). Your account can go up to -10 credits before sending is paused.
