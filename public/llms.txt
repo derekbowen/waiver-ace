@@ -1,0 +1,55 @@
+# Rental Waivers
+
+> Digital e-signature platform for rental businesses. Collect legally-binding liability waivers via API-first webhooks before confirming bookings.
+
+## What We Do
+
+Rental Waivers automates liability waiver collection for rental and hospitality businesses. Hosts, operators, and property managers send digital waivers to guests before arrival. Guests sign on any device in under 60 seconds. Every signature is timestamped, IP-logged, and stored as a tamper-proof PDF.
+
+## Key Features
+
+- **API-First**: REST API and webhooks for seamless booking platform integration
+- **E-Signatures**: Legally binding under ESIGN Act and UETA — full name, initials, drawn signature
+- **Group Signing**: One link for multiple signers (families, tour groups, parties)
+- **Kiosk Mode**: QR code scanning for walk-in operations
+- **Audit Trail**: Every action logged with timestamps, IP addresses, and device info
+- **Secure Storage**: SHA-256 verified PDFs stored for 7+ years
+- **Automated Reminders**: Guests who haven't signed get follow-up emails
+- **Template Editor**: Create custom waivers with variables and conditional fields
+- **Multi-Language**: English and Spanish support
+- **Pay-Per-Waiver**: No monthly fees — starting at 6¢ per waiver
+
+## Industries Served
+
+- Pool rentals (Swimply hosts, private pools)
+- Boat and jet ski rentals
+- Kayak and paddleboard rentals
+- Airbnb and vacation rental hosts
+- Short-term rental property managers
+- ATV and off-road vehicle rentals
+- Golf cart rentals
+- Bounce house and party equipment rentals
+- RV rentals
+- Bike and scooter rentals
+- Surfboard rentals
+- Event and equipment rental companies
+
+## Pricing
+
+Credit-based, pay-per-waiver model:
+- 200 credits: $20 (10¢/waiver)
+- 550 credits: $50 (9¢/waiver)
+- 1,250 credits: $100 (8¢/waiver)
+- 8,000 credits: $500 (6¢/waiver)
+
+No monthly fees. No contracts. No subscriptions.
+
+## Links
+
+- [Homepage](https://rentalwaivers.lovable.app/)
+- [Documentation](https://rentalwaivers.lovable.app/docs)
+- [Pool Rental Waivers](https://rentalwaivers.lovable.app/waivers/pool-rental-waivers)
+- [Boat Rental Waivers](https://rentalwaivers.lovable.app/waivers/boat-rental-waivers)
+- [Airbnb Host Waivers](https://rentalwaivers.lovable.app/waivers/airbnb-host-waivers)
+- [Vacation Rental Waivers](https://rentalwaivers.lovable.app/waivers/vacation-rental-waivers)
+- [ATV Rental Waivers](https://rentalwaivers.lovable.app/waivers/atv-rental-waivers)
