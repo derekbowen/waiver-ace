@@ -267,7 +267,7 @@ export default function AdminCredits() {
                         <TableCell className="font-mono text-xs">
                           {tx.org_id.slice(0, 8)}...
                         </TableCell>
-                        <TableCell className="text-right font-mono text-green-600">
+                        <TableCell className="text-right font-mono text-primary">
                           +{tx.credits_delta}
                         </TableCell>
                         <TableCell className="text-right font-mono">
