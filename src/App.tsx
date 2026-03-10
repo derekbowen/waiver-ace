@@ -47,6 +47,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/sign/:token" element={<SigningPage />} />
             <Route path="/waiver/:groupToken" element={<GroupSigningPage />} />
+            <Route path="/waiver/kiosk/:templateId" element={<KioskPage />} />
             <Route path="/my-waivers" element={<CustomerPortal />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
