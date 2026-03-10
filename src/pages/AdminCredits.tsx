@@ -16,6 +16,8 @@ interface OrgResult {
   name: string;
   created_at: string;
   wallet_credits?: number;
+  matched_email?: string;
+  matched_name?: string;
 }
 
 export default function AdminCredits() {
