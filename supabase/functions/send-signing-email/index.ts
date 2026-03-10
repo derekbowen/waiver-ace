@@ -20,9 +20,6 @@ serve(async (req) => {
 
   try {
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-    if (!RESEND_API_KEY) {
-      throw new Error('RESEND_API_KEY is not configured');
-    }
 
     const { to, signerName, signingUrl, templateName, organizationName } = await req.json() as EmailRequest;
 
@@ -47,31 +44,31 @@ serve(async (req) => {
   <div style="text-align: center; margin-bottom: 32px;">
     <h1 style="font-size: 24px; font-weight: 600; margin: 0;">${orgName}</h1>
   </div>
-  
+
   <p style="font-size: 16px; margin-bottom: 16px;">Hi ${displayName},</p>
-  
+
   <p style="font-size: 16px; margin-bottom: 24px;">
     You have a document that requires your signature: <strong>${templateName || 'Waiver Agreement'}</strong>
   </p>
-  
+
   <p style="font-size: 16px; margin-bottom: 24px;">
     Please review and sign the document by clicking the button below:
   </p>
-  
+
   <div style="text-align: center; margin: 32px 0;">
     <a href="${signingUrl}" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;">
       Review & Sign Document
     </a>
   </div>
-  
+
   <p style="font-size: 14px; color: #64748b; margin-top: 32px;">
     If the button doesn't work, copy and paste this link into your browser:
     <br>
     <a href="${signingUrl}" style="color: #3b82f6; word-break: break-all;">${signingUrl}</a>
   </p>
-  
+
   <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
-  
+
   <p style="font-size: 12px; color: #94a3b8; text-align: center;">
     This email was sent by ${orgName} via WaiverFlow.<br>
     If you did not expect this email, please ignore it.
@@ -79,6 +76,15 @@ serve(async (req) => {
 </body>
 </html>
     `;
+
+    if (!RESEND_API_KEY) {
+      // Dev mode: log instead of sending
+      console.log("EMAIL (no RESEND_API_KEY set):", { to, signingUrl });
+      return new Response(
+        JSON.stringify({ success: true, mode: "dev", message: "RESEND_API_KEY not configured. Email logged to console." }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -110,10 +116,11 @@ serve(async (req) => {
       JSON.stringify({ success: true, messageId: data.id }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error sending email:', error);
+    const message = error instanceof Error ? error.message : "Failed to send email";
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

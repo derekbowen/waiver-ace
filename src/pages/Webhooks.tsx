@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2, Webhook } from "lucide-react";
 import { toast } from "sonner";
+import type { Tables } from "@/integrations/supabase/types";
 
 const eventTypes = [
   "envelope.sent",
@@ -20,7 +21,7 @@ const eventTypes = [
 
 export default function Webhooks() {
   const { profile } = useAuth();
-  const [endpoints, setEndpoints] = useState<any[]>([]);
+  const [endpoints, setEndpoints] = useState<Tables<"webhook_endpoints">[]>([]);
   const [url, setUrl] = useState("");
   const [selectedEvents, setSelectedEvents] = useState<string[]>(eventTypes);
   const [loading, setLoading] = useState(true);
@@ -32,21 +33,19 @@ export default function Webhooks() {
       .select("*")
       .eq("org_id", profile.org_id)
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => { if (!error) setEndpoints(data || []); setLoading(false); });
+      .then(({ data }) => { setEndpoints(data || []); setLoading(false); });
   }, [profile?.org_id]);
 
   const createEndpoint = async () => {
     if (!profile?.org_id || !url.trim()) return;
     const secret = `whsec_${crypto.randomUUID().replace(/-/g, "")}`;
-    const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(secret));
-    const secretHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
 
     const { data, error } = await supabase
       .from("webhook_endpoints")
       .insert({
         org_id: profile.org_id,
         url: url.trim(),
-        secret: secretHash,
+        secret,
         events: selectedEvents,
       })
       .select()
@@ -55,12 +54,11 @@ export default function Webhooks() {
     if (error) { toast.error(error.message); return; }
     setEndpoints([data, ...endpoints]);
     setUrl("");
-    toast.success(`Webhook created. Secret: ${secret} (save it now — it won't be shown again)`);
+    toast.success(`Webhook created. Secret: ${secret} (save it now)`);
   };
 
   const deleteEndpoint = async (id: string) => {
-    const { error } = await supabase.from("webhook_endpoints").delete().eq("id", id);
-    if (error) { toast.error(error.message); return; }
+    await supabase.from("webhook_endpoints").delete().eq("id", id);
     setEndpoints(endpoints.filter((e) => e.id !== id));
     toast.success("Webhook deleted");
   };
@@ -84,7 +82,7 @@ export default function Webhooks() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>URL</Label>
-              <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://your-app.com/webhooks/rental-waivers" />
+              <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://your-app.com/webhooks/waiverflow" />
             </div>
             <div className="space-y-2">
               <Label>Events</Label>

@@ -8,21 +8,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
-import { SignatureCanvas } from "@/components/SignatureCanvas";
+import type { Tables, Json } from "@/integrations/supabase/types";
+
+type EnvelopeWithVersion = Tables<"envelopes"> & {
+  template_versions: Tables<"template_versions"> | null;
+};
 
 export default function SigningPage() {
   const { token } = useParams();
-  const [envelope, setEnvelope] = useState<any>(null);
+  const [envelope, setEnvelope] = useState<EnvelopeWithVersion | null>(null);
   const [templateContent, setTemplateContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
   const [scrolledToEnd, setScrolledToEnd] = useState(false);
   const [fullName, setFullName] = useState("");
   const [initials, setInitials] = useState("");
-  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [hasDrawnSignature, setHasDrawnSignature] = useState(false);
+  const [signatureMode, setSignatureMode] = useState<"draw" | "type">("draw");
 
   useEffect(() => {
     const fetch = async () => {
@@ -41,8 +48,9 @@ export default function SigningPage() {
       setEnvelope(env);
 
       // Get template content and replace variables
-      const content = (env.template_versions as any)?.content?.body || "";
-      const payload = env.payload as Record<string, any> || {};
+      const tv = env.template_versions as Tables<"template_versions"> | null;
+      const content = (tv?.content as Record<string, string>)?.body || "";
+      const payload = (env.payload as Record<string, Json>) || {};
       let rendered = content;
       Object.entries(payload).forEach(([key, value]) => {
         rendered = rendered.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), String(value || ""));
@@ -63,6 +71,15 @@ export default function SigningPage() {
         });
       }
 
+      // Check expiration
+      if (env.expires_at && new Date(env.expires_at) < new Date() && !["signed", "completed"].includes(env.status)) {
+        await supabase.from("envelopes").update({ status: "expired" }).eq("id", env.id);
+        env.status = "expired" as typeof env.status;
+        setEnvelope({ ...env });
+        setLoading(false);
+        return;
+      }
+
       if (env.status === "signed" || env.status === "completed") {
         setSigned(true);
       }
@@ -80,15 +97,75 @@ export default function SigningPage() {
     }
   };
 
+  const getCanvasPoint = (e: React.MouseEvent | React.TouchEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) * (canvas.width / rect.width),
+      y: (clientY - rect.top) * (canvas.height / rect.height),
+    };
+  };
+
+  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    setIsDrawing(true);
+    const { x, y } = getCanvasPoint(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  const draw = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    const { x, y } = getCanvasPoint(e);
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#1a1a1a";
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    setHasDrawnSignature(true);
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+  };
+
+  const clearSignature = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setHasDrawnSignature(false);
+  };
+
+  const getSignatureDataUrl = (): string | null => {
+    if (signatureMode === "type") return null;
+    return canvasRef.current?.toDataURL("image/png") || null;
+  };
+
   const handleSign = async () => {
     if (!fullName.trim() || !initials.trim() || !agreed) {
       toast.error("Please complete all required fields");
+      return;
+    }
+    if (signatureMode === "draw" && !hasDrawnSignature) {
+      toast.error("Please draw your signature");
       return;
     }
 
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
+      const signatureImage = getSignatureDataUrl();
       const { error } = await supabase
         .from("envelopes")
         .update({
@@ -96,15 +173,11 @@ export default function SigningPage() {
           signer_name: fullName.trim(),
           signed_at: now,
           user_agent: navigator.userAgent,
-          content_snapshot: {
-            rendered: templateContent,
-            template_version_id: envelope.template_version_id,
-            snapshot_at: now,
-          },
           signature_data: {
             full_name: fullName.trim(),
             initials: initials.trim(),
-            signature_image: signatureDataUrl,
+            signature_mode: signatureMode,
+            signature_image: signatureImage,
             agreed_to_electronic_signing: true,
             signed_at_utc: now,
             user_agent: navigator.userAgent,
@@ -121,15 +194,10 @@ export default function SigningPage() {
         metadata: { signer_name: fullName.trim() },
       });
 
-      // Send confirmation email to signer + notification to admin (fire and forget)
-      supabase.functions.invoke("send-completion-email", {
-        body: { envelope_id: envelope.id },
-      }).catch(() => {}); // Don't block the UI on email failure
-
       setSigned(true);
       toast.success("Waiver signed successfully!");
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Signing failed");
     } finally {
       setSubmitting(false);
     }
@@ -165,6 +233,17 @@ export default function SigningPage() {
     );
   }
 
+  if (envelope.status === "expired") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <h1 className="font-heading text-2xl font-bold mb-2">Waiver Expired</h1>
+          <p className="text-muted-foreground">This signing link has expired. Please contact the sender for a new link.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (signed) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -193,12 +272,12 @@ export default function SigningPage() {
           <div className="flex h-7 w-7 items-center justify-center rounded bg-primary">
             <FileText className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
-          <span className="font-heading text-sm font-bold">Rental Waivers</span>
-          <span className="ml-auto text-xs text-muted-foreground">Powered by Rental Waivers</span>
+          <span className="font-heading text-sm font-bold">WaiverFlow</span>
+          <span className="ml-auto text-xs text-muted-foreground">Powered by WaiverFlow</span>
         </div>
       </header>
 
-      <div className="container max-w-2xl py-8 px-4">
+      <div className="max-w-2xl mx-auto py-6 px-4 sm:py-8">
         <div className="animate-fade-in">
           <h1 className="font-heading text-xl font-bold mb-1">Liability Waiver</h1>
           <p className="text-sm text-muted-foreground mb-6">
@@ -211,7 +290,7 @@ export default function SigningPage() {
               <div
                 ref={contentRef}
                 onScroll={handleScroll}
-                className="max-h-[400px] overflow-y-auto p-6 text-sm leading-relaxed whitespace-pre-wrap"
+                className="max-h-[50vh] sm:max-h-[400px] overflow-y-auto p-4 sm:p-6 text-sm leading-relaxed whitespace-pre-wrap"
               >
                 {templateContent}
               </div>
@@ -227,7 +306,7 @@ export default function SigningPage() {
           <div className={`space-y-6 transition-opacity ${scrolledToEnd ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
             <Card>
               <CardContent className="pt-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Full Legal Name *</Label>
                     <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" />
@@ -239,8 +318,66 @@ export default function SigningPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Signature</Label>
-                  <SignatureCanvas onSignature={setSignatureDataUrl} />
+                  <div className="flex items-center justify-between">
+                    <Label>Signature</Label>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setSignatureMode("draw")}
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${signatureMode === "draw" ? "bg-primary text-primary-foreground" : "bg-accent text-muted-foreground hover:bg-accent/80"}`}
+                      >
+                        Draw
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSignatureMode("type")}
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${signatureMode === "type" ? "bg-primary text-primary-foreground" : "bg-accent text-muted-foreground hover:bg-accent/80"}`}
+                      >
+                        Type
+                      </button>
+                    </div>
+                  </div>
+
+                  {signatureMode === "draw" ? (
+                    <div className="relative">
+                      <canvas
+                        ref={canvasRef}
+                        width={400}
+                        height={150}
+                        onMouseDown={startDrawing}
+                        onMouseMove={draw}
+                        onMouseUp={stopDrawing}
+                        onMouseLeave={stopDrawing}
+                        onTouchStart={startDrawing}
+                        onTouchMove={draw}
+                        onTouchEnd={stopDrawing}
+                        className="w-full rounded-lg border-2 border-dashed bg-white cursor-crosshair touch-none"
+                        style={{ height: "160px" }}
+                      />
+                      {!hasDrawnSignature && (
+                        <p className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground/50 pointer-events-none">
+                          Draw your signature here
+                        </p>
+                      )}
+                      {hasDrawnSignature && (
+                        <button
+                          type="button"
+                          onClick={clearSignature}
+                          className="absolute top-2 right-2 px-2 py-1 text-xs rounded bg-background/80 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border-2 border-dashed bg-accent/30 p-8 text-center">
+                      {fullName ? (
+                        <p className="text-2xl italic font-serif text-foreground">{fullName}</p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Your typed name will appear here as your signature</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -256,16 +393,12 @@ export default function SigningPage() {
               </CardContent>
             </Card>
 
-            <Button onClick={handleSign} disabled={submitting || !agreed || !fullName || !initials || !signatureDataUrl} className="w-full" size="lg">
+            <Button onClick={handleSign} disabled={submitting || !agreed || !fullName || !initials || (signatureMode === "draw" && !hasDrawnSignature)} className="w-full" size="lg">
               {submitting ? "Signing..." : "Finish & Submit"}
             </Button>
 
             <p className="text-center text-xs text-muted-foreground">
               By clicking "Finish & Submit", you agree to the terms above and consent to electronic signing.
-            </p>
-
-            <p className="text-center text-xs text-muted-foreground/60 mt-4">
-              Rental Waivers is a document signing tool, not a law firm, and does not provide legal advice.
             </p>
           </div>
         </div>
