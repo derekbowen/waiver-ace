@@ -253,7 +253,7 @@ export default function GroupSigningPage() {
           </div>
           <span className="font-heading text-sm font-bold">Rental Waivers</span>
           <span className="ml-auto text-xs text-muted-foreground">
-            {envelope.group_label || "Group Waiver"} — {signatures.length} signed so far
+            {"Group Waiver"} — {signatures.length} signed so far
           </span>
         </div>
       </header>
