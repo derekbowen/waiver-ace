@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { ShieldCheck } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { toast } from "sonner";
 
@@ -128,7 +129,8 @@ export default function Login() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full gap-2" disabled={loading}>
+            <ShieldCheck className="h-4 w-4" />
             {loading ? "Loading..." : isSignUp ? "Create account" : "Sign in"}
           </Button>
 
