@@ -40,13 +40,14 @@ export default function Terms() {
 
           <section>
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">6. Credit-Based Billing</h2>
-            <p>Rental Waivers operates on a prepaid credit model. Credits are purchased in packages and deducted when waivers are sent (1 credit per signer). Key terms:</p>
+            <p>Rental Waivers operates on a prepaid credit model. Credits are purchased in packages and deducted when waivers are sent. Key terms:</p>
             <ul className="list-disc pl-6 mt-2 space-y-1">
               <li><strong>Prepaid credits are non-refundable.</strong> Once purchased, credits cannot be refunded or exchanged for cash.</li>
               <li><strong>Credits never expire.</strong> Purchased credits remain in your organization's wallet indefinitely.</li>
+              <li><strong>Variable credit pricing.</strong> Base cost is 1 credit per waiver. Premium features add +1 credit each: branded waivers (custom logo/colors), photo capture, and safety video requirements. Maximum cost is 4 credits per waiver with all features enabled.</li>
               <li><strong>Overdraft buffer.</strong> Your account may go up to -10 credits before waiver sending is paused. Any negative balance must be resolved by purchasing additional credits.</li>
               <li><strong>Auto-recharge.</strong> If enabled, your saved payment method will be automatically charged when your credit balance drops below your configured threshold. You may disable auto-recharge at any time.</li>
-              <li><strong>Credit deduction timing.</strong> Credits are deducted at the time of sending (envelope creation), not upon signing. For group waivers, 1 credit is deducted per individual signer.</li>
+              <li><strong>Credit deduction timing.</strong> Credits are deducted at the time of sending (envelope creation), not upon signing. For group waivers, 1 credit is deducted at envelope creation regardless of group size.</li>
               <li><strong>Starter credits.</strong> New organizations receive 5 complimentary credits upon creation. These are non-transferable.</li>
             </ul>
           </section>

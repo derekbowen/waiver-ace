@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { buildEmail, sendEmail } from "../_shared/email-builder.ts";
+import { calculateCreditCost, orgIsBranded } from "../_shared/credit-cost.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -169,6 +170,28 @@ serve(async (req: Request) => {
         }
       }
 
+      // Look up template features for credit cost calculation
+      const { data: templateRow } = await supabase
+        .from("template_versions")
+        .select("template_id, templates!inner(require_photo, require_video)")
+        .eq("id", templateVersionId)
+        .single();
+
+      const tmplFeatures = (templateRow as any)?.templates || {};
+
+      // Check org branding
+      const { data: orgRow } = await supabase
+        .from("organizations")
+        .select("logo_url, brand_color, brand_font")
+        .eq("id", orgId)
+        .single();
+
+      const creditCost = calculateCreditCost({
+        requirePhoto: tmplFeatures.require_photo || false,
+        requireVideo: tmplFeatures.require_video || false,
+        isBranded: orgIsBranded(orgRow || {}),
+      });
+
       // Create the envelope
       const { data: envelope, error: envErr } = await supabase
         .from("envelopes")
@@ -182,6 +205,7 @@ serve(async (req: Request) => {
           host_id: customer.hostId || null,
           customer_id: customer.customerId || null,
           status: "sent",
+          credits_charged: creditCost.total,
           payload: {
             customer_name: customer.name || "",
             customer_email: customer.email,
@@ -196,11 +220,13 @@ serve(async (req: Request) => {
 
       if (envErr) throw envErr;
 
-      // Deduct credit from wallet (after successful envelope creation)
+      // Deduct variable credit amount from wallet
       const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
         p_org_id: orgId,
         p_reference_id: envelope.id,
         p_type: "waiver_deduction",
+        p_amount: creditCost.total,
+        p_notes: creditCost.breakdown,
       });
 
       if (creditErr || !creditResult?.[0]?.success) {

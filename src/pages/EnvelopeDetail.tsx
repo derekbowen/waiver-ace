@@ -217,8 +217,8 @@ export default function EnvelopeDetail() {
                           {sig.signer_email || "No email provided"} · Signed {format(new Date(sig.signed_at), "PPpp")}
                         </p>
                       </div>
-                      {sig.signature_image && (
-                        <img src={sig.signature_image} alt="Signature" className="h-8 max-w-[120px] object-contain" />
+                      {(sig.signature_data as any)?.signature_image && (
+                        <img src={(sig.signature_data as any).signature_image} alt="Signature" className="h-8 max-w-[120px] object-contain" />
                       )}
                     </div>
                   ))}

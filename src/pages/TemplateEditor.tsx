@@ -539,6 +539,7 @@ export default function TemplateEditor() {
   const [content, setContent] = useState("");
   const [requireSigning, setRequireSigning] = useState(false);
   const [requirePhoto, setRequirePhoto] = useState(false);
+  const [requireVideo, setRequireVideo] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const pickPreset = (preset: TemplatePreset) => {
@@ -571,6 +572,7 @@ export default function TemplateEditor() {
           description: description.trim() || null,
           created_by: (await supabase.auth.getUser()).data.user?.id,
           require_photo: requirePhoto,
+          require_video: requireVideo,
         })
         .select()
         .single();
@@ -680,10 +682,27 @@ export default function TemplateEditor() {
               </div>
               <div className="flex items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
-                  <Label htmlFor="require-photo" className="text-sm font-medium">Require Photo ID</Label>
+                  <Label htmlFor="require-photo" className="text-sm font-medium">Require Photo ID (+1 credit)</Label>
                   <p className="text-xs text-muted-foreground">Signers must take a selfie before submitting — useful for identity verification</p>
                 </div>
                 <Switch id="require-photo" checked={requirePhoto} onCheckedChange={setRequirePhoto} />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <Label htmlFor="require-video" className="text-sm font-medium">Require Safety Video (+1 credit)</Label>
+                  <p className="text-xs text-muted-foreground">Embed a video signers must watch before signing — great for safety briefings</p>
+                </div>
+                <Switch id="require-video" checked={requireVideo} onCheckedChange={setRequireVideo} />
+              </div>
+              <div className="rounded-lg border border-dashed p-4 bg-accent/30">
+                <p className="text-sm font-medium">Estimated cost per signing</p>
+                <p className="text-2xl font-bold mt-1">
+                  {1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)} credit{(1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)) > 1 ? "s" : ""}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Base: 1{requirePhoto ? " + Photo: 1" : ""}{requireVideo ? " + Video: 1" : ""}
+                  {" "}(+1 if org branding is configured)
+                </p>
               </div>
             </CardContent>
           </Card>

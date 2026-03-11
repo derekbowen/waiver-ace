@@ -78,7 +78,7 @@ serve(async (req) => {
     }
 
     // Check if balance is still below threshold (prevent double-recharge)
-    if (wallet.credits_remaining > wallet.auto_recharge_threshold) {
+    if (wallet.credits > wallet.auto_recharge_threshold) {
       return new Response(JSON.stringify({ skipped: true, reason: "Balance above threshold" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

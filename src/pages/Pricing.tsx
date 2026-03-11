@@ -243,7 +243,7 @@ export default function Pricing() {
 
         <div className="text-center space-y-3">
           <p className="text-sm text-muted-foreground">
-            Credits are deducted when you send a waiver (1 credit per signer). Your account can go up to -10 credits before sending is paused.
+            Credits are deducted when you send a waiver. Base cost is 1 credit per signer. Premium features add +1 credit each: branded waivers, photo capture, and safety videos. Your account can go up to -10 credits before sending is paused.
           </p>
           <div className="flex items-center justify-center gap-3">
             <Button variant="ghost" size="sm" onClick={refreshWallet}>

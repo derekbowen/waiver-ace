@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/hooks/useWallet";
+import { calculateCreditCost, orgIsBranded } from "@/lib/credit-cost";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,7 +72,7 @@ export default function BulkSend() {
     setSending(true);
     const bulkResults: BulkResult[] = [];
 
-    // Get current template version
+    // Get current template version and features
     const { data: version } = await supabase
       .from("template_versions")
       .select("id")
@@ -85,6 +86,26 @@ export default function BulkSend() {
       return;
     }
 
+    // Get template features for credit cost
+    const { data: tmpl } = await supabase
+      .from("templates")
+      .select("require_photo, require_video")
+      .eq("id", templateId)
+      .single();
+
+    // Get org branding
+    const { data: org } = await supabase
+      .from("organizations")
+      .select("logo_url, brand_color, brand_font")
+      .eq("id", profile.org_id)
+      .single();
+
+    const cost = calculateCreditCost({
+      requirePhoto: tmpl?.require_photo,
+      requireVideo: tmpl?.require_video,
+      isBranded: orgIsBranded(org || {}),
+    });
+
     for (const email of emails) {
       try {
         const { data: envelope, error } = await supabase
@@ -94,6 +115,7 @@ export default function BulkSend() {
             template_version_id: version.id,
             signer_email: email,
             status: "sent",
+            credits_charged: cost.total,
             expires_at: new Date(Date.now() + 7 * 86400000).toISOString(),
             payload: {},
           })
@@ -102,11 +124,13 @@ export default function BulkSend() {
 
         if (error) throw error;
 
-        // Deduct credit server-side after successful envelope creation
+        // Deduct variable credit amount
         const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
           p_org_id: profile.org_id,
           p_reference_id: envelope.id,
           p_type: "waiver_deduction",
+          p_amount: cost.total,
+          p_notes: cost.breakdown.map(b => `${b.label}:${b.cost}`).join(" + "),
         });
 
         if (creditErr || !creditResult?.[0]?.success) {

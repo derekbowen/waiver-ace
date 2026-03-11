@@ -228,6 +228,7 @@ export type Database = {
         Row: {
           booking_id: string | null
           created_at: string
+          credits_charged: number
           customer_id: string | null
           expires_at: string | null
           group_token: string | null
@@ -255,6 +256,7 @@ export type Database = {
         Insert: {
           booking_id?: string | null
           created_at?: string
+          credits_charged?: number
           customer_id?: string | null
           expires_at?: string | null
           group_token?: string | null
@@ -282,6 +284,7 @@ export type Database = {
         Update: {
           booking_id?: string | null
           created_at?: string
+          credits_charged?: number
           customer_id?: string | null
           expires_at?: string | null
           group_token?: string | null
@@ -433,6 +436,8 @@ export type Database = {
           email_sender_domain: string | null
           id: string
           logo_url: string | null
+          brand_color: string | null
+          brand_font: string | null
           name: string
           retention_years: number
           tier_override: string | null
@@ -443,6 +448,8 @@ export type Database = {
           email_sender_domain?: string | null
           id?: string
           logo_url?: string | null
+          brand_color?: string | null
+          brand_font?: string | null
           name: string
           retention_years?: number
           tier_override?: string | null
@@ -453,6 +460,8 @@ export type Database = {
           email_sender_domain?: string | null
           id?: string
           logo_url?: string | null
+          brand_color?: string | null
+          brand_font?: string | null
           name?: string
           retention_years?: number
           tier_override?: string | null
@@ -608,6 +617,9 @@ export type Database = {
           name: string
           org_id: string
           require_photo: boolean
+          require_video: boolean
+          brand_color: string | null
+          brand_font: string | null
           updated_at: string
         }
         Insert: {
@@ -619,6 +631,9 @@ export type Database = {
           name: string
           org_id: string
           require_photo?: boolean
+          require_video?: boolean
+          brand_color?: string | null
+          brand_font?: string | null
           updated_at?: string
         }
         Update: {
@@ -630,6 +645,9 @@ export type Database = {
           name?: string
           org_id?: string
           require_photo?: boolean
+          require_video?: boolean
+          brand_color?: string | null
+          brand_font?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -828,10 +846,18 @@ export type Database = {
         Returns: number
       }
       deduct_credit: {
-        Args: { p_org_id: string; p_reference_id: string; p_type?: string }
+        Args: {
+          p_org_id: string
+          p_reference_id: string
+          p_type?: string
+          p_amount?: number
+          p_notes?: string
+        }
         Returns: {
           error_message: string
           success: boolean
+          new_balance: number
+          needs_recharge: boolean
         }[]
       }
       delete_email: {

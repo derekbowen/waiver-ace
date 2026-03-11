@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/hooks/useWallet";
+import { calculateCreditCost, orgIsBranded } from "@/lib/credit-cost";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,6 +62,26 @@ export default function NewEnvelope() {
 
       if (!version) throw new Error("No active template version found");
 
+      // Get template features for credit cost
+      const { data: tmpl } = await supabase
+        .from("templates")
+        .select("require_photo, require_video")
+        .eq("id", templateId)
+        .single();
+
+      // Get org branding
+      const { data: org } = await supabase
+        .from("organizations")
+        .select("logo_url, brand_color, brand_font")
+        .eq("id", profile.org_id)
+        .single();
+
+      const cost = calculateCreditCost({
+        requirePhoto: tmpl?.require_photo,
+        requireVideo: tmpl?.require_video,
+        isBranded: orgIsBranded(org || {}),
+      });
+
       const { data: envelope, error } = await supabase
         .from("envelopes")
         .insert({
@@ -74,7 +95,7 @@ export default function NewEnvelope() {
           customer_id: customerId.trim() || null,
           status: "sent",
           is_group_waiver: isGroupWaiver,
-          
+          credits_charged: cost.total,
           expires_at: expiresInDays && expiresInDays !== "none" ? new Date(Date.now() + Number(expiresInDays) * 86400000).toISOString() : null,
           payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId },
         })
@@ -82,6 +103,20 @@ export default function NewEnvelope() {
         .single();
 
       if (error) throw error;
+
+      // Deduct variable credit amount
+      const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
+        p_org_id: profile.org_id,
+        p_reference_id: envelope.id,
+        p_type: "waiver_deduction" as any,
+        p_amount: cost.total,
+        p_notes: cost.breakdown.map(b => `${b.label}:${b.cost}`).join(" + "),
+      });
+
+      if (creditErr || !creditResult?.[0]?.success) {
+        await supabase.from("envelopes").update({ status: "canceled" }).eq("id", envelope.id);
+        throw new Error(creditResult?.[0]?.error_message || "Insufficient credits");
+      }
 
       await supabase.from("envelope_events").insert({
         envelope_id: envelope.id,

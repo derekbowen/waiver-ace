@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { calculateCreditCost, orgIsBranded } from "../_shared/credit-cost.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -210,7 +211,7 @@ serve(async (req: Request) => {
         }
         const { data: template } = await supabase
           .from("templates")
-          .select("id, org_id, is_active")
+          .select("id, org_id, is_active, require_photo, require_video")
           .eq("id", body.template_id)
           .eq("is_active", true)
           .single();
@@ -234,19 +235,20 @@ serve(async (req: Request) => {
           });
         }
 
-        // Deduct credit
-        const { data: creditResult } = await supabase.rpc("deduct_credit", {
-          p_org_id: template.org_id,
-          p_reference_id: `kiosk_${Date.now()}`,
-          p_type: "waiver_deduction",
+        // Calculate variable credit cost
+        const { data: kioskOrg } = await supabase
+          .from("organizations")
+          .select("logo_url, brand_color, brand_font")
+          .eq("id", template.org_id)
+          .single();
+
+        const kioskCost = calculateCreditCost({
+          requirePhoto: template.require_photo,
+          requireVideo: template.require_video,
+          isBranded: orgIsBranded(kioskOrg || {}),
         });
 
-        if (!creditResult?.[0]?.success) {
-          return new Response(JSON.stringify({ error: "Organization has no credits remaining" }), {
-            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
+        // Create envelope first (so we have a real ID for credit deduction reference)
         const { data: envelope, error } = await supabase
           .from("envelopes")
           .insert({
@@ -255,15 +257,33 @@ serve(async (req: Request) => {
             signer_email: "kiosk@placeholder.local",
             signer_name: "Kiosk Guest",
             status: "sent",
+            credits_charged: kioskCost.total,
             payload: { source: "kiosk" },
           })
-          .select("signing_token")
+          .select("id, signing_token")
           .single();
 
         if (error) throw error;
 
+        // Deduct variable credit amount using actual envelope ID
+        const { data: creditResult } = await supabase.rpc("deduct_credit", {
+          p_org_id: template.org_id,
+          p_reference_id: envelope.id,
+          p_type: "waiver_deduction",
+          p_amount: kioskCost.total,
+          p_notes: kioskCost.breakdown,
+        });
+
+        if (!creditResult?.[0]?.success) {
+          // Cancel the envelope if credit deduction fails
+          await supabase.from("envelopes").update({ status: "canceled" }).eq("id", envelope.id);
+          return new Response(JSON.stringify({ error: "Organization has no credits remaining" }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         await supabase.from("envelope_events").insert({
-          envelope_id: envelope.signing_token, // will be looked up
+          envelope_id: envelope.id,
           event_type: "envelope.sent",
           metadata: { source: "kiosk" },
         });
@@ -335,19 +355,26 @@ serve(async (req: Request) => {
         });
       }
 
-      // Get template name
+      // Get template name and features
       const { data: template } = await supabase
         .from("templates")
-        .select("name")
+        .select("name, require_photo, require_video")
         .eq("id", template_id)
         .single();
 
-      // Get organization name
+      // Get organization name and branding
       const { data: org } = await supabase
         .from("organizations")
-        .select("name")
+        .select("name, logo_url, brand_color, brand_font")
         .eq("id", orgId)
         .single();
+
+      // Calculate variable credit cost
+      const apiCost = calculateCreditCost({
+        requirePhoto: template?.require_photo,
+        requireVideo: template?.require_video,
+        isBranded: orgIsBranded(org || {}),
+      });
 
       const { data: envelope, error } = await supabase
         .from("envelopes")
@@ -361,6 +388,7 @@ serve(async (req: Request) => {
           host_id: host_id || null,
           customer_id: customer_id || null,
           status: "sent",
+          credits_charged: apiCost.total,
           payload: payload || {},
         })
         .select()
@@ -368,11 +396,13 @@ serve(async (req: Request) => {
 
       if (error) throw error;
 
-      // Deduct credit from wallet (after successful envelope creation)
+      // Deduct variable credit amount from wallet
       const { data: creditResult, error: creditErr } = await supabase.rpc("deduct_credit", {
         p_org_id: orgId,
         p_reference_id: envelope.id,
         p_type: "waiver_deduction",
+        p_amount: apiCost.total,
+        p_notes: apiCost.breakdown,
       });
 
       if (creditErr || !creditResult?.[0]?.success) {
