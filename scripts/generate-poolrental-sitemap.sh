@@ -9,9 +9,14 @@
 #   3. Filter out junk (drafts, login, signup, pagination)
 #   4. Categorize with proper priorities & change frequencies
 #   5. Split into organized sitemaps (under 1000 each)
-#   6. Create a sitemap index
-#   7. Update robots.txt
-#   8. Remove the old PRO Sitemaps reference
+#   6. Create a sitemap index with a randomized filename
+#   7. Clean up robots.txt (remove old sitemap refs, NO new ones)
+#   8. You submit the sitemap URL in Google Search Console only
+#
+# ANTI-SCRAPE: Sitemap filenames are randomized so competitors
+# can't just go to /sitemap.xml and see your whole strategy.
+# The sitemap is NOT listed in robots.txt - only Google knows
+# about it via Search Console.
 #
 # No installs needed. Uses only curl and bash.
 # ============================================================
@@ -22,6 +27,12 @@ DOMAIN="https://www.poolrentalnearme.com"
 SITEMAPHOSTING_URL="https://a487260.sitemaphosting7.com/4661760/sitemap.xml"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S+00:00")
 TMPDIR=$(mktemp -d)
+
+# Generate a random prefix so filenames aren't guessable
+RAND_ID=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 8)
+echo ""
+echo "  Sitemap ID: ${RAND_ID} (save this - you'll need it for Google Search Console)"
+echo ""
 
 echo ""
 echo "=========================================="
@@ -260,34 +271,30 @@ XMLHEADER
     fi
 }
 
-# Generate each sitemap with appropriate priority and changefreq
-#                    input_file      name                changefreq  priority
-generate_sitemap "$CORE_FILE"      "sitemap-core"      "weekly"     "1.0"
-generate_sitemap "$LISTINGS_FILE"  "sitemap-listings"  "weekly"     "0.9"
-generate_sitemap "$HOSTS_FILE"     "sitemap-hosts"     "weekly"     "0.8"
-generate_sitemap "$EVENTS_FILE"    "sitemap-events"    "monthly"    "0.7"
-generate_sitemap "$CONTENT_FILE"   "sitemap-content"   "monthly"    "0.8"
-generate_sitemap "$ADVOCACY_FILE"  "sitemap-advocacy"  "monthly"    "0.7"
-generate_sitemap "$SPANISH_FILE"   "sitemap-spanish"   "monthly"    "0.7"
+# Generate each sitemap with randomized filenames
+#                    input_file      name                          changefreq  priority
+generate_sitemap "$CORE_FILE"      "sm-${RAND_ID}-cr"            "weekly"     "1.0"
+generate_sitemap "$LISTINGS_FILE"  "sm-${RAND_ID}-ls"            "weekly"     "0.9"
+generate_sitemap "$HOSTS_FILE"     "sm-${RAND_ID}-ho"            "weekly"     "0.8"
+generate_sitemap "$EVENTS_FILE"    "sm-${RAND_ID}-ev"            "monthly"    "0.7"
+generate_sitemap "$CONTENT_FILE"   "sm-${RAND_ID}-cn"            "monthly"    "0.8"
+generate_sitemap "$ADVOCACY_FILE"  "sm-${RAND_ID}-ad"            "monthly"    "0.7"
+generate_sitemap "$SPANISH_FILE"   "sm-${RAND_ID}-es"            "monthly"    "0.7"
 
 echo ""
 
 # --- Step 6: Generate sitemap index ---
 echo "[6/7] Creating sitemap index..."
 
-SITEMAP_INDEX="${PUBLIC_DIR}/sitemap-index.xml"
+SITEMAP_INDEX="${PUBLIC_DIR}/sm-${RAND_ID}.xml"
 
 {
     echo '<?xml version="1.0" encoding="UTF-8"?>'
     echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 
     # Find all our generated sitemap files
-    for f in $(ls "${PUBLIC_DIR}"/sitemap-*.xml 2>/dev/null | sort); do
+    for f in $(ls "${PUBLIC_DIR}"/sm-${RAND_ID}*.xml 2>/dev/null | sort); do
         fname=$(basename "$f")
-        # Skip the index itself and Sharetribe's auto-generated one
-        if [ "$fname" = "sitemap-index.xml" ] || [ "$fname" = "sitemap-recent-pages.xml" ]; then
-            continue
-        fi
         echo "  <sitemap>"
         echo "    <loc>${DOMAIN}/${fname}</loc>"
         echo "    <lastmod>${TIMESTAMP}</lastmod>"
@@ -297,7 +304,7 @@ SITEMAP_INDEX="${PUBLIC_DIR}/sitemap-index.xml"
     echo '</sitemapindex>'
 } > "$SITEMAP_INDEX"
 
-echo "  Created sitemap-index.xml"
+echo "  Created sm-${RAND_ID}.xml (sitemap index)"
 echo ""
 
 # --- Step 7: Update robots.txt ---
@@ -309,26 +316,21 @@ if [ -f "$ROBOTS_FILE" ]; then
     cp "$ROBOTS_FILE" "${ROBOTS_FILE}.bak"
     echo "  Backed up robots.txt -> robots.txt.bak"
 
-    # Remove ALL existing Sitemap lines (kills the dead sitemaphosting7 ref)
+    # Remove ALL existing Sitemap lines (kills the sitemaphosting7 ref)
+    # We are NOT adding the new sitemap here - competitors check robots.txt
     sed -i '/^[Ss]itemap:/d' "$ROBOTS_FILE"
 
     # Remove any blank lines at the end
     sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$ROBOTS_FILE" 2>/dev/null || true
 
-    # Add our new sitemap index reference
-    echo "" >> "$ROBOTS_FILE"
-    echo "Sitemap: ${DOMAIN}/sitemap-index.xml" >> "$ROBOTS_FILE"
-
     echo "  Removed old sitemaphosting7 reference"
-    echo "  Added: Sitemap: ${DOMAIN}/sitemap-index.xml"
+    echo "  NOT adding new sitemap to robots.txt (stealth mode)"
 else
     cat > "$ROBOTS_FILE" << 'ROBOTS'
 User-agent: *
 Allow: /
-
 ROBOTS
-    echo "Sitemap: ${DOMAIN}/sitemap-index.xml" >> "$ROBOTS_FILE"
-    echo "  Created new robots.txt"
+    echo "  Created new robots.txt (no sitemap reference)"
 fi
 
 echo ""
@@ -342,15 +344,31 @@ echo "  Total URLs indexed: $TOTAL_URLS"
 echo "  Files created in:   $PUBLIC_DIR"
 echo ""
 echo "  Sitemap files:"
-ls -la "${PUBLIC_DIR}"/sitemap-*.xml 2>/dev/null | awk '{print "    " $NF " (" $5 " bytes)"}'
+ls -la "${PUBLIC_DIR}"/sm-${RAND_ID}*.xml 2>/dev/null | awk '{print "    " $NF " (" $5 " bytes)"}'
 echo ""
-echo "  robots.txt now says:"
-grep -i sitemap "$ROBOTS_FILE" 2>/dev/null | sed 's/^/    /'
+echo "  robots.txt: NO sitemap reference (stealth mode)"
 echo ""
-echo "  Verify with:"
-echo "    curl -s ${DOMAIN}/robots.txt"
-echo "    curl -s ${DOMAIN}/sitemap-index.xml | head -30"
-echo "    curl -s ${DOMAIN}/sitemap-core.xml | head -20"
+echo "=========================================="
+echo "  IMPORTANT: NEXT STEP"
+echo "=========================================="
+echo ""
+echo "  Go to Google Search Console:"
+echo "    https://search.google.com/search-console"
+echo ""
+echo "  1. Select your poolrentalnearme.com property"
+echo "  2. Go to Sitemaps (left sidebar)"
+echo "  3. In 'Add a new sitemap' enter:"
+echo ""
+echo "     sm-${RAND_ID}.xml"
+echo ""
+echo "  4. Click Submit"
+echo ""
+echo "  That's it. Google will find all your pages through"
+echo "  the sitemap index, but competitors won't know the"
+echo "  URL because it's not in robots.txt."
+echo ""
+echo "  Verify the file is accessible:"
+echo "    curl -s ${DOMAIN}/sm-${RAND_ID}.xml | head -30"
 echo ""
 echo "  No restart needed. Takes effect immediately."
 echo "=========================================="
