@@ -253,7 +253,9 @@ serve(async (req: Request) => {
     });
   }
 
-  const keyHash = btoa(apiKey);
+  const enc = new TextEncoder();
+  const hashBuffer = await crypto.subtle.digest("SHA-256", enc.encode(apiKey));
+  const keyHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
   const { data: keyData } = await supabase
     .from("api_keys")
     .select("org_id, is_active")
