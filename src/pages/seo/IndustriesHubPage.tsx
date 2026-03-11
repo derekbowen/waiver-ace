@@ -70,11 +70,32 @@ export default function IndustriesHubPage() {
           {[
             { name: "Airbnb Hosts", slug: "airbnb-host-waivers", desc: "Auto-send property waivers when guests book. Pool rules, house rules, damage policies." },
             { name: "Vacation Rentals", slug: "vacation-rental-waivers", desc: "VRBO, Booking.com, and direct booking hosts with amenity liability coverage." },
+            { name: "Short-Term Rentals", slug: "short-term-rental-waivers", desc: "Digital waivers for any short-term rental property — pools, hot tubs, and amenities." },
+            { name: "Property Managers", slug: "property-manager-waivers", desc: "Multi-property waiver management for property management companies." },
           ].map((item) => (
             <Link to={`/waivers/${item.slug}`} key={item.slug}>
               <Card className="h-full hover:border-primary/40 transition-colors">
                 <CardContent className="pt-6">
                   <h3 className="font-semibold mb-1">{item.name}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </SeoSection>
+
+      <SeoSection title="More Rental Categories">
+        <div className="grid md:grid-cols-3 gap-4">
+          {[
+            { name: "Hot Tub Rentals", slug: "hot-tub-rental-waivers", desc: "Liability waivers for hot tub and spa rental operators" },
+            { name: "Surfboard Rentals", slug: "surfboard-rental-waivers", desc: "Beach and surf shop rental waiver management" },
+            { name: "Event Rentals", slug: "event-rental-waivers", desc: "Waivers for event equipment and venue rentals" },
+          ].map((item) => (
+            <Link to={`/waivers/${item.slug}`} key={item.slug}>
+              <Card className="h-full hover:border-primary/40 transition-colors group">
+                <CardContent className="pt-6">
+                  <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">{item.name}</h3>
                   <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </CardContent>
               </Card>

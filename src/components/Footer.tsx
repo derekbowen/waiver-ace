@@ -79,6 +79,18 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
                   </Link>
                 </li>
               )}
+              {moreWaiverPages.map((page) =>
+              <li key={page.slug}>
+                  <Link to={`/waivers/${page.slug}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                    {page.label}
+                  </Link>
+                </li>
+              )}
+              <li>
+                <Link to="/industries" className="text-primary hover:text-primary/80 transition-colors font-medium">
+                  View All Industries →
+                </Link>
+              </li>
             </ul>
           </div>
 
