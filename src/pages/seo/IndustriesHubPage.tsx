@@ -16,7 +16,7 @@ const industries = [
   { name: "Ski & Snowboard", slug: "ski-rental-waiver-software", icon: Snowflake, desc: "Resort and ski shop rental waiver software" },
   { name: "Golf Cart Rentals", slug: "golf-cart-rental-waiver-software", icon: CarFront, desc: "Resort and community golf cart rental waivers" },
   { name: "RV Rentals", slug: "rv-rental-waiver-software", icon: Truck, desc: "Motorhome and camper van rental liability waivers" },
-  { name: "Horse & Trail Rides", slug: "horse-rental-waiver-software", icon: Horse, desc: "Equestrian liability waivers for trail riding operations" },
+  { name: "Horse & Trail Rides", slug: "horse-rental-waiver-software", icon: Waves, desc: "Equestrian liability waivers for trail riding operations" },
   { name: "Tool Rentals", slug: "tool-rental-waiver-software", icon: Wrench, desc: "Hardware and power tool rental liability management" },
   { name: "Party Rentals", slug: "party-rental-waiver-software", icon: PartyPopper, desc: "Event equipment rental waivers for tables, tents, and gear" },
 ];
