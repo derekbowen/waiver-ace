@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -30,36 +30,42 @@ export default function AdminCredits() {
   const [notes, setNotes] = useState("");
   const [adding, setAdding] = useState(false);
   const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const handleSearch = async () => {
-    if (!search.trim()) return;
+  const handleSearch = useCallback(async (term: string) => {
+    if (!term.trim()) {
+      setOrgs([]);
+      setShowDropdown(false);
+      return;
+    }
     setSearching(true);
     try {
-      const term = search.trim();
+      const t = term.trim();
 
-      // Search orgs by name
-      const { data: orgsByName } = await supabase
-        .from("organizations")
-        .select("id, name, created_at")
-        .ilike("name", `%${term}%`)
-        .limit(20);
+      // Search orgs by name + profiles by email/name in parallel
+      const [orgsByNameRes, profileMatchesRes] = await Promise.all([
+        supabase
+          .from("organizations")
+          .select("id, name, created_at")
+          .ilike("name", `%${t}%`)
+          .limit(20),
+        supabase
+          .from("profiles")
+          .select("org_id, email, full_name")
+          .or(`email.ilike.%${t}%,full_name.ilike.%${t}%`)
+          .not("org_id", "is", null)
+          .limit(20),
+      ]);
 
-      // Search profiles by email or name to find their org
-      const { data: profileMatches } = await supabase
-        .from("profiles")
-        .select("org_id, email, full_name")
-        .or(`email.ilike.%${term}%,full_name.ilike.%${term}%`)
-        .not("org_id", "is", null)
-        .limit(20);
+      const orgsByName = orgsByNameRes.data || [];
+      const profileMatches = profileMatchesRes.data || [];
 
-      // Collect unique org IDs from profile matches
-      const profileOrgIds = [...new Set(
-        (profileMatches || []).map(p => p.org_id).filter(Boolean)
-      )] as string[];
-
-      // Fetch org details for profile-matched orgs not already found
-      const existingOrgIds = new Set((orgsByName || []).map(o => o.id));
-      const missingOrgIds = profileOrgIds.filter(id => !existingOrgIds.has(id));
+      const existingOrgIds = new Set(orgsByName.map(o => o.id));
+      const missingOrgIds = [...new Set(
+        profileMatches.map(p => p.org_id).filter(Boolean)
+      )].filter(id => !existingOrgIds.has(id!)) as string[];
 
       let extraOrgs: typeof orgsByName = [];
       if (missingOrgIds.length > 0) {
@@ -70,32 +76,57 @@ export default function AdminCredits() {
         extraOrgs = data || [];
       }
 
-      const allOrgs = [...(orgsByName || []), ...extraOrgs];
+      const allOrgs = [...orgsByName, ...extraOrgs];
 
-      // Get wallet info for each org
-      const orgsWithWallets: OrgResult[] = [];
-      for (const org of allOrgs) {
-        const { data: wallet } = await supabase
-          .from("wallets")
-          .select("credits")
-          .eq("org_id", org.id)
-          .single();
-        // Find matching profile info for display
-        const matchedProfile = (profileMatches || []).find(p => p.org_id === org.id);
-        orgsWithWallets.push({
-          ...org,
-          wallet_credits: wallet?.credits ?? 0,
-          matched_email: matchedProfile?.email ?? undefined,
-          matched_name: matchedProfile?.full_name ?? undefined,
-        });
-      }
+      // Get wallet info for all orgs in parallel
+      const orgsWithWallets: OrgResult[] = await Promise.all(
+        allOrgs.map(async (org) => {
+          const { data: wallet } = await supabase
+            .from("wallets")
+            .select("credits")
+            .eq("org_id", org.id)
+            .maybeSingle();
+          const matchedProfile = profileMatches.find(p => p.org_id === org.id);
+          return {
+            ...org,
+            wallet_credits: wallet?.credits ?? 0,
+            matched_email: matchedProfile?.email ?? undefined,
+            matched_name: matchedProfile?.full_name ?? undefined,
+          };
+        })
+      );
+
       setOrgs(orgsWithWallets);
+      setShowDropdown(orgsWithWallets.length > 0);
     } catch (err: any) {
       toast.error("Search failed: " + err.message);
     } finally {
       setSearching(false);
     }
+  }, []);
+
+  const onSearchChange = (value: string) => {
+    setSearch(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => handleSearch(value), 300);
   };
+
+  const selectOrg = (org: OrgResult) => {
+    setSelectedOrg(org);
+    setSearch(org.name);
+    setShowDropdown(false);
+  };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   const handleAddCredits = async () => {
     if (!selectedOrg || credits <= 0) return;
@@ -115,9 +146,6 @@ export default function AdminCredits() {
       setSelectedOrg({ ...selectedOrg, wallet_credits: data as number });
       setCredits(100);
       setNotes("");
-
-      // Refresh org list
-      handleSearch();
       loadRecentTransactions();
     } catch (err: any) {
       toast.error("Failed to add credits: " + err.message);
@@ -160,65 +188,69 @@ export default function AdminCredits() {
               <CardTitle className="text-base">Search Organizations</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-2">
-                <div className="flex-1">
+              <div className="relative" ref={dropdownRef}>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search by org name, user email, or user name..."
+                    placeholder="Start typing org name, user email, or user name..."
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    onFocus={() => orgs.length > 0 && setShowDropdown(true)}
+                    className="pl-9"
                   />
+                  {searching && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
                 </div>
-                <Button onClick={handleSearch} disabled={searching} className="gap-2">
-                  {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                  Search
-                </Button>
+
+                {showDropdown && orgs.length > 0 && (
+                  <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-lg max-h-72 overflow-y-auto">
+                    {orgs.map((org) => (
+                      <button
+                        key={org.id}
+                        onClick={() => selectOrg(org)}
+                        className="w-full flex items-center justify-between px-4 py-3 hover:bg-accent text-left transition-colors border-b last:border-b-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <div>
+                            <div className="font-medium text-sm">{org.name}</div>
+                            {org.matched_email && (
+                              <div className="text-xs text-muted-foreground">{org.matched_email}</div>
+                            )}
+                            {org.matched_name && !org.matched_email && (
+                              <div className="text-xs text-muted-foreground">{org.matched_name}</div>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-xs font-mono text-muted-foreground">
+                          {org.wallet_credits?.toLocaleString() ?? 0} credits
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {orgs.length > 0 && (
-                <div className="mt-4 border rounded-lg overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Organization</TableHead>
-                        <TableHead className="text-right">Credits</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {orgs.map((org) => (
-                        <TableRow key={org.id} className={selectedOrg?.id === org.id ? "bg-primary/5" : ""}>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Building2 className="h-4 w-4 text-muted-foreground" />
-                              <div>
-                                <div className="font-medium">{org.name}</div>
-                                {org.matched_email && (
-                                  <div className="text-xs text-muted-foreground">{org.matched_email}</div>
-                                )}
-                                {org.matched_name && !org.matched_email && (
-                                  <div className="text-xs text-muted-foreground">{org.matched_name}</div>
-                                )}
-                                <div className="text-xs text-muted-foreground font-mono">{org.id.slice(0, 8)}...</div>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right font-mono">
-                            {org.wallet_credits?.toLocaleString() ?? 0}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              size="sm"
-                              variant={selectedOrg?.id === org.id ? "default" : "outline"}
-                              onClick={() => setSelectedOrg(org)}
-                            >
-                              Select
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+              {selectedOrg && (
+                <div className="mt-3 flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">{selectedOrg.name}</span>
+                  <span className="text-xs text-muted-foreground font-mono ml-auto">
+                    {selectedOrg.wallet_credits?.toLocaleString() ?? 0} credits
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 text-xs"
+                    onClick={() => {
+                      setSelectedOrg(null);
+                      setSearch("");
+                      setOrgs([]);
+                    }}
+                  >
+                    Clear
+                  </Button>
                 </div>
               )}
             </CardContent>
