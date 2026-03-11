@@ -29,13 +29,16 @@ serve(async (req) => {
     );
 
     const token = authHeader.replace("Bearer ", "");
-    // Service-role key is also a valid JWT — getClaims will verify it
-    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Check for service-role key first
+    const isServiceRole = token === Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!isServiceRole) {
+      const { data: { user }, error: userError } = await supabaseAuth.auth.getUser(token);
+      if (userError || !user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     const { envelope_id, event_type } = await req.json();
