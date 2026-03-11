@@ -100,7 +100,8 @@ async function dispatchWebhooks(
     const { data: endpoints } = await supabase
       .from("webhook_endpoints")
       .select("id, url, secret, events")
-      .eq("org_id", orgId);
+      .eq("org_id", orgId)
+      .eq("is_active", true);
 
     if (!endpoints?.length) return;
 
