@@ -92,14 +92,18 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   html {
     /* Prevent bounce-scroll behind fixed elements on iOS */
     height: 100%;
   }
   body {
-    @apply bg-background text-foreground font-body antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     min-height: 100%;
     /* iOS-style smooth scrolling & tap behavior */
     -webkit-tap-highlight-color: transparent;
