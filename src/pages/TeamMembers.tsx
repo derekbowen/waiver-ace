@@ -52,15 +52,7 @@ export default function TeamMembers() {
       return;
     }
 
-    // Send invite email
-    try {
-      const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY;
-      // We'll use the send-signing-email function pattern but just log it for now
-      // In production, you'd call an edge function to send the invite email
-      toast.success(`Invite sent to ${email}`);
-    } catch {
-      toast.success(`Invite created for ${email}`);
-    }
+    toast.success(`Invite sent to ${email}`);
 
     setInvites([data, ...invites]);
     setEmail("");

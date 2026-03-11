@@ -65,8 +65,8 @@ serve(async (req) => {
       .insert({ user_id: user.id, role: "admin" });
     if (roleErr) throw roleErr;
 
-    // Grant 250 free welcome credits
-    const { error: creditErr } = await adminClient.rpc("add_credits", {
+    // Grant 250 free welcome credits (use internal function that has no auth check, called via service role)
+    const { error: creditErr } = await adminClient.rpc("add_credits_internal", {
       p_org_id: org.id,
       p_amount: 250,
       p_reference_id: `welcome_${org.id}`,

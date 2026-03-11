@@ -697,6 +697,16 @@ export type Database = {
         }
         Returns: number
       }
+      add_credits_internal: {
+        Args: {
+          p_amount: number
+          p_notes?: string
+          p_org_id: string
+          p_reference_id: string
+          p_type: string
+        }
+        Returns: number
+      }
       deduct_credit: {
         Args: { p_org_id: string; p_reference_id: string; p_type?: string }
         Returns: {
