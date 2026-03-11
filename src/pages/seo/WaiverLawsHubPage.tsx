@@ -97,7 +97,7 @@ export default function WaiverLawsHubPage() {
             <Card key={s.state}>
               <CardContent className="py-4">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                  <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                   <div>
                     <h3 className="font-semibold">{s.state}</h3>
                     <p className="text-sm text-muted-foreground">{s.note}</p>
