@@ -74,7 +74,7 @@ export default function NewEnvelope() {
           customer_id: customerId.trim() || null,
           status: "sent",
           is_group_waiver: isGroupWaiver,
-          group_label: isGroupWaiver ? (groupLabel.trim() || null) : null,
+          
           expires_at: expiresInDays && expiresInDays !== "none" ? new Date(Date.now() + Number(expiresInDays) * 86400000).toISOString() : null,
           payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId },
         })

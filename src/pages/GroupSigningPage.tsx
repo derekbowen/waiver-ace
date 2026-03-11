@@ -253,7 +253,7 @@ export default function GroupSigningPage() {
           </div>
           <span className="font-heading text-sm font-bold">Rental Waivers</span>
           <span className="ml-auto text-xs text-muted-foreground">
-            {envelope.group_label || "Group Waiver"} — {signatures.length} signed so far
+            {"Group Waiver"} — {signatures.length} signed so far
           </span>
         </div>
       </header>
@@ -261,7 +261,7 @@ export default function GroupSigningPage() {
       <div className="container max-w-2xl py-8 px-4">
         <div className="animate-fade-in">
           <h1 className="font-heading text-xl font-bold mb-1">
-            {envelope.group_label || "Liability Waiver"}
+            Liability Waiver
           </h1>
           <p className="text-sm text-muted-foreground mb-6">
             Each person in your group needs to sign individually. Read the waiver, scroll to the bottom, then complete your signature.
