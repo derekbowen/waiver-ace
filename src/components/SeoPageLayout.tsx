@@ -25,7 +25,7 @@ export function SeoPageLayout({ metaTitle, metaDescription, children }: SeoPageL
   }, [metaTitle, metaDescription]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
@@ -49,7 +49,9 @@ export function SeoPageLayout({ metaTitle, metaDescription, children }: SeoPageL
           </div>
         </div>
       </header>
-      {children}
+      <div className="flex-1">
+        {children}
+      </div>
       <Footer />
     </div>
   );
