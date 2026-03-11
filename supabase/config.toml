@@ -1,1 +1,10 @@
 project_id = "llsgwfzoutdpgrgtcbif"
+
+[functions.send-team-invite-email]
+verify_jwt = false
+
+[functions.send-envelope-notification]
+verify_jwt = false
+
+[functions.send-welcome-email]
+verify_jwt = false
