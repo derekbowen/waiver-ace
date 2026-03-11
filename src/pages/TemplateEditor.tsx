@@ -235,6 +235,299 @@ DISCLAIMER: This waiver template is provided as a starting point only. Rental Wa
 
 By signing below, I acknowledge that I have read this waiver in its entirety, understand its contents, and voluntarily agree to its terms.`,
   },
+  {
+    id: "boat_jetski",
+    name: "Boat / Jet Ski Rental",
+    description: "Watercraft, pontoons, jet skis, wave runners",
+    icon: Ship,
+    content: `WATERCRAFT RENTAL WAIVER AND RELEASE OF LIABILITY
+
+This Waiver and Release of Liability ("Agreement") is entered into by and between the Watercraft Owner/Operator and the Renter identified below.
+
+Renter: {{customer_name}}
+Booking/Rental ID: {{booking_id}}
+Rental Date: {{date}}
+Departure Time: {{time}}
+Marina/Launch Location: {{address_redacted}}
+State: {{state}}
+
+WATERCRAFT CONDITION
+The Renter acknowledges that they have inspected the watercraft and all provided safety equipment, found them to be in satisfactory condition, and received operating instructions from the Owner/Operator.
+
+ACKNOWLEDGMENT OF RISKS
+The Renter acknowledges that operating or riding on a watercraft involves significant inherent risks, including but not limited to: drowning, collision with other vessels or objects, capsizing, propeller injuries, hypothermia, sunburn, dehydration, mechanical failure, and injuries caused by waves, wake, weather, or other boaters. These risks may result in serious bodily injury or death.
+
+The Renter acknowledges that:
+- A valid boater safety certificate or license may be required by state law
+- All passengers must wear a U.S. Coast Guard-approved personal flotation device (PFD) at all times while on the water
+- Operating a watercraft under the influence of alcohol or drugs is illegal and strictly prohibited
+- Weather and water conditions can change rapidly and without warning
+- The Renter is solely responsible for safe operation of the watercraft
+
+ASSUMPTION OF RISK
+The Renter voluntarily assumes all risks associated with the operation, riding on, or proximity to the rented watercraft, including risks arising from the actions of other boaters, weather, water conditions, marine life, and equipment malfunction.
+
+RELEASE AND WAIVER
+The Renter hereby releases, waives, and discharges the Watercraft Owner/Operator ({{host_name}}), the marina, the booking platform, and their respective agents and affiliates from any and all liability, claims, and demands arising from the use of the watercraft, including personal injury, death, property damage, or loss.
+
+OPERATING RULES
+{{rules}}
+
+DAMAGE AND LOSS
+The Renter accepts full financial responsibility for any damage to, loss of, or theft of the watercraft and its equipment during the rental period. The Renter agrees to report any incidents, collisions, or mechanical issues immediately. The Renter authorizes charges to their payment method on file for repairs or replacement costs.
+
+FUELING
+The Renter agrees to return the watercraft with the same fuel level as at the time of rental, or pay the applicable refueling fee.
+
+INDEMNIFICATION
+The Renter agrees to indemnify and hold harmless the Watercraft Owner/Operator from any third-party claims, fines, or penalties arising from the Renter's operation of the watercraft.
+
+GOVERNING LAW
+This Agreement shall be governed by the laws of the State of {{state}} and applicable federal maritime regulations.
+
+DISCLAIMER: This waiver template is provided as a starting point only. Rental Waivers is not a law firm and does not provide legal advice. Consult a licensed attorney in your jurisdiction to ensure your waiver is legally enforceable.
+
+By signing below, I acknowledge that I have read this waiver in its entirety, understand its contents, and voluntarily agree to its terms.`,
+  },
+  {
+    id: "atv_offroad",
+    name: "ATV / Off-Road Vehicle",
+    description: "ATVs, UTVs, dirt bikes, off-road vehicles",
+    icon: CarFront,
+    content: `ATV / OFF-ROAD VEHICLE RENTAL WAIVER AND RELEASE OF LIABILITY
+
+This Waiver and Release of Liability ("Agreement") is entered into by and between the Vehicle Owner/Operator and the Rider/Driver identified below.
+
+Rider/Driver: {{customer_name}}
+Booking/Rental ID: {{booking_id}}
+Rental Date: {{date}}
+Time: {{time}}
+Location: {{address_redacted}}
+State: {{state}}
+
+VEHICLE CONDITION AND SAFETY BRIEFING
+The Rider/Driver acknowledges that they have received a safety briefing, inspected the vehicle, and been fitted with appropriate safety gear (helmet, goggles, gloves as applicable). The Rider/Driver confirms they understand the vehicle's controls and operating procedures.
+
+ACKNOWLEDGMENT OF RISKS
+The Rider/Driver acknowledges that operating an ATV, UTV, or off-road vehicle is an inherently dangerous activity that involves significant risk of serious bodily injury or death. Risks include but are not limited to: rollovers, collisions with obstacles or other vehicles, falls, ejection from the vehicle, being struck by flying debris, exposure to rough terrain, mechanical failure, and injuries from dust, mud, or environmental conditions.
+
+The Rider/Driver acknowledges that:
+- ATVs and off-road vehicles can be unstable and tip over, especially on hills, turns, and uneven terrain
+- Helmets are required and must be worn at all times while operating or riding
+- Operating under the influence of alcohol or drugs is strictly prohibited
+- Speed limits and designated trail boundaries must be followed
+- Riders must meet minimum age and weight requirements
+- Passengers are only permitted on vehicles designed for multiple riders
+
+EXPERIENCE AND ABILITY
+The Rider/Driver represents that they possess sufficient physical ability, skill, and experience to safely operate the assigned vehicle. The Rider/Driver acknowledges they have been given the opportunity to ask questions and decline participation.
+
+ASSUMPTION OF RISK
+The Rider/Driver voluntarily assumes all risks associated with the operation of the off-road vehicle, including risks that may arise from trail conditions, weather, mechanical issues, the actions of other riders, or the Rider/Driver's own inexperience.
+
+RELEASE AND WAIVER
+The Rider/Driver hereby releases, waives, and discharges the Vehicle Owner/Operator ({{host_name}}), the property owner, the booking platform, and their respective agents and affiliates from any and all liability for personal injury, death, or property damage arising from the use of the vehicle.
+
+SAFETY RULES AND TRAIL GUIDELINES
+{{rules}}
+
+DAMAGE AND LOSS
+The Rider/Driver accepts full financial responsibility for any damage to the vehicle caused by negligent operation, including rollovers, collisions, submerging the vehicle in water, or operating outside designated areas.
+
+INDEMNIFICATION
+The Rider/Driver agrees to indemnify and hold harmless the Vehicle Owner/Operator from any third-party claims arising from the Rider/Driver's operation of the vehicle.
+
+GOVERNING LAW
+This Agreement shall be governed by the laws of the State of {{state}}.
+
+DISCLAIMER: This waiver template is provided as a starting point only. Rental Waivers is not a law firm and does not provide legal advice. Consult a licensed attorney in your jurisdiction to ensure your waiver is legally enforceable.
+
+By signing below, I acknowledge that I have read this waiver in its entirety, understand its contents, and voluntarily agree to its terms.`,
+  },
+  {
+    id: "bounce_house",
+    name: "Bounce House / Inflatable",
+    description: "Bounce houses, water slides, inflatable rentals",
+    icon: PartyPopper,
+    content: `BOUNCE HOUSE / INFLATABLE EQUIPMENT RENTAL WAIVER AND RELEASE OF LIABILITY
+
+This Waiver and Release of Liability ("Agreement") is entered into by and between the Rental Company and the Customer/Event Host identified below.
+
+Customer/Event Host: {{customer_name}}
+Booking/Rental ID: {{booking_id}}
+Event Date: {{date}}
+Setup Time: {{time}}
+Event Location: {{address_redacted}}
+State: {{state}}
+
+EQUIPMENT USE ACKNOWLEDGMENT
+The Customer acknowledges receipt of inflatable equipment in good working condition and agrees to supervise its use throughout the rental period. The Customer accepts responsibility for the safety of all users, including children.
+
+ACKNOWLEDGMENT OF RISKS
+The Customer acknowledges that the use of bounce houses, inflatable slides, and similar equipment involves inherent risks including but not limited to: falls, collisions between users, being thrown or ejected, neck and spinal injuries, broken bones, sprains, concussions, suffocation, and heat-related illness. These risks are present even with proper supervision.
+
+The Customer acknowledges and agrees that:
+- Adult supervision is required at ALL times when the equipment is in use
+- Maximum occupancy limits must be strictly enforced
+- Users must be separated by similar age and size groups
+- No flips, wrestling, rough play, or piling on top of one another
+- Shoes, glasses, jewelry, and sharp objects must be removed before entry
+- No use during rain, high winds (15+ mph), thunderstorms, or wet conditions
+- The equipment must remain properly anchored/staked at all times
+- No food, drinks, silly string, or gum inside the inflatable
+- The Customer must not move, re-anchor, or modify the equipment
+
+ASSUMPTION OF RISK
+The Customer voluntarily assumes all risks associated with the use of the inflatable equipment by themselves, their children, and all event attendees.
+
+RELEASE AND WAIVER
+The Customer hereby releases, waives, and discharges the Rental Company ({{host_name}}), its employees, agents, and affiliates from any and all liability for personal injury, death, or property damage arising from the use of the inflatable equipment.
+
+SAFETY RULES
+{{rules}}
+
+WEATHER POLICY
+The Customer agrees to immediately stop use and deflate or secure the equipment if wind speeds exceed 15 mph or if rain, lightning, or storms occur. The Rental Company is not responsible for injuries resulting from use during inclement weather.
+
+DAMAGE
+The Customer accepts financial responsibility for any damage to the equipment beyond normal wear, including punctures, tears, and stains. The Customer will be charged for repairs or replacement.
+
+INDEMNIFICATION
+The Customer agrees to indemnify and hold harmless the Rental Company from any claims made by event attendees or third parties arising from the use of the equipment.
+
+GOVERNING LAW
+This Agreement shall be governed by the laws of the State of {{state}}.
+
+DISCLAIMER: This waiver template is provided as a starting point only. Rental Waivers is not a law firm and does not provide legal advice. Consult a licensed attorney in your jurisdiction to ensure your waiver is legally enforceable.
+
+By signing below, I acknowledge that I have read this waiver in its entirety, understand its contents, and voluntarily agree to its terms.`,
+  },
+  {
+    id: "rv_camper",
+    name: "RV / Camper Van Rental",
+    description: "Motorhomes, camper vans, travel trailers",
+    icon: Truck,
+    content: `RV / CAMPER VAN RENTAL AGREEMENT AND WAIVER OF LIABILITY
+
+This Rental Agreement and Waiver of Liability ("Agreement") is entered into by and between the RV Owner/Operator and the Renter identified below.
+
+Renter: {{customer_name}}
+Booking/Rental ID: {{booking_id}}
+Pickup Date: {{date}}
+Pickup Time: {{time}}
+Pickup Location: {{address_redacted}}
+State: {{state}}
+
+VEHICLE CONDITION
+The Renter acknowledges that they have inspected the RV/camper van, received a walkthrough of all systems (electrical, plumbing, propane, slide-outs, awning), and found the vehicle to be in satisfactory condition. The Renter has been given operating instructions and documentation.
+
+DRIVER QUALIFICATIONS
+The Renter certifies that:
+- They possess a valid driver's license appropriate for the vehicle class
+- They are at least 25 years of age (or the minimum age specified by the Owner)
+- They have no DUI/DWI convictions in the past 5 years
+- All listed drivers have been approved by the Owner
+- Only approved drivers will operate the vehicle
+
+ACKNOWLEDGMENT OF RISKS
+The Renter acknowledges that operating a large recreational vehicle involves unique risks including but not limited to: rollovers, accidents due to vehicle size and weight, low-clearance bridge strikes, propane leaks, carbon monoxide exposure, generator hazards, tire blowouts, and injuries from improperly secured equipment during travel.
+
+ASSUMPTION OF RISK
+The Renter voluntarily assumes all risks associated with the operation, use, and occupancy of the rented RV/camper van.
+
+RELEASE AND WAIVER
+The Renter hereby releases, waives, and discharges the RV Owner/Operator ({{host_name}}), the booking platform, and their respective agents and affiliates from any liability for personal injury, death, or property damage arising from the Renter's use of the vehicle, except in cases of gross negligence by the Owner.
+
+VEHICLE USE RULES
+{{rules}}
+
+PROHIBITED USES
+The Renter agrees that the vehicle shall NOT be used for:
+- Off-road driving or unpaved roads not suitable for RVs
+- Towing (unless expressly permitted)
+- Transport of hazardous materials
+- Any illegal purposes
+- Driving under the influence of alcohol or drugs
+- Travel outside the agreed-upon geographic area
+- Subletting or lending to unauthorized drivers
+
+MILEAGE AND FUEL
+The Renter agrees to return the vehicle with the same fuel level and propane level as at pickup, or pay applicable refueling charges. Mileage limits, if any, are specified in the booking confirmation.
+
+DAMAGE AND INSURANCE
+The Renter accepts financial responsibility for any damage to the vehicle during the rental period, including collision damage, interior damage, roof/awning damage, and tire damage. The Renter's personal auto insurance or any purchased supplemental coverage may apply — the Renter is responsible for verifying coverage.
+
+INDEMNIFICATION
+The Renter agrees to indemnify and hold harmless the RV Owner from any third-party claims, traffic violations, tolls, or fines incurred during the rental period.
+
+GOVERNING LAW
+This Agreement shall be governed by the laws of the State of {{state}}.
+
+DISCLAIMER: This waiver template is provided as a starting point only. Rental Waivers is not a law firm and does not provide legal advice. Consult a licensed attorney in your jurisdiction to ensure your waiver is legally enforceable.
+
+By signing below, I acknowledge that I have read this waiver in its entirety, understand its contents, and voluntarily agree to its terms.`,
+  },
+  {
+    id: "bike_scooter",
+    name: "Bike / Scooter Rental",
+    description: "Bicycles, e-bikes, electric scooters, mopeds",
+    icon: Bike,
+    content: `BICYCLE / SCOOTER RENTAL WAIVER AND RELEASE OF LIABILITY
+
+This Waiver and Release of Liability ("Agreement") is entered into by and between the Rental Operator and the Rider identified below.
+
+Rider: {{customer_name}}
+Booking/Rental ID: {{booking_id}}
+Rental Date: {{date}}
+Pickup Time: {{time}}
+Pickup Location: {{address_redacted}}
+State: {{state}}
+
+EQUIPMENT CONDITION
+The Rider acknowledges that they have inspected the bicycle/scooter, tested the brakes and controls, confirmed proper tire inflation, verified the seat/handlebar adjustment, and found the equipment to be in safe, rideable condition. A helmet has been offered and the Rider has accepted or declined.
+
+ACKNOWLEDGMENT OF RISKS
+The Rider acknowledges that cycling and scooter riding on public roads, bike paths, and trails involves inherent and significant risks including but not limited to: collisions with motor vehicles, pedestrians, or other cyclists; falls due to road hazards, potholes, gravel, or wet surfaces; mechanical failure; injuries from traffic; theft of the equipment; and weather-related hazards.
+
+The Rider acknowledges that:
+- Helmets are strongly recommended (and may be required by local law)
+- The Rider must obey all traffic laws, signals, and posted signs
+- Riding under the influence of alcohol or drugs is prohibited
+- E-bikes and electric scooters may reach speeds that increase injury risk
+- The Rider is responsible for securing the bike/scooter with the provided lock when unattended
+- Riding on sidewalks may be prohibited by local ordinance
+
+EXPERIENCE AND ABILITY
+The Rider represents that they know how to safely ride a bicycle/scooter, are physically capable of doing so, and are familiar with local traffic rules. For e-bikes and electric scooters, the Rider confirms they have received operating instructions and understand the throttle/pedal-assist controls.
+
+ASSUMPTION OF RISK
+The Rider voluntarily assumes all risks associated with riding the rented bicycle/scooter, including risks from road conditions, traffic, weather, equipment performance, and the Rider's own actions.
+
+RELEASE AND WAIVER
+The Rider hereby releases, waives, and discharges the Rental Operator ({{host_name}}), the booking platform, and their respective agents and affiliates from any and all liability for personal injury, death, or property damage arising from the use of the rented bicycle/scooter.
+
+RENTAL RULES
+{{rules}}
+
+THEFT AND LOSS
+The Rider accepts full financial responsibility for theft or loss of the bicycle/scooter during the rental period. The Rider must use the provided lock and take reasonable precautions. The Rider agrees to pay the full replacement value if the equipment is stolen or not returned.
+
+DAMAGE
+The Rider accepts financial responsibility for any damage to the bicycle/scooter beyond normal wear and tear, including bent wheels, damaged brakes, cosmetic damage, and electronic component failure (for e-bikes/scooters) caused by misuse.
+
+LATE RETURNS
+The Rider agrees to return the equipment by the agreed-upon time. Late returns will incur additional charges as specified in the rental terms.
+
+INDEMNIFICATION
+The Rider agrees to indemnify and hold harmless the Rental Operator from any third-party claims arising from the Rider's use of the equipment, including claims from pedestrians, motorists, or property owners.
+
+GOVERNING LAW
+This Agreement shall be governed by the laws of the State of {{state}}.
+
+DISCLAIMER: This waiver template is provided as a starting point only. Rental Waivers is not a law firm and does not provide legal advice. Consult a licensed attorney in your jurisdiction to ensure your waiver is legally enforceable.
+
+By signing below, I acknowledge that I have read this waiver in its entirety, understand its contents, and voluntarily agree to its terms.`,
+  },
 ];
 
 export default function TemplateEditor() {
