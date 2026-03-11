@@ -9,11 +9,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, CheckCircle, Users } from "lucide-react";
 import { toast } from "sonner";
 import { SignatureCanvas } from "@/components/SignatureCanvas";
+import { PhotoCapture } from "@/components/PhotoCapture";
 
 export default function GroupSigningPage() {
   const { groupToken } = useParams();
   const [envelope, setEnvelope] = useState<any>(null);
   const [templateContent, setTemplateContent] = useState("");
+  const [requirePhoto, setRequirePhoto] = useState(false);
   const [signatures, setSignatures] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
@@ -22,6 +24,7 @@ export default function GroupSigningPage() {
   const [initials, setInitials] = useState("");
   const [signerEmail, setSignerEmail] = useState("");
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
+  const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -47,6 +50,16 @@ export default function GroupSigningPage() {
       if (!env) { setLoading(false); return; }
 
       setEnvelope(env);
+
+      // Fetch require_photo from the template
+      if ((env.template_versions as any)?.template_id) {
+        const { data: tmpl } = await supabase
+          .from("templates")
+          .select("require_photo")
+          .eq("id", (env.template_versions as any).template_id)
+          .single();
+        setRequirePhoto(tmpl?.require_photo === true);
+      }
 
       const content = (env.template_versions as any)?.content?.body || "";
       const payload = env.payload as Record<string, any> || {};
@@ -76,7 +89,6 @@ export default function GroupSigningPage() {
     load();
   }, [groupToken, fetchSignatures]);
 
-  // Realtime: update signature list when others sign
   useEffect(() => {
     if (!envelope?.id) return;
     const channel = supabase
@@ -103,24 +115,40 @@ export default function GroupSigningPage() {
       toast.error("Please complete all required fields");
       return;
     }
+    if (requirePhoto && !photoBlob) {
+      toast.error("Please take a photo before signing");
+      return;
+    }
 
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
+
+      // Upload photo if captured
+      let photoStorageKey: string | null = null;
+      if (photoBlob && envelope?.id) {
+        const path = `${envelope.id}/${Date.now()}.jpg`;
+        const { error: uploadErr } = await supabase.storage
+          .from("signer-photos")
+          .upload(path, photoBlob, { contentType: "image/jpeg" });
+        if (uploadErr) throw uploadErr;
+        photoStorageKey = path;
+      }
 
       const { error } = await supabase.from("group_signatures").insert({
         envelope_id: envelope.id,
         signer_name: fullName.trim(),
         signer_email: signerEmail.trim() || null,
         initials: initials.trim(),
-        signature_image: signatureDataUrl,
+        signature_data: {
+          signature_image: signatureDataUrl,
+          agreed_to_electronic_signing: true,
+          signed_at_utc: now,
+          user_agent: navigator.userAgent,
+        },
         signed_at: now,
         user_agent: navigator.userAgent,
-        content_snapshot: {
-          rendered: templateContent,
-          template_version_id: envelope.template_version_id,
-          snapshot_at: now,
-        },
+        photo_storage_key: photoStorageKey,
       });
 
       if (error) throw error;
@@ -132,7 +160,6 @@ export default function GroupSigningPage() {
         metadata: { signer_name: fullName.trim(), signer_email: signerEmail.trim() || null },
       });
 
-      // Send confirmation + admin notification (fire and forget)
       supabase.functions.invoke("send-completion-email", {
         body: {
           envelope_id: envelope.id,
@@ -207,13 +234,15 @@ export default function GroupSigningPage() {
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setAgreed(false); setScrolledToEnd(false); }}>
+          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setScrolledToEnd(false); }}>
             Next Person — Sign Another
           </Button>
         </div>
       </div>
     );
   }
+
+  const canSubmit = agreed && fullName && initials && signatureDataUrl && (!requirePhoto || !!photoBlob);
 
   return (
     <div className="min-h-screen bg-background">
@@ -292,6 +321,11 @@ export default function GroupSigningPage() {
                   <SignatureCanvas onSignature={setSignatureDataUrl} />
                 </div>
 
+                <div className="space-y-2">
+                  <Label>Photo {requirePhoto ? "*" : "(optional)"}</Label>
+                  <PhotoCapture onPhoto={setPhotoBlob} required={requirePhoto} />
+                </div>
+
                 <div className="flex items-center gap-3">
                   <Checkbox id="agree" checked={agreed} onCheckedChange={(c) => setAgreed(c === true)} />
                   <Label htmlFor="agree" className="text-sm cursor-pointer">
@@ -305,7 +339,7 @@ export default function GroupSigningPage() {
               </CardContent>
             </Card>
 
-            <Button onClick={handleSign} disabled={submitting || !agreed || !fullName || !initials || !signatureDataUrl} className="w-full" size="lg">
+            <Button onClick={handleSign} disabled={submitting || !canSubmit} className="w-full" size="lg">
               {submitting ? "Signing..." : "Sign Waiver"}
             </Button>
 

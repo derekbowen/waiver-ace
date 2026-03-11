@@ -9,17 +9,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { SignatureCanvas } from "@/components/SignatureCanvas";
+import { PhotoCapture } from "@/components/PhotoCapture";
 
 export default function SigningPage() {
   const { token } = useParams();
   const [envelope, setEnvelope] = useState<any>(null);
   const [templateContent, setTemplateContent] = useState("");
+  const [requirePhoto, setRequirePhoto] = useState(false);
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
   const [scrolledToEnd, setScrolledToEnd] = useState(false);
   const [fullName, setFullName] = useState("");
   const [initials, setInitials] = useState("");
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
+  const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -28,7 +31,6 @@ export default function SigningPage() {
     const fetchEnvelope = async () => {
       if (!token) { setLoading(false); return; }
 
-      // Use SECURITY DEFINER RPC instead of direct table access
       const { data, error } = await supabase.rpc("get_envelope_by_token", {
         p_token: token,
       });
@@ -40,8 +42,8 @@ export default function SigningPage() {
 
       const env = data as any;
       setEnvelope(env);
+      setRequirePhoto(env.require_photo === true);
 
-      // Get template content and replace variables
       const content = env.template_content?.body || "";
       const payload = (env.payload as Record<string, any>) || {};
       let rendered = content;
@@ -52,7 +54,6 @@ export default function SigningPage() {
       rendered = rendered.replace(/\{\{date\}\}/g, new Date().toLocaleDateString());
       setTemplateContent(rendered);
 
-      // Mark as viewed via RPC
       if (env.status === "sent") {
         await supabase.rpc("view_envelope", {
           p_token: token,
@@ -82,12 +83,26 @@ export default function SigningPage() {
       toast.error("Please complete all required fields");
       return;
     }
+    if (requirePhoto && !photoBlob) {
+      toast.error("Please take a photo before signing");
+      return;
+    }
 
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
 
-      // Use SECURITY DEFINER RPC instead of direct table update
+      // Upload photo if captured
+      let photoStorageKey: string | null = null;
+      if (photoBlob && envelope?.id) {
+        const path = `${envelope.id}/${Date.now()}.jpg`;
+        const { error: uploadErr } = await supabase.storage
+          .from("signer-photos")
+          .upload(path, photoBlob, { contentType: "image/jpeg" });
+        if (uploadErr) throw uploadErr;
+        photoStorageKey = path;
+      }
+
       const { data: result, error } = await supabase.rpc("sign_envelope", {
         p_token: token!,
         p_signer_name: fullName.trim(),
@@ -100,6 +115,7 @@ export default function SigningPage() {
           user_agent: navigator.userAgent,
         },
         p_user_agent: navigator.userAgent,
+        p_photo_storage_key: photoStorageKey,
       });
 
       if (error) throw error;
@@ -109,7 +125,6 @@ export default function SigningPage() {
         throw new Error(res?.error || "Failed to sign envelope");
       }
 
-      // Send completion email (fire and forget)
       supabase.functions.invoke("send-completion-email", {
         body: { envelope_id: res.envelope_id },
       }).catch(() => {});
@@ -173,6 +188,8 @@ export default function SigningPage() {
     );
   }
 
+  const canSubmit = agreed && fullName && initials && signatureDataUrl && (!requirePhoto || !!photoBlob);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card sticky top-0 z-10">
@@ -228,6 +245,11 @@ export default function SigningPage() {
                   <SignatureCanvas onSignature={setSignatureDataUrl} />
                 </div>
 
+                <div className="space-y-2">
+                  <Label>Photo {requirePhoto ? "*" : "(optional)"}</Label>
+                  <PhotoCapture onPhoto={setPhotoBlob} required={requirePhoto} />
+                </div>
+
                 <div className="flex items-center gap-3">
                   <Checkbox id="agree" checked={agreed} onCheckedChange={(c) => setAgreed(c === true)} />
                   <Label htmlFor="agree" className="text-sm cursor-pointer">
@@ -241,7 +263,7 @@ export default function SigningPage() {
               </CardContent>
             </Card>
 
-            <Button onClick={handleSign} disabled={submitting || !agreed || !fullName || !initials || !signatureDataUrl} className="w-full" size="lg">
+            <Button onClick={handleSign} disabled={submitting || !canSubmit} className="w-full" size="lg">
               {submitting ? "Signing..." : "Finish & Submit"}
             </Button>
 

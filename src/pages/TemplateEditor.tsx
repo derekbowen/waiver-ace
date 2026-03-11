@@ -538,6 +538,7 @@ export default function TemplateEditor() {
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
   const [requireSigning, setRequireSigning] = useState(false);
+  const [requirePhoto, setRequirePhoto] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const pickPreset = (preset: TemplatePreset) => {
