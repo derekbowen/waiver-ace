@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildEmail, sendEmail } from "../_shared/email-builder.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -39,7 +40,7 @@ This Agreement shall be governed by the laws of the State of {{state}}.
 
 By signing below, I acknowledge that I have read and understand this waiver and voluntarily agree to its terms.`;
 
-// Generate the waiver request email HTML
+// Generate branded waiver request email using shared builder
 function generateWaiverEmailHtml({
   customerName,
   signingUrl,
@@ -55,51 +56,20 @@ function generateWaiverEmailHtml({
 }): string {
   const displayName = customerName || "there";
   const listing = listingTitle || "your upcoming booking";
-  const dateText = bookingDate
-    ? ` on <strong>${bookingDate}</strong>`
-    : "";
+  const dateText = bookingDate ? ` on <strong>${bookingDate}</strong>` : "";
 
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #f8fafc;">
-  <div style="background: white; border-radius: 12px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <div style="text-align: center; margin-bottom: 32px;">
-      <h1 style="font-size: 22px; font-weight: 700; margin: 0; color: #0f172a;">${orgName}</h1>
-    </div>
-
-    <p style="font-size: 16px; margin-bottom: 8px;">Hi ${displayName},</p>
-
-    <p style="font-size: 16px; margin-bottom: 24px; color: #475569;">
-      Before your booking for <strong>${listing}</strong>${dateText}, we need you to sign a quick liability waiver. It only takes a minute.
-    </p>
-
-    <div style="text-align: center; margin: 32px 0;">
-      <a href="${signingUrl}" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-        Sign My Waiver
-      </a>
-    </div>
-
-    <p style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 0;">
-      Takes less than 60 seconds
-    </p>
-  </div>
-
-  <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 24px;">
-    If the button doesn't work, copy this link:<br>
-    <a href="${signingUrl}" style="color: #3b82f6; word-break: break-all; font-size: 11px;">${signingUrl}</a>
-  </p>
-
-  <p style="font-size: 11px; color: #cbd5e1; text-align: center; margin-top: 16px;">
-    Sent by ${orgName} via Rental Waivers
-  </p>
-</body>
-</html>
-  `;
+  return buildEmail({
+    previewText: `Sign your waiver for ${listing}`,
+    orgName,
+    greeting: `Hi ${displayName},`,
+    sections: [
+      { type: "text", content: `Before your booking for <strong>${listing}</strong>${dateText}, we need you to sign a quick liability waiver. It only takes a minute.` },
+      { type: "button", content: "Sign My Waiver", href: signingUrl },
+      { type: "small", content: "Takes less than 60 seconds" },
+      { type: "divider" },
+      { type: "small", content: `If the button doesn't work, copy this link: <a href="${signingUrl}" style="color:#3b82f6;word-break:break-all;">${signingUrl}</a>` },
+    ],
+  });
 }
 
 serve(async (req: Request) => {

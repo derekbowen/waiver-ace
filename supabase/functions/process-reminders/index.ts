@@ -1,17 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildEmail, sendEmail } from "../_shared/email-builder.ts";
 
 // This function should be invoked via a cron job (e.g., Supabase pg_cron or external scheduler)
 // It handles two things:
 // 1. Sends reminder emails for unsigned envelopes older than 24 hours
-// 2. Expires envelopes past their expires_at date
+// 2. Expires envelopes past their expires_at date and notifies signers
 
 serve(async (_req: Request) => {
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
-  const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
   const results = { reminders_sent: 0, expired: 0, errors: [] as string[] };
 
@@ -20,7 +20,7 @@ serve(async (_req: Request) => {
     const now = new Date().toISOString();
     const { data: overdue } = await supabase
       .from("envelopes")
-      .select("id")
+      .select("id, signer_email, signer_name, org_id")
       .in("status", ["sent", "viewed"])
       .not("expires_at", "is", null)
       .lt("expires_at", now);
@@ -28,18 +28,32 @@ serve(async (_req: Request) => {
     if (overdue && overdue.length > 0) {
       const ids = overdue.map((e: any) => e.id);
       await supabase.from("envelopes").update({ status: "expired" }).in("id", ids);
-      for (const id of ids) {
+      for (const env of overdue) {
         await supabase.from("envelope_events").insert({
-          envelope_id: id,
+          envelope_id: env.id,
           event_type: "envelope.expired",
           metadata: { source: "auto" },
         });
+
+        // Send expiration notification
+        try {
+          const notifyUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-envelope-notification`;
+          await fetch(notifyUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            },
+            body: JSON.stringify({ envelope_id: env.id, event_type: "expired" }),
+          });
+        } catch (notifyErr: any) {
+          results.errors.push(`expire-notify ${env.id}: ${notifyErr.message}`);
+        }
       }
       results.expired = ids.length;
     }
 
     // --- Send reminders for unsigned envelopes ---
-    // Envelopes that are sent/viewed, created > 24h ago, and haven't had a reminder event in the last 24h
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
     const { data: pending } = await supabase
@@ -49,7 +63,7 @@ serve(async (_req: Request) => {
       .lt("created_at", oneDayAgo)
       .limit(50);
 
-    if (!pending || !RESEND_API_KEY) {
+    if (!pending) {
       return new Response(JSON.stringify(results), {
         headers: { "Content-Type": "application/json" },
       });
@@ -74,41 +88,31 @@ serve(async (_req: Request) => {
         .eq("id", env.org_id)
         .single();
 
-      const baseUrl = Deno.env.get("SITE_URL") || "https://waiverflow.app";
+      const baseUrl = Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
       const signingUrl = `${baseUrl}/sign/${env.signing_token}`;
       const orgName = org?.name || "Rental Waivers";
       const displayName = env.signer_name || "there";
 
       try {
-        const emailRes = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: `${orgName} <onboarding@resend.dev>`,
-            to: [env.signer_email],
-            subject: `Reminder: Your waiver is waiting for your signature`,
-            html: `
-              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-                <h2 style="font-size: 20px;">${orgName}</h2>
-                <p>Hi ${displayName},</p>
-                <p>This is a friendly reminder that you have a waiver awaiting your signature.</p>
-                <div style="text-align: center; margin: 32px 0;">
-                  <a href="${signingUrl}" style="display: inline-block; background-color: #0f172a; color: #fff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 500;">
-                    Review & Sign Now
-                  </a>
-                </div>
-                <p style="font-size: 12px; color: #94a3b8; text-align: center;">
-                  If you've already signed, please disregard this email.
-                </p>
-              </div>
-            `,
-          }),
+        const html = buildEmail({
+          previewText: `Reminder: Your waiver from ${orgName} is waiting for your signature`,
+          orgName,
+          greeting: `Hi ${displayName},`,
+          sections: [
+            { type: "text", content: "This is a friendly reminder that you have a waiver awaiting your signature." },
+            { type: "button", content: "Review & Sign Now", href: signingUrl },
+            { type: "small", content: "If you've already signed, please disregard this email." },
+          ],
+          footerText: "This is an automated reminder.",
         });
 
-        if (emailRes.ok) {
+        const result = await sendEmail({
+          to: env.signer_email,
+          subject: `Reminder: Your waiver is waiting for your signature`,
+          html,
+        });
+
+        if (result.success) {
           await supabase.from("envelope_events").insert({
             envelope_id: env.id,
             event_type: "envelope.reminder_sent",

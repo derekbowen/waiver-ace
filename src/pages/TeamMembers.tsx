@@ -52,6 +52,13 @@ export default function TeamMembers() {
       return;
     }
 
+    // Send invite email (fetch org name first)
+    supabase.from("organizations").select("name").eq("id", profile.org_id).single().then(({ data: orgData }) => {
+      supabase.functions.invoke("send-team-invite-email", {
+        body: { email: email.trim().toLowerCase(), role, org_name: orgData?.name },
+      }).catch((e) => console.error("Invite email failed:", e));
+    });
+
     toast.success(`Invite sent to ${email}`);
 
     setInvites([data, ...invites]);
