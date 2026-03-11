@@ -46,7 +46,14 @@ import CompareHubPage from "./pages/seo/CompareHubPage";
 import CompetitorAltPage from "./pages/seo/CompetitorAltPage";
 import PricingPublicPage from "./pages/seo/PricingPublicPage";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
