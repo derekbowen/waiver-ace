@@ -538,6 +538,7 @@ export default function TemplateEditor() {
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
   const [requireSigning, setRequireSigning] = useState(false);
+  const [requirePhoto, setRequirePhoto] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const pickPreset = (preset: TemplatePreset) => {
@@ -569,6 +570,7 @@ export default function TemplateEditor() {
           name: name.trim(),
           description: description.trim() || null,
           created_by: (await supabase.auth.getUser()).data.user?.id,
+          require_photo: requirePhoto,
         })
         .select()
         .single();
@@ -675,6 +677,13 @@ export default function TemplateEditor() {
                   <p className="text-xs text-muted-foreground">When enabled, bookings won't be confirmed until the waiver is signed</p>
                 </div>
                 <Switch id="require-signing" checked={requireSigning} onCheckedChange={setRequireSigning} />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <Label htmlFor="require-photo" className="text-sm font-medium">Require Photo ID</Label>
+                  <p className="text-xs text-muted-foreground">Signers must take a selfie before submitting — useful for identity verification</p>
+                </div>
+                <Switch id="require-photo" checked={requirePhoto} onCheckedChange={setRequirePhoto} />
               </div>
             </CardContent>
           </Card>
