@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta } from "@/components/SeoPageLayout";
 import { Card, CardContent } from "@/components/ui/card";
-import { Waves, Bike, Ship, Zap, Snowflake, Truck, PartyPopper, CarFront, Wrench, Horse, Tent, ArrowRight } from "lucide-react";
+import { Waves, Bike, Ship, Zap, Snowflake, Truck, PartyPopper, CarFront, Wrench, Tent, ArrowRight } from "lucide-react";
 
 const industries = [
   { name: "Kayak Rentals", slug: "kayak-rental-waiver-software", icon: Waves, desc: "Digital waivers for kayak and paddle sport rental operators" },
