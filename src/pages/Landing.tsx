@@ -5,15 +5,25 @@ import {
   Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock,
   Smartphone, Droplets, Home, Wrench, PartyPopper, Zap, Globe,
   Code, Webhook, DollarSign, X, BadgeCheck, TrendingDown, Lock,
-  BarChart3, Bell, CreditCard, Info, ExternalLink, PenLine
+  BarChart3, Bell, CreditCard, Info, ExternalLink, PenLine, ChevronDown, Menu
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { CREDIT_PACKAGES } from "@/lib/credit-packages";
 import logo from "@/assets/logo.png";
+import { useState } from "react";
 
 export default function Landing() {
   const { user, loading } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   if (!loading && user) {
     return <Navigate to="/dashboard" replace />;
@@ -25,25 +35,131 @@ export default function Landing() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src={logo} alt="Rental Waivers" className="h-8 w-8" />
-            <span className="font-heading text-lg font-bold tracking-tight">Rental Waivers</span>
+            <Link to="/" className="flex items-center gap-2">
+              <img src={logo} alt="Rental Waivers" className="h-8 w-8" />
+              <span className="font-heading text-lg font-bold tracking-tight">Rental Waivers</span>
+            </Link>
           </div>
-          <div className="flex items-center gap-2">
-            <a href="#pricing" className="hidden sm:inline-flex">
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {/* Product dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1">
+                  Product <ChevronDown className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/waiver-software" className="cursor-pointer">
+                    <Shield className="h-4 w-4 mr-2" /> Waiver Software
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/rental-waiver-software" className="cursor-pointer">
+                    <FileText className="h-4 w-4 mr-2" /> Rental Waivers
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/waiver-templates" className="cursor-pointer">
+                    <PenLine className="h-4 w-4 mr-2" /> Waiver Templates
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/industries" className="cursor-pointer">
+                    <Globe className="h-4 w-4 mr-2" /> Industries
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/docs" className="cursor-pointer">
+                    <Code className="h-4 w-4 mr-2" /> API Docs
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Compare dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1">
+                  Compare <ChevronDown className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/compare" className="cursor-pointer">Compare All</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/alternatives/smartwaiver-alternative" className="cursor-pointer">vs Smartwaiver</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/alternatives/waiverforever-alternative" className="cursor-pointer">vs WaiverForever</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/alternatives/docusign-waiver-alternative" className="cursor-pointer">vs DocuSign</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/alternatives/wherewolf-alternative" className="cursor-pointer">vs Wherewolf</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <a href="#pricing">
               <Button variant="ghost" size="sm">Pricing</Button>
             </a>
-            <Link to="/docs" className="hidden md:inline-flex">
-              <Button variant="ghost" size="sm">API Docs</Button>
+            <Link to="/waiver-laws">
+              <Button variant="ghost" size="sm">Waiver Laws</Button>
             </Link>
-            <Link to="/my-waivers" className="hidden md:inline-flex">
+            <Link to="/my-waivers">
               <Button variant="ghost" size="sm">My Waivers</Button>
             </Link>
             <Link to="/login">
               <Button variant="ghost" size="sm">Sign in</Button>
             </Link>
-            <Link to="/login" className="hidden sm:inline-flex">
+            <Link to="/login">
               <Button size="sm">Get Started Free</Button>
             </Link>
+          </nav>
+
+          {/* Mobile nav */}
+          <div className="flex md:hidden items-center gap-2">
+            <Link to="/login">
+              <Button size="sm">Get Started</Button>
+            </Link>
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72 pt-12">
+                <nav className="flex flex-col gap-1">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Product</p>
+                  <Link to="/waiver-software" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Waiver Software</Link>
+                  <Link to="/rental-waiver-software" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Rental Waivers</Link>
+                  <Link to="/waiver-templates" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Waiver Templates</Link>
+                  <Link to="/industries" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Industries</Link>
+                  <Link to="/docs" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">API Docs</Link>
+
+                  <div className="my-2 border-t" />
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Compare</p>
+                  <Link to="/compare" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Compare All</Link>
+                  <Link to="/alternatives/smartwaiver-alternative" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">vs Smartwaiver</Link>
+                  <Link to="/alternatives/docusign-waiver-alternative" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">vs DocuSign</Link>
+
+                  <div className="my-2 border-t" />
+                  <a href="#pricing" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Pricing</a>
+                  <Link to="/waiver-laws" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Waiver Laws</Link>
+                  <Link to="/my-waivers" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">My Waivers</Link>
+
+                  <div className="my-2 border-t" />
+                  <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Sign In</Link>
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
