@@ -200,6 +200,13 @@ serve(async (req: Request) => {
       }
 
       if (body.action === "kiosk_create" && body.template_id) {
+        // Rate limit kiosk creates by IP
+        const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+        if (isKioskRateLimited(clientIp)) {
+          return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         const { data: template } = await supabase
           .from("templates")
           .select("id, org_id, is_active")
