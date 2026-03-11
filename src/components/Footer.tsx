@@ -4,16 +4,30 @@ import logo from "@/assets/logo.png";
 import { FileText, Mail, MapPin, ExternalLink } from "lucide-react";
 
 const waiverPages = [
-{ label: "Pool Rental Waivers", slug: "pool-rental-waivers" },
-{ label: "Boat Rental Waivers", slug: "boat-rental-waivers" },
-{ label: "Jet Ski Waivers", slug: "jet-ski-rental-waivers" },
-{ label: "Kayak Waivers", slug: "kayak-rental-waivers" },
-{ label: "Airbnb Host Waivers", slug: "airbnb-host-waivers" },
-{ label: "Vacation Rental Waivers", slug: "vacation-rental-waivers" },
-{ label: "ATV Rental Waivers", slug: "atv-rental-waivers" },
-{ label: "Bounce House Waivers", slug: "bounce-house-rental-waivers" },
-{ label: "RV Rental Waivers", slug: "rv-rental-waivers" },
-{ label: "Bike Rental Waivers", slug: "bike-rental-waivers" }];
+  { label: "Pool Rental Waivers", slug: "pool-rental-waivers" },
+  { label: "Boat Rental Waivers", slug: "boat-rental-waivers" },
+  { label: "Jet Ski Waivers", slug: "jet-ski-rental-waivers" },
+  { label: "Kayak Waivers", slug: "kayak-rental-waivers" },
+  { label: "Airbnb Host Waivers", slug: "airbnb-host-waivers" },
+  { label: "Vacation Rental Waivers", slug: "vacation-rental-waivers" },
+  { label: "ATV Rental Waivers", slug: "atv-rental-waivers" },
+  { label: "Bounce House Waivers", slug: "bounce-house-rental-waivers" },
+  { label: "RV Rental Waivers", slug: "rv-rental-waivers" },
+  { label: "Bike Rental Waivers", slug: "bike-rental-waivers" },
+];
+
+const moreWaiverPages = [
+  { label: "Short-Term Rental Waivers", slug: "short-term-rental-waivers" },
+  { label: "Property Manager Waivers", slug: "property-manager-waivers" },
+  { label: "Golf Cart Waivers", slug: "golf-cart-rental-waivers" },
+  { label: "Party Equipment Waivers", slug: "party-equipment-rental-waivers" },
+  { label: "Paddleboard Waivers", slug: "paddleboard-rental-waivers" },
+  { label: "Scooter Waivers", slug: "scooter-rental-waivers" },
+  { label: "Equipment Rental Waivers", slug: "equipment-rental-waivers" },
+  { label: "Event Rental Waivers", slug: "event-rental-waivers" },
+  { label: "Hot Tub Waivers", slug: "hot-tub-rental-waivers" },
+  { label: "Surfboard Waivers", slug: "surfboard-rental-waivers" },
+];
 
 
 export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
