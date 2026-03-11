@@ -32,7 +32,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
               The lowest-cost digital waiver platform on the market. Pay per waiver, starting at 6¢. No monthly fees, no contracts.
             </p>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <a className="flex items-center gap-2 hover:text-foreground transition-colors" href="mailto:support@poolrentalnearme.com">
+              <a className="flex items-center gap-2 hover:text-foreground transition-colors text-base font-bold" href="mailto:support@poolrentalnearme.com">​E-mail Us!  
                 <Mail className="h-4 w-4 shrink-0" /> e-mail is
               </a>
               <div className="flex items-center gap-2">
