@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Save, Globe, ExternalLink, Loader2, CreditCard, Zap, Coins } from "lucide-react";
+import { Save, Globe, ExternalLink, Loader2, CreditCard, Zap, Coins, Palette, Image, Link } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useI18n } from "@/i18n";
@@ -16,7 +16,12 @@ export default function Settings() {
   const { locale } = useI18n();
   const [orgName, setOrgName] = useState("");
   const [retentionYears, setRetentionYears] = useState(7);
+  const [logoUrl, setLogoUrl] = useState("");
+  const [brandColor, setBrandColor] = useState("#162a4a");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [socialUrl, setSocialUrl] = useState("");
   const [saving, setSaving] = useState(false);
+  const [savingBrand, setSavingBrand] = useState(false);
   const [hasOrg, setHasOrg] = useState(false);
 
   useEffect(() => {
@@ -30,6 +35,10 @@ export default function Settings() {
         if (data) {
           setOrgName(data.name);
           setRetentionYears(data.retention_years);
+          setLogoUrl(data.logo_url || "");
+          setBrandColor(data.brand_color || "#162a4a");
+          setWebsiteUrl(data.website_url || "");
+          setSocialUrl(data.social_url || "");
           setHasOrg(true);
         }
       });
@@ -64,6 +73,28 @@ export default function Settings() {
     }
   };
 
+  const handleSaveBranding = async () => {
+    if (!profile?.org_id) return;
+    setSavingBrand(true);
+    try {
+      const { error } = await supabase
+        .from("organizations")
+        .update({
+          logo_url: logoUrl.trim() || null,
+          brand_color: brandColor.trim() || null,
+          website_url: websiteUrl.trim() || null,
+          social_url: socialUrl.trim() || null,
+        })
+        .eq("id", profile.org_id);
+      if (error) throw error;
+      toast.success("Branding saved");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSavingBrand(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="animate-fade-in max-w-2xl">
@@ -92,6 +123,94 @@ export default function Settings() {
               </Button>
             </CardContent>
           </Card>
+
+          {hasOrg && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Palette className="h-4 w-4 text-primary" />
+                  Branding & Business Profile
+                </CardTitle>
+                <CardDescription>
+                  Customize how your waivers look and share your business info. Adding branding costs +1 credit per signing.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Image className="h-3.5 w-3.5 text-muted-foreground" />
+                    Logo URL
+                  </Label>
+                  <Input
+                    value={logoUrl}
+                    onChange={(e) => setLogoUrl(e.target.value)}
+                    placeholder="https://yourbusiness.com/logo.png"
+                  />
+                  <p className="text-xs text-muted-foreground">Direct link to your logo image (PNG, JPG, or SVG)</p>
+                  {logoUrl && (
+                    <div className="mt-2 rounded-lg border bg-accent/20 p-4 flex items-center justify-center">
+                      <img
+                        src={logoUrl}
+                        alt="Logo preview"
+                        className="max-h-16 max-w-[200px] object-contain"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Palette className="h-3.5 w-3.5 text-muted-foreground" />
+                    Brand Color
+                  </Label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={brandColor}
+                      onChange={(e) => setBrandColor(e.target.value)}
+                      className="h-10 w-12 rounded border cursor-pointer"
+                    />
+                    <Input
+                      value={brandColor}
+                      onChange={(e) => setBrandColor(e.target.value)}
+                      placeholder="#162a4a"
+                      className="w-32 font-mono text-sm"
+                    />
+                    <div
+                      className="h-10 flex-1 rounded-md border"
+                      style={{ backgroundColor: brandColor }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Link className="h-3.5 w-3.5 text-muted-foreground" />
+                    Website
+                  </Label>
+                  <Input
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    placeholder="https://yourbusiness.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Link className="h-3.5 w-3.5 text-muted-foreground" />
+                    Social Profile
+                  </Label>
+                  <Input
+                    value={socialUrl}
+                    onChange={(e) => setSocialUrl(e.target.value)}
+                    placeholder="https://instagram.com/yourbusiness"
+                  />
+                  <p className="text-xs text-muted-foreground">Instagram, Facebook, TikTok, or any social page</p>
+                </div>
+                <Button onClick={handleSaveBranding} disabled={savingBrand} className="gap-2">
+                  <Save className="h-4 w-4" /> {savingBrand ? "Saving..." : "Save Branding"}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader>
