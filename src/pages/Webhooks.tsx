@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, Webhook } from "lucide-react";
+import { Plus, Trash2, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const eventTypes = [
@@ -24,6 +24,7 @@ export default function Webhooks() {
   const [url, setUrl] = useState("");
   const [selectedEvents, setSelectedEvents] = useState<string[]>(eventTypes);
   const [loading, setLoading] = useState(true);
+  const [testingId, setTestingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!profile?.org_id) { setLoading(false); return; }
@@ -63,6 +64,55 @@ export default function Webhooks() {
     if (error) { toast.error(error.message); return; }
     setEndpoints(endpoints.filter((e) => e.id !== id));
     toast.success("Webhook deleted");
+  };
+
+  const testEndpoint = async (ep: any) => {
+    setTestingId(ep.id);
+    try {
+      const samplePayload = {
+        event: "envelope.completed",
+        data: {
+          id: "test_" + crypto.randomUUID().slice(0, 8),
+          status: "completed",
+          signer_email: "jane@example.com",
+          signer_name: "Jane Smith",
+          booking_id: "bk_test_001",
+          signed_at: new Date().toISOString(),
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      const body = JSON.stringify(samplePayload);
+
+      // HMAC-SHA256 signature using stored secret hash (matches server-side dispatchWebhooks)
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(ep.secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      );
+      const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+      const signature = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
+
+      const res = await fetch(ep.url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Webhook-Signature": `sha256=${signature}`,
+          "X-Webhook-Event": "envelope.completed",
+        },
+        body,
+        mode: "no-cors",
+      });
+
+      toast.success("Test event sent to " + ep.url);
+    } catch (err: any) {
+      toast.error("Failed to send test: " + (err.message || "Network error"));
+    } finally {
+      setTestingId(null);
+    }
   };
 
   const toggleEvent = (event: string) => {
@@ -118,9 +168,24 @@ export default function Webhooks() {
                         Events: {(ep.events as string[])?.join(", ")}
                       </p>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteEndpoint(ep.id)} className="text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => testEndpoint(ep)}
+                        disabled={testingId === ep.id}
+                        title="Send test event"
+                      >
+                        {testingId === ep.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Send className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => deleteEndpoint(ep.id)} className="text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
