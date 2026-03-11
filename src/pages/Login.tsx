@@ -104,9 +104,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm animate-fade-in">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
-            <FileText className="h-6 w-6 text-primary-foreground" />
-          </div>
+          <img src={logo} alt="Rental Waivers" className="mx-auto mb-4 h-14 w-14 rounded-xl object-contain" />
           <h1 className="font-heading text-2xl font-bold">
             {isSignUp ? "Create your account" : "Welcome back"}
           </h1>
