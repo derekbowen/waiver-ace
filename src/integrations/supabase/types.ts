@@ -240,6 +240,7 @@ export type Database = {
           payload: Json
           pdf_hash: string | null
           pdf_storage_key: string | null
+          photo_storage_key: string | null
           reminder_count: number
           signature_data: Json | null
           signed_at: string | null
@@ -266,6 +267,7 @@ export type Database = {
           payload?: Json
           pdf_hash?: string | null
           pdf_storage_key?: string | null
+          photo_storage_key?: string | null
           reminder_count?: number
           signature_data?: Json | null
           signed_at?: string | null
@@ -292,6 +294,7 @@ export type Database = {
           payload?: Json
           pdf_hash?: string | null
           pdf_storage_key?: string | null
+          photo_storage_key?: string | null
           reminder_count?: number
           signature_data?: Json | null
           signed_at?: string | null
@@ -326,6 +329,7 @@ export type Database = {
           id: string
           initials: string | null
           ip_address: string | null
+          photo_storage_key: string | null
           signature_data: Json | null
           signed_at: string
           signer_email: string | null
@@ -337,6 +341,7 @@ export type Database = {
           id?: string
           initials?: string | null
           ip_address?: string | null
+          photo_storage_key?: string | null
           signature_data?: Json | null
           signed_at?: string
           signer_email?: string | null
@@ -348,6 +353,7 @@ export type Database = {
           id?: string
           initials?: string | null
           ip_address?: string | null
+          photo_storage_key?: string | null
           signature_data?: Json | null
           signed_at?: string
           signer_email?: string | null
@@ -601,6 +607,7 @@ export type Database = {
           is_active: boolean
           name: string
           org_id: string
+          require_photo: boolean
           updated_at: string
         }
         Insert: {
@@ -611,6 +618,7 @@ export type Database = {
           is_active?: boolean
           name: string
           org_id: string
+          require_photo?: boolean
           updated_at?: string
         }
         Update: {
@@ -621,6 +629,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           org_id?: string
+          require_photo?: boolean
           updated_at?: string
         }
         Relationships: [
@@ -859,15 +868,26 @@ export type Database = {
           read_ct: number
         }[]
       }
-      sign_envelope: {
-        Args: {
-          p_signature_data: Json
-          p_signer_name: string
-          p_token: string
-          p_user_agent?: string
-        }
-        Returns: Json
-      }
+      sign_envelope:
+        | {
+            Args: {
+              p_signature_data: Json
+              p_signer_name: string
+              p_token: string
+              p_user_agent?: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_photo_storage_key?: string
+              p_signature_data: Json
+              p_signer_name: string
+              p_token: string
+              p_user_agent?: string
+            }
+            Returns: Json
+          }
       view_envelope: {
         Args: { p_token: string; p_user_agent?: string }
         Returns: undefined
