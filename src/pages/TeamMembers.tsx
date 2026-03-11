@@ -52,12 +52,7 @@ export default function TeamMembers() {
       return;
     }
 
-    // Send invite email
-    supabase.functions.invoke("send-team-invite-email", {
-      body: { email: email.trim().toLowerCase(), role, org_name: profile.org_id ? undefined : undefined },
-    }).catch((e) => console.error("Invite email failed:", e));
-
-    // Get org name for the email
+    // Send invite email (fetch org name first)
     supabase.from("organizations").select("name").eq("id", profile.org_id).single().then(({ data: orgData }) => {
       supabase.functions.invoke("send-team-invite-email", {
         body: { email: email.trim().toLowerCase(), role, org_name: orgData?.name },
