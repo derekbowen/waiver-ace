@@ -570,6 +570,7 @@ export default function TemplateEditor() {
           name: name.trim(),
           description: description.trim() || null,
           created_by: (await supabase.auth.getUser()).data.user?.id,
+          require_photo: requirePhoto,
         })
         .select()
         .single();
