@@ -650,7 +650,9 @@ export default function Landing() {
         </div>
       </section>
 
-      <Footer />
+      <div className="mt-auto">
+        <Footer />
+      </div>
     </div>
   );
 }
