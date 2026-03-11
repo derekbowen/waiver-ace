@@ -540,6 +540,7 @@ export default function TemplateEditor() {
   const [requireSigning, setRequireSigning] = useState(false);
   const [requirePhoto, setRequirePhoto] = useState(false);
   const [requireVideo, setRequireVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
   const [saving, setSaving] = useState(false);
 
   const pickPreset = (preset: TemplatePreset) => {
@@ -560,6 +561,10 @@ export default function TemplateEditor() {
       toast.error("Template name is required");
       return;
     }
+    if (requireVideo && !videoUrl.trim()) {
+      toast.error("Please enter a video URL when requiring a safety video");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -573,6 +578,7 @@ export default function TemplateEditor() {
           created_by: (await supabase.auth.getUser()).data.user?.id,
           require_photo: requirePhoto,
           require_video: requireVideo,
+          video_url: requireVideo && videoUrl.trim() ? videoUrl.trim() : null,
         })
         .select()
         .single();
@@ -694,6 +700,20 @@ export default function TemplateEditor() {
                 </div>
                 <Switch id="require-video" checked={requireVideo} onCheckedChange={setRequireVideo} />
               </div>
+              {requireVideo && (
+                <div className="space-y-2 ml-4 pl-4 border-l-2 border-primary/20">
+                  <Label htmlFor="video-url">Video URL (YouTube or Vimeo)</Label>
+                  <Input
+                    id="video-url"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Paste a YouTube or Vimeo link. Signers must watch this video before they can sign.
+                  </p>
+                </div>
+              )}
               <div className="rounded-lg border border-dashed p-4 bg-accent/30">
                 <p className="text-sm font-medium">Estimated cost per signing</p>
                 <p className="text-2xl font-bold mt-1">
