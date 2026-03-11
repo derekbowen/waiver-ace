@@ -8,6 +8,33 @@ const corsHeaders = {
 
 const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+// Simple in-memory rate limiter for kiosk actions (per Deno isolate)
+const kioskRateLimit = new Map<string, { count: number; resetAt: number }>();
+const KIOSK_RATE_LIMIT = 10; // max requests per window
+const KIOSK_RATE_WINDOW_MS = 60_000; // 1 minute
+
+function isKioskRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = kioskRateLimit.get(ip);
+  if (!entry || now > entry.resetAt) {
+    kioskRateLimit.set(ip, { count: 1, resetAt: now + KIOSK_RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  if (entry.count > KIOSK_RATE_LIMIT) {
+    return true;
+  }
+  return false;
+}
+
+// Periodically clean up stale entries to prevent memory leaks
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of kioskRateLimit) {
+    if (now > entry.resetAt) kioskRateLimit.delete(ip);
+  }
+}, 120_000);
+
 function generateSigningEmailHtml({ signerName, signingUrl, templateName, organizationName }: {
   signerName?: string;
   signingUrl: string;
