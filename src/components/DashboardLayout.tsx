@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Footer } from "@/components/Footer";
 import logo from "@/assets/logo.png";
 import {
   FileText,
@@ -132,8 +131,8 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
         <div className="flex-1 p-4 pt-16 pb-24 md:p-8 md:pt-8 md:pb-8">
           {children}
         </div>
-        <div className="hidden md:block">
-          <Footer />
+        <div className="hidden md:block text-center py-4 text-xs text-muted-foreground">
+          &copy; {new Date().getFullYear()} Rental Waivers &mdash; a product of 10,000 Solutions LLC
         </div>
       </main>
 
