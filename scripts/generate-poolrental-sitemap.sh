@@ -2,14 +2,16 @@
 # ============================================================
 # Pool Rental Near Me - Sitemap Generator
 #
-# USAGE: Just paste this entire script into your EC2 terminal.
+# USAGE: Paste this entire script into your EC2 terminal.
 # It will:
 #   1. Find Sharetribe's public directory
-#   2. Crawl poolrentalnearme.com to discover ALL pages
-#   3. Split URLs into category-based sitemaps (under 1000 each)
-#   4. Create a sitemap index file
-#   5. Update robots.txt to point to the new sitemap index
-#   6. Remove the dead PRO Sitemaps reference
+#   2. Pull ALL URLs from sitemaphosting7 + Sharetribe + crawl
+#   3. Filter out junk (drafts, login, signup, pagination)
+#   4. Categorize with proper priorities & change frequencies
+#   5. Split into organized sitemaps (under 1000 each)
+#   6. Create a sitemap index
+#   7. Update robots.txt
+#   8. Remove the old PRO Sitemaps reference
 #
 # No installs needed. Uses only curl and bash.
 # ============================================================
@@ -17,6 +19,7 @@
 set -e
 
 DOMAIN="https://www.poolrentalnearme.com"
+SITEMAPHOSTING_URL="https://a487260.sitemaphosting7.com/4661760/sitemap.xml"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S+00:00")
 TMPDIR=$(mktemp -d)
 
@@ -27,7 +30,7 @@ echo "=========================================="
 echo ""
 
 # --- Step 1: Find Sharetribe's public directory ---
-echo "[1/6] Finding Sharetribe public directory..."
+echo "[1/7] Finding Sharetribe public directory..."
 
 PUBLIC_DIR=""
 for dir in \
@@ -44,7 +47,6 @@ for dir in \
     fi
 done
 
-# If not found in common locations, search for robots.txt
 if [ -z "$PUBLIC_DIR" ]; then
     echo "  Searching for robots.txt to find public directory..."
     ROBOTS_PATH=$(find / -name "robots.txt" -type f 2>/dev/null | head -1)
@@ -54,197 +56,224 @@ if [ -z "$PUBLIC_DIR" ]; then
 fi
 
 if [ -z "$PUBLIC_DIR" ]; then
+    echo ""
     echo "  ERROR: Could not find Sharetribe public directory."
-    echo "  Please run: find / -name 'robots.txt' -type f 2>/dev/null"
-    echo "  Then re-run this script with: PUBLIC_DIR=/path/to/public bash $0"
+    echo "  Run this to find it manually:"
+    echo "    find / -name 'robots.txt' -type f 2>/dev/null"
+    echo ""
+    echo "  Then re-run with:"
+    echo "    PUBLIC_DIR=/path/to/public bash generate-poolrental-sitemap.sh"
     exit 1
 fi
 
 echo "  Found: $PUBLIC_DIR"
 echo ""
 
-# --- Step 2: Crawl the site to discover all URLs ---
-echo "[2/6] Crawling $DOMAIN to discover all pages..."
-echo "  This may take a few minutes for 2000+ pages..."
-echo ""
+# --- Step 2: Collect ALL URLs from every source ---
+echo "[2/7] Collecting URLs from all sources..."
 
 URLS_FILE="$TMPDIR/all_urls.txt"
+touch "$URLS_FILE"
 
-# Start with the existing Sharetribe sitemap if available
-echo "  Checking for existing Sharetribe sitemap..."
+# Source 1: Pull from sitemaphosting7 (the big one - has ~2500 URLs)
+echo "  Pulling from sitemaphosting7..."
+curl -s "$SITEMAPHOSTING_URL" 2>/dev/null | \
+    grep -oP '(?<=<loc>)[^<]+' >> "$URLS_FILE" 2>/dev/null || true
+HOSTED_COUNT=$(wc -l < "$URLS_FILE")
+echo "    Got $HOSTED_COUNT URLs"
+
+# Source 2: Sharetribe's own sitemaps
+echo "  Pulling from Sharetribe sitemaps..."
 curl -s "${DOMAIN}/sitemap-recent-pages.xml" 2>/dev/null | \
     grep -oP '(?<=<loc>)[^<]+' >> "$URLS_FILE" 2>/dev/null || true
 curl -s "${DOMAIN}/sitemap.xml" 2>/dev/null | \
     grep -oP '(?<=<loc>)[^<]+' >> "$URLS_FILE" 2>/dev/null || true
 
-EXISTING_COUNT=$(wc -l < "$URLS_FILE" 2>/dev/null || echo "0")
-echo "  Found $EXISTING_COUNT URLs from existing sitemaps"
-
-# Crawl hub/index pages to find linked pages
-echo "  Crawling hub pages for additional URLs..."
-
-HUB_PAGES=(
-    "/"
-    "/all-locations"
-    "/s"
-    "/en/s"
-    "/es/s"
-)
-
-for hub in "${HUB_PAGES[@]}"; do
-    echo "    Crawling ${DOMAIN}${hub}..."
+# Source 3: Crawl key hub pages for any URLs not in sitemaps
+echo "  Crawling hub pages..."
+for hub in "/" "/p/all-locations" "/p/hosting" "/p/blog" "/p/host-advocacy" "/s"; do
     curl -s -L "${DOMAIN}${hub}" 2>/dev/null | \
-        grep -oP "href=\"${DOMAIN}[^\"]*\"" | \
-        sed 's/href="//;s/"$//' >> "$URLS_FILE" 2>/dev/null || true
-    curl -s -L "${DOMAIN}${hub}" 2>/dev/null | \
-        grep -oP 'href="/[^"]*"' | \
+        grep -oP 'href="(/[^"]*)"' | \
         sed "s|href=\"|${DOMAIN}|;s|\"$||" >> "$URLS_FILE" 2>/dev/null || true
 done
 
-# Crawl category/listing pages to find deeper links
-echo "  Crawling category pages..."
-# Get links from the pages we already found, looking for listing/category pages
-CATEGORY_URLS=$(grep -E '(/p/|/c/|/l/|/become-a-host|/guide-to-|/host-|/pool-rental-)' "$URLS_FILE" | sort -u | head -100)
-
-for cat_url in $CATEGORY_URLS; do
-    curl -s -L "$cat_url" 2>/dev/null | \
-        grep -oP "href=\"${DOMAIN}[^\"]*\"" | \
-        sed 's/href="//;s/"$//' >> "$URLS_FILE" 2>/dev/null || true
-    curl -s -L "$cat_url" 2>/dev/null | \
-        grep -oP 'href="/[^"]*"' | \
-        sed "s|href=\"|${DOMAIN}|;s|\"$||" >> "$URLS_FILE" 2>/dev/null || true
-done
-
-# Also try paginated listing pages
-echo "  Checking paginated listings..."
-for page in $(seq 1 50); do
+# Source 4: Crawl paginated search results
+echo "  Crawling search pages..."
+for page in $(seq 1 100); do
     RESULT=$(curl -s -L "${DOMAIN}/s?page=${page}" 2>/dev/null)
-    if echo "$RESULT" | grep -q 'href="/'; then
-        echo "$RESULT" | grep -oP 'href="/[^"]*"' | \
+    if echo "$RESULT" | grep -q '/l/'; then
+        echo "$RESULT" | grep -oP 'href="(/l/[^"]*)"' | \
             sed "s|href=\"|${DOMAIN}|;s|\"$||" >> "$URLS_FILE" 2>/dev/null || true
     else
         break
     fi
 done
 
-# Clean up URLs: remove duplicates, fragments, query strings (except page), sort
-echo "  Cleaning up URL list..."
+RAW_COUNT=$(wc -l < "$URLS_FILE")
+echo "  Raw total (before cleanup): $RAW_COUNT"
+echo ""
+
+# --- Step 3: Clean and filter URLs ---
+echo "[3/7] Cleaning and filtering URLs..."
+
+# Remove junk URLs, duplicates, fragments, query strings
 cat "$URLS_FILE" | \
     sed 's/#.*$//' | \
     sed 's/\?.*$//' | \
-    grep -E "^${DOMAIN}" | \
-    grep -v -E '\.(jpg|jpeg|png|gif|svg|css|js|ico|pdf|woff|woff2|ttf)$' | \
-    grep -v -E '(login|signup|password|account|admin|api|oauth)' | \
+    grep -E "^https://(www\.)?poolrentalnearme\.com" | \
+    grep -v -E '\.(jpg|jpeg|png|gif|svg|css|js|ico|pdf|woff|woff2|ttf|map)' | \
+    grep -v -E '/(login|signup|password|account|admin|api|oauth|new|draft)' | \
+    grep -v -E '/l/draft/' | \
+    grep -v -E '/l/.*/new/' | \
+    grep -v -E '00000000-0000-0000' | \
+    grep -v -E '/s$' | \
+    grep -v -E 'amenities\.' | \
+    grep -v -E 'connect\.' | \
+    grep -v -E 'help\.' | \
+    grep -v -E 'go\.' | \
     sort -u > "$TMPDIR/clean_urls.txt"
 
 TOTAL_URLS=$(wc -l < "$TMPDIR/clean_urls.txt")
-echo ""
-echo "  Total unique URLs discovered: $TOTAL_URLS"
+echo "  Clean unique URLs: $TOTAL_URLS"
 echo ""
 
-# --- Step 3: Categorize URLs ---
-echo "[3/6] Categorizing URLs into sitemap groups..."
+# --- Step 4: Categorize URLs ---
+echo "[4/7] Categorizing URLs into sitemap groups..."
 
 # Category files
+LISTINGS_FILE="$TMPDIR/urls_listings.txt"
 HOSTS_FILE="$TMPDIR/urls_hosts.txt"
 EVENTS_FILE="$TMPDIR/urls_events.txt"
 CONTENT_FILE="$TMPDIR/urls_content.txt"
 ADVOCACY_FILE="$TMPDIR/urls_advocacy.txt"
 SPANISH_FILE="$TMPDIR/urls_spanish.txt"
 CORE_FILE="$TMPDIR/urls_core.txt"
-OTHER_FILE="$TMPDIR/urls_other.txt"
 
-touch "$HOSTS_FILE" "$EVENTS_FILE" "$CONTENT_FILE" "$ADVOCACY_FILE" "$SPANISH_FILE" "$CORE_FILE" "$OTHER_FILE"
+touch "$LISTINGS_FILE" "$HOSTS_FILE" "$EVENTS_FILE" "$CONTENT_FILE" "$ADVOCACY_FILE" "$SPANISH_FILE" "$CORE_FILE"
 
 while IFS= read -r url; do
     case "$url" in
+        # Spanish pages
         */es/*|*/es)
-            echo "$url" >> "$SPANISH_FILE" ;;
-        *become-a-host*|*become-a-pool-host*|*/l/*)
-            echo "$url" >> "$HOSTS_FILE" ;;
-        *guide-to-*|*event-guide*|*event-rental*)
-            echo "$url" >> "$EVENTS_FILE" ;;
-        *host-advocacy*|*state-*|*-laws*|*-regulations*)
-            echo "$url" >> "$ADVOCACY_FILE" ;;
-        *blog*|*article*|*content*|*/p/*)
-            echo "$url" >> "$CONTENT_FILE" ;;
-        */|*/about|*/contact|*/terms|*/privacy|*/faq|*/pricing|*/how-it-works|*/all-locations)
-            echo "$url" >> "$CORE_FILE" ;;
+            echo "$url" >> "$SPANISH_FILE"
+            ;;
+        # Actual pool listings (the /l/ UUID pages)
+        */l/*)
+            echo "$url" >> "$LISTINGS_FILE"
+            ;;
+        # Become-a-host city pages
+        *become-a-*host*|*become-a-pool-host*)
+            echo "$url" >> "$HOSTS_FILE"
+            ;;
+        # Event guide pages
+        *guide-to-*)
+            echo "$url" >> "$EVENTS_FILE"
+            ;;
+        # Host advocacy / state pages
+        *host-advocacy*|*-pool-rental-laws*|*-pool-sharing-laws*|*advocacy*)
+            echo "$url" >> "$ADVOCACY_FILE"
+            ;;
+        # Core pages (homepage, about, faq, etc)
+        *poolrentalnearme.com/|*poolrentalnearme.com/p/about|*poolrentalnearme.com/p/faq|*poolrentalnearme.com/p/hosting|*poolrentalnearme.com/p/howitworksforguests|*poolrentalnearme.com/p/make-money|*poolrentalnearme.com/p/all-locations|*poolrentalnearme.com/terms-of-service|*poolrentalnearme.com/privacy-policy|*poolrentalnearme.com/p/water-savings|*poolrentalnearme.com/p/zerodrowning|*poolrentalnearme.com/p/accesstopoolrentals|*poolrentalnearme.com/p/investors|*poolrentalnearme.com/p/swimply-alternative*|*poolrentalnearme.com/p/hoa-pool-rental-defense-kit|*poolrentalnearme.com/p/pricing*)
+            echo "$url" >> "$CORE_FILE"
+            ;;
+        # City search/landing pages
+        *poolrentalnearme.com/p/las-vegas*|*poolrentalnearme.com/p/katy*|*poolrentalnearme.com/p/newyork*|*poolrentalnearme.com/p/losangeles*|*poolrentalnearme.com/p/riverside*|*poolrentalnearme.com/p/privatepoolrentals*|*poolrentalnearme.com/p/sacramento*)
+            echo "$url" >> "$CORE_FILE"
+            ;;
+        # Everything else in /p/ is content
+        */p/*)
+            echo "$url" >> "$CONTENT_FILE"
+            ;;
+        # Anything else
         *)
-            echo "$url" >> "$OTHER_FILE" ;;
+            echo "$url" >> "$CONTENT_FILE"
+            ;;
     esac
 done < "$TMPDIR/clean_urls.txt"
 
-echo "  Hosts (become-a-host pages):  $(wc -l < "$HOSTS_FILE")"
-echo "  Events (event guides):        $(wc -l < "$EVENTS_FILE")"
-echo "  Content (articles):           $(wc -l < "$CONTENT_FILE")"
-echo "  Advocacy (state pages):       $(wc -l < "$ADVOCACY_FILE")"
-echo "  Spanish:                      $(wc -l < "$SPANISH_FILE")"
 echo "  Core pages:                   $(wc -l < "$CORE_FILE")"
-echo "  Other:                        $(wc -l < "$OTHER_FILE")"
+echo "  Pool listings:                $(wc -l < "$LISTINGS_FILE")"
+echo "  Become-a-host pages:          $(wc -l < "$HOSTS_FILE")"
+echo "  Event guides:                 $(wc -l < "$EVENTS_FILE")"
+echo "  Content/articles:             $(wc -l < "$CONTENT_FILE")"
+echo "  Host advocacy/state pages:    $(wc -l < "$ADVOCACY_FILE")"
+echo "  Spanish pages:                $(wc -l < "$SPANISH_FILE")"
 echo ""
 
-# --- Step 4: Generate sitemap XML files ---
-echo "[4/6] Generating sitemap XML files..."
+# --- Step 5: Generate sitemap XML files ---
+echo "[5/7] Generating sitemap XML files..."
 
 generate_sitemap() {
     local input_file="$1"
-    local output_file="$2"
+    local sitemap_name="$2"
     local changefreq="$3"
     local priority="$4"
     local count=$(wc -l < "$input_file")
 
     if [ "$count" -eq 0 ]; then
+        echo "  Skipped $sitemap_name (0 URLs)"
         return
     fi
 
-    # If over 1000 URLs, split into multiple files
     if [ "$count" -gt 1000 ]; then
-        local base_name=$(basename "$output_file" .xml)
+        # Split into multiple files
         local part=1
         local line_num=0
 
         while IFS= read -r url; do
             if [ $((line_num % 1000)) -eq 0 ]; then
                 if [ "$line_num" -gt 0 ]; then
-                    echo '</urlset>' >> "${PUBLIC_DIR}/${base_name}-${part}.xml"
+                    echo '</urlset>' >> "${PUBLIC_DIR}/${sitemap_name}-${part}.xml"
                     part=$((part + 1))
                 fi
-                cat > "${PUBLIC_DIR}/${base_name}-${part}.xml" << XMLHEADER
+                cat > "${PUBLIC_DIR}/${sitemap_name}-${part}.xml" << XMLHEADER
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 XMLHEADER
             fi
-            echo "  <url><loc>${url}</loc><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>" >> "${PUBLIC_DIR}/${base_name}-${part}.xml"
+            echo "  <url>" >> "${PUBLIC_DIR}/${sitemap_name}-${part}.xml"
+            echo "    <loc>${url}</loc>" >> "${PUBLIC_DIR}/${sitemap_name}-${part}.xml"
+            echo "    <lastmod>${TIMESTAMP}</lastmod>" >> "${PUBLIC_DIR}/${sitemap_name}-${part}.xml"
+            echo "    <changefreq>${changefreq}</changefreq>" >> "${PUBLIC_DIR}/${sitemap_name}-${part}.xml"
+            echo "    <priority>${priority}</priority>" >> "${PUBLIC_DIR}/${sitemap_name}-${part}.xml"
+            echo "  </url>" >> "${PUBLIC_DIR}/${sitemap_name}-${part}.xml"
             line_num=$((line_num + 1))
         done < "$input_file"
-        echo '</urlset>' >> "${PUBLIC_DIR}/${base_name}-${part}.xml"
-        echo "  Created ${part} files for ${base_name} (${count} URLs)"
+        echo '</urlset>' >> "${PUBLIC_DIR}/${sitemap_name}-${part}.xml"
+        echo "  Created ${sitemap_name}-1.xml through ${sitemap_name}-${part}.xml ($count URLs)"
     else
         {
             echo '<?xml version="1.0" encoding="UTF-8"?>'
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
             while IFS= read -r url; do
-                echo "  <url><loc>${url}</loc><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>"
+                echo "  <url>"
+                echo "    <loc>${url}</loc>"
+                echo "    <lastmod>${TIMESTAMP}</lastmod>"
+                echo "    <changefreq>${changefreq}</changefreq>"
+                echo "    <priority>${priority}</priority>"
+                echo "  </url>"
             done < "$input_file"
             echo '</urlset>'
-        } > "${PUBLIC_DIR}/$(basename "$output_file")"
-        echo "  Created $(basename "$output_file") (${count} URLs)"
+        } > "${PUBLIC_DIR}/${sitemap_name}.xml"
+        echo "  Created ${sitemap_name}.xml ($count URLs)"
     fi
 }
 
-generate_sitemap "$CORE_FILE" "sitemap-core.xml" "weekly" "1.0"
-generate_sitemap "$HOSTS_FILE" "sitemap-hosts.xml" "weekly" "0.8"
-generate_sitemap "$EVENTS_FILE" "sitemap-events.xml" "monthly" "0.7"
-generate_sitemap "$CONTENT_FILE" "sitemap-content.xml" "monthly" "0.8"
-generate_sitemap "$ADVOCACY_FILE" "sitemap-advocacy.xml" "monthly" "0.7"
-generate_sitemap "$SPANISH_FILE" "sitemap-spanish.xml" "monthly" "0.7"
-generate_sitemap "$OTHER_FILE" "sitemap-other.xml" "monthly" "0.6"
+# Generate each sitemap with appropriate priority and changefreq
+#                    input_file      name                changefreq  priority
+generate_sitemap "$CORE_FILE"      "sitemap-core"      "weekly"     "1.0"
+generate_sitemap "$LISTINGS_FILE"  "sitemap-listings"  "weekly"     "0.9"
+generate_sitemap "$HOSTS_FILE"     "sitemap-hosts"     "weekly"     "0.8"
+generate_sitemap "$EVENTS_FILE"    "sitemap-events"    "monthly"    "0.7"
+generate_sitemap "$CONTENT_FILE"   "sitemap-content"   "monthly"    "0.8"
+generate_sitemap "$ADVOCACY_FILE"  "sitemap-advocacy"  "monthly"    "0.7"
+generate_sitemap "$SPANISH_FILE"   "sitemap-spanish"   "monthly"    "0.7"
 
 echo ""
 
-# --- Step 5: Generate sitemap index ---
-echo "[5/6] Creating sitemap index..."
+# --- Step 6: Generate sitemap index ---
+echo "[6/7] Creating sitemap index..."
 
 SITEMAP_INDEX="${PUBLIC_DIR}/sitemap-index.xml"
 
@@ -252,14 +281,17 @@ SITEMAP_INDEX="${PUBLIC_DIR}/sitemap-index.xml"
     echo '<?xml version="1.0" encoding="UTF-8"?>'
     echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 
-    for f in "${PUBLIC_DIR}"/sitemap-*.xml; do
+    # Find all our generated sitemap files
+    for f in $(ls "${PUBLIC_DIR}"/sitemap-*.xml 2>/dev/null | sort); do
         fname=$(basename "$f")
-        if [ "$fname" != "sitemap-index.xml" ] && [ "$fname" != "sitemap-recent-pages.xml" ]; then
-            echo "  <sitemap>"
-            echo "    <loc>${DOMAIN}/${fname}</loc>"
-            echo "    <lastmod>${TIMESTAMP}</lastmod>"
-            echo "  </sitemap>"
+        # Skip the index itself and Sharetribe's auto-generated one
+        if [ "$fname" = "sitemap-index.xml" ] || [ "$fname" = "sitemap-recent-pages.xml" ]; then
+            continue
         fi
+        echo "  <sitemap>"
+        echo "    <loc>${DOMAIN}/${fname}</loc>"
+        echo "    <lastmod>${TIMESTAMP}</lastmod>"
+        echo "  </sitemap>"
     done
 
     echo '</sitemapindex>'
@@ -268,58 +300,60 @@ SITEMAP_INDEX="${PUBLIC_DIR}/sitemap-index.xml"
 echo "  Created sitemap-index.xml"
 echo ""
 
-# --- Step 6: Update robots.txt ---
-echo "[6/6] Updating robots.txt..."
+# --- Step 7: Update robots.txt ---
+echo "[7/7] Updating robots.txt..."
 
 ROBOTS_FILE="${PUBLIC_DIR}/robots.txt"
 
 if [ -f "$ROBOTS_FILE" ]; then
-    # Back up existing robots.txt
     cp "$ROBOTS_FILE" "${ROBOTS_FILE}.bak"
-    echo "  Backed up existing robots.txt to robots.txt.bak"
+    echo "  Backed up robots.txt -> robots.txt.bak"
 
-    # Remove any existing Sitemap lines (including the dead PRO Sitemaps one)
-    sed -i '/^Sitemap:/d' "$ROBOTS_FILE"
+    # Remove ALL existing Sitemap lines (kills the dead sitemaphosting7 ref)
+    sed -i '/^[Ss]itemap:/d' "$ROBOTS_FILE"
 
-    # Add new sitemap reference
+    # Remove any blank lines at the end
+    sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$ROBOTS_FILE" 2>/dev/null || true
+
+    # Add our new sitemap index reference
     echo "" >> "$ROBOTS_FILE"
     echo "Sitemap: ${DOMAIN}/sitemap-index.xml" >> "$ROBOTS_FILE"
 
-    echo "  Updated robots.txt - removed old sitemap references, added sitemap-index.xml"
+    echo "  Removed old sitemaphosting7 reference"
+    echo "  Added: Sitemap: ${DOMAIN}/sitemap-index.xml"
 else
-    # Create a new robots.txt
-    cat > "$ROBOTS_FILE" << ROBOTS
+    cat > "$ROBOTS_FILE" << 'ROBOTS'
 User-agent: *
 Allow: /
 
-Sitemap: ${DOMAIN}/sitemap-index.xml
 ROBOTS
+    echo "Sitemap: ${DOMAIN}/sitemap-index.xml" >> "$ROBOTS_FILE"
     echo "  Created new robots.txt"
 fi
 
 echo ""
 
-# --- Done ---
+# --- Summary ---
 echo "=========================================="
-echo "  DONE!"
+echo "  ALL DONE"
 echo "=========================================="
 echo ""
-echo "  Sitemap index: ${DOMAIN}/sitemap-index.xml"
 echo "  Total URLs indexed: $TOTAL_URLS"
-echo "  Files created in: $PUBLIC_DIR"
+echo "  Files created in:   $PUBLIC_DIR"
 echo ""
 echo "  Sitemap files:"
-ls -la "${PUBLIC_DIR}"/sitemap-*.xml 2>/dev/null
+ls -la "${PUBLIC_DIR}"/sitemap-*.xml 2>/dev/null | awk '{print "    " $NF " (" $5 " bytes)"}'
 echo ""
-echo "  Updated robots.txt:"
-cat "$ROBOTS_FILE"
+echo "  robots.txt now says:"
+grep -i sitemap "$ROBOTS_FILE" 2>/dev/null | sed 's/^/    /'
 echo ""
-echo "  Verify it's working:"
-echo "    curl ${DOMAIN}/sitemap-index.xml | head -20"
-echo "    curl ${DOMAIN}/robots.txt"
+echo "  Verify with:"
+echo "    curl -s ${DOMAIN}/robots.txt"
+echo "    curl -s ${DOMAIN}/sitemap-index.xml | head -30"
+echo "    curl -s ${DOMAIN}/sitemap-core.xml | head -20"
 echo ""
-echo "  No restart needed - these are static files."
+echo "  No restart needed. Takes effect immediately."
 echo "=========================================="
 
-# Cleanup
+# Cleanup temp files
 rm -rf "$TMPDIR"
