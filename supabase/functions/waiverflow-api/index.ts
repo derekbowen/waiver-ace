@@ -100,7 +100,8 @@ async function dispatchWebhooks(
     const { data: endpoints } = await supabase
       .from("webhook_endpoints")
       .select("id, url, secret, events")
-      .eq("org_id", orgId);
+      .eq("org_id", orgId)
+      .eq("is_active", true);
 
     if (!endpoints?.length) return;
 
@@ -133,20 +134,20 @@ async function dispatchWebhooks(
         });
 
         await supabase.from("webhook_deliveries").insert({
-          endpoint_id: ep.id,
+          webhook_endpoint_id: ep.id,
           event_type: eventType,
           payload,
           response_status: res.status,
-          success: res.ok,
+          response_body: await res.text().catch(() => null),
+          delivered_at: res.ok ? new Date().toISOString() : null,
         });
       } catch (err: any) {
         await supabase.from("webhook_deliveries").insert({
-          endpoint_id: ep.id,
+          webhook_endpoint_id: ep.id,
           event_type: eventType,
           payload,
           response_status: 0,
-          success: false,
-          error_message: err.message,
+          response_body: err.message,
         });
       }
     }
