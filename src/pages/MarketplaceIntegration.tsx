@@ -66,7 +66,7 @@ export default function MarketplaceIntegration() {
     });
   }, [profile?.org_id]);
 
-  const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/marketplace-webhook`;
+  const webhookUrl = `${window.location.origin}/functions/v1/marketplace-webhook`;
   const webhookSecret = integration?.webhook_secret || "Save to generate";
 
   const handleCopy = (text: string) => {
