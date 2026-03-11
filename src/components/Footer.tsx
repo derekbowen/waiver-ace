@@ -4,17 +4,17 @@ import logo from "@/assets/logo.png";
 import { FileText, Mail, MapPin, ExternalLink } from "lucide-react";
 
 const waiverPages = [
-  { label: "Pool Rental Waivers", slug: "pool-rental-waivers" },
-  { label: "Boat Rental Waivers", slug: "boat-rental-waivers" },
-  { label: "Jet Ski Waivers", slug: "jet-ski-rental-waivers" },
-  { label: "Kayak Waivers", slug: "kayak-rental-waivers" },
-  { label: "Airbnb Host Waivers", slug: "airbnb-host-waivers" },
-  { label: "Vacation Rental Waivers", slug: "vacation-rental-waivers" },
-  { label: "ATV Rental Waivers", slug: "atv-rental-waivers" },
-  { label: "Bounce House Waivers", slug: "bounce-house-rental-waivers" },
-  { label: "RV Rental Waivers", slug: "rv-rental-waivers" },
-  { label: "Bike Rental Waivers", slug: "bike-rental-waivers" },
-];
+{ label: "Pool Rental Waivers", slug: "pool-rental-waivers" },
+{ label: "Boat Rental Waivers", slug: "boat-rental-waivers" },
+{ label: "Jet Ski Waivers", slug: "jet-ski-rental-waivers" },
+{ label: "Kayak Waivers", slug: "kayak-rental-waivers" },
+{ label: "Airbnb Host Waivers", slug: "airbnb-host-waivers" },
+{ label: "Vacation Rental Waivers", slug: "vacation-rental-waivers" },
+{ label: "ATV Rental Waivers", slug: "atv-rental-waivers" },
+{ label: "Bounce House Waivers", slug: "bounce-house-rental-waivers" },
+{ label: "RV Rental Waivers", slug: "rv-rental-waivers" },
+{ label: "Bike Rental Waivers", slug: "bike-rental-waivers" }];
+
 
 export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
   return (
@@ -32,7 +32,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
               The lowest-cost digital waiver platform on the market. Pay per waiver, starting at 6¢. No monthly fees, no contracts.
             </p>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <a href="mailto:hello@rentalwaivers.com" className="flex items-center gap-2 hover:text-foreground transition-colors">
+              <a className="flex items-center gap-2 hover:text-foreground transition-colors" href="mailto:support@poolrentalnearme.com">
                 <Mail className="h-4 w-4 shrink-0" /> hello@rentalwaivers.com
               </a>
               <div className="flex items-center gap-2">
@@ -57,13 +57,13 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
           <div>
             <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4 text-foreground">Waiver Types</h3>
             <ul className="space-y-2.5 text-sm">
-              {waiverPages.map((page) => (
-                <li key={page.slug}>
+              {waiverPages.map((page) =>
+              <li key={page.slug}>
                   <Link to={`/waivers/${page.slug}`} className="text-muted-foreground hover:text-foreground transition-colors">
                     {page.label}
                   </Link>
                 </li>
-              ))}
+              )}
             </ul>
           </div>
 
@@ -110,6 +110,6 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
           </p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>);
+
 });
