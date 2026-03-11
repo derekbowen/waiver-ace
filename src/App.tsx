@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import { I18nProvider } from "@/components/I18nProvider";
 import Landing from "./pages/Landing";
 import KioskPage from "./pages/KioskPage";
@@ -92,7 +92,7 @@ const App = () => (
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/envelopes/bulk" element={<ProtectedRoute><BulkSend /></ProtectedRoute>} />
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
-            <Route path="/admin/credits" element={<ProtectedRoute><AdminCredits /></ProtectedRoute>} />
+            <Route path="/admin/credits" element={<AdminRoute><AdminCredits /></AdminRoute>} />
 
             {/* SEO vertical/niche landing pages */}
             <Route path="/waivers/:slug" element={<SeoLanding />} />
