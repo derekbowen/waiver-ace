@@ -53,7 +53,7 @@ serve(async (req) => {
     const signedDate = new Date().toLocaleDateString("en-US", {
       year: "numeric", month: "long", day: "numeric",
     });
-    const signedDateTime = new Date().toLocaleDateString("en-US", {
+    const signedDateTime = new Date().toLocaleString("en-US", {
       year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit",
     });
 
