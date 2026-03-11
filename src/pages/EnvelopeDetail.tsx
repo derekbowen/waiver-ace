@@ -110,6 +110,10 @@ export default function EnvelopeDetail() {
     else {
       toast.success("Envelope canceled");
       setEnvelope({ ...envelope, status: "canceled" });
+      // Notify signer
+      supabase.functions.invoke("send-envelope-notification", {
+        body: { envelope_id: id, event_type: "canceled" },
+      }).catch((e) => console.error("Cancel notification failed:", e));
     }
   };
 

@@ -78,6 +78,25 @@ serve(async (req) => {
       // Don't throw - org creation succeeded, credits are a bonus
     }
 
+    // Send welcome email
+    try {
+      const welcomeUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-welcome-email`;
+      await fetch(welcomeUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+        },
+        body: JSON.stringify({
+          email: user.email,
+          full_name: user.user_metadata?.full_name || "",
+          org_name: name.trim(),
+        }),
+      });
+    } catch (welcomeErr) {
+      console.error("Failed to send welcome email:", welcomeErr);
+    }
+
     return new Response(JSON.stringify({ org }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

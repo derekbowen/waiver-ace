@@ -119,6 +119,26 @@ serve(async (req) => {
 
       console.log(`Auto-recharged ${pkg.credits} credits for org ${org_id}`);
 
+      // Send receipt email via send-credits-email
+      try {
+        const creditsEmailUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-credits-email`;
+        await fetch(creditsEmailUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          },
+          body: JSON.stringify({
+            org_id,
+            type: "credits_added",
+            credits: pkg.credits,
+            notes: `Auto-recharge: ${pkg.label}`,
+          }),
+        });
+      } catch (emailErr) {
+        console.error("Failed to send auto-recharge receipt email:", emailErr);
+      }
+
       return new Response(JSON.stringify({
         success: true,
         credits_added: pkg.credits,
