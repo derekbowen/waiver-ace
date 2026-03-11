@@ -20,6 +20,7 @@ import {
   X,
   ChevronRight,
   Zap,
+  HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ const navItems = [
   { label: "Webhooks", href: "/settings/webhooks", icon: Webhook },
   { label: "Marketplace", href: "/settings/marketplace", icon: Zap },
   { label: "Pricing", href: "/pricing", icon: CreditCard },
+  { label: "Help", href: "/docs", icon: HelpCircle },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
