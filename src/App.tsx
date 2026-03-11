@@ -54,6 +54,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <I18nProvider>
         <AuthProvider>
           <Routes>
