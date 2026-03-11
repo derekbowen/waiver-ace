@@ -33,7 +33,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
             </p>
             <div className="space-y-2 text-sm text-muted-foreground">
               <a className="flex items-center gap-2 hover:text-foreground transition-colors" href="mailto:support@poolrentalnearme.com">
-                <Mail className="h-4 w-4 shrink-0" /> hello@rentalwaivers.com
+                <Mail className="h-4 w-4 shrink-0" /> e-mail is
               </a>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 shrink-0" /> Riverside, CA
