@@ -35,7 +35,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
     <footer ref={ref} className="border-t bg-card">
       {/* Main footer grid */}
       <div className="container py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand column */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
@@ -62,7 +62,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
             <ul className="space-y-2.5 text-sm">
               <li><Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">Sign Up Free</Link></li>
               <li><Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">Sign In</Link></li>
-              <li><a href="/#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a></li>
+              <li><Link to="/pricing-info" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
               <li><Link to="/docs" className="text-muted-foreground hover:text-foreground transition-colors">API Documentation</Link></li>
               <li><Link to="/my-waivers" className="text-muted-foreground hover:text-foreground transition-colors">Customer Portal</Link></li>
             </ul>
@@ -94,6 +94,32 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
             </ul>
           </div>
 
+          {/* Resources & Learn More column */}
+          <div>
+            <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4 text-foreground">Resources</h3>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link to="/waiver-software" className="text-muted-foreground hover:text-foreground transition-colors">Waiver Software</Link></li>
+              <li><Link to="/rental-waiver-software" className="text-muted-foreground hover:text-foreground transition-colors">Rental Waiver Software</Link></li>
+              <li><Link to="/waiver-templates" className="text-muted-foreground hover:text-foreground transition-colors">Waiver Templates</Link></li>
+              <li><Link to="/waiver-laws" className="text-muted-foreground hover:text-foreground transition-colors">Waiver Laws by State</Link></li>
+              <li><Link to="/industries" className="text-muted-foreground hover:text-foreground transition-colors">Industries</Link></li>
+              <li><Link to="/docs" className="text-muted-foreground hover:text-foreground transition-colors">API Reference</Link></li>
+            </ul>
+
+            <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4 mt-8 text-foreground">Compare</h3>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link to="/compare" className="text-muted-foreground hover:text-foreground transition-colors">Compare Waiver Software</Link></li>
+              <li><Link to="/alternatives/smartwaiver-alternative" className="text-muted-foreground hover:text-foreground transition-colors">vs Smartwaiver</Link></li>
+              <li><Link to="/alternatives/waiverforever-alternative" className="text-muted-foreground hover:text-foreground transition-colors">vs WaiverForever</Link></li>
+              <li><Link to="/alternatives/waiverfile-alternative" className="text-muted-foreground hover:text-foreground transition-colors">vs WaiverFile</Link></li>
+              <li><Link to="/alternatives/waiversign-alternative" className="text-muted-foreground hover:text-foreground transition-colors">vs WaiverSign</Link></li>
+              <li><Link to="/alternatives/jotform-waiver-alternative" className="text-muted-foreground hover:text-foreground transition-colors">vs Jotform</Link></li>
+              <li><Link to="/alternatives/docusign-waiver-alternative" className="text-muted-foreground hover:text-foreground transition-colors">vs DocuSign</Link></li>
+              <li><Link to="/alternatives/pandadoc-waiver-alternative" className="text-muted-foreground hover:text-foreground transition-colors">vs PandaDoc</Link></li>
+              <li><Link to="/alternatives/wherewolf-alternative" className="text-muted-foreground hover:text-foreground transition-colors">vs Wherewolf</Link></li>
+            </ul>
+          </div>
+
           {/* Legal & Company column */}
           <div>
             <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4 text-foreground">Company</h3>
@@ -105,13 +131,6 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
                   10,000 Solutions LLC <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
-            </ul>
-
-            <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4 mt-8 text-foreground">Resources</h3>
-            <ul className="space-y-2.5 text-sm">
-              <li><Link to="/docs" className="text-muted-foreground hover:text-foreground transition-colors">API Reference</Link></li>
-              <li><Link to="/docs" className="text-muted-foreground hover:text-foreground transition-colors">Webhook Guide</Link></li>
-              <li><Link to="/docs" className="text-muted-foreground hover:text-foreground transition-colors">Integration Setup</Link></li>
             </ul>
           </div>
         </div>

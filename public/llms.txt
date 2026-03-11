@@ -33,6 +33,7 @@ Rental Waivers automates liability waiver collection for rental and hospitality 
 - Bike and scooter rentals
 - Surfboard rentals
 - Event and equipment rental companies
+- Hot tub rentals
 
 ## Pricing
 
@@ -46,10 +47,17 @@ No monthly fees. No contracts. No subscriptions.
 
 ## Links
 
-- [Homepage](https://rentalwaivers.lovable.app/)
-- [Documentation](https://rentalwaivers.lovable.app/docs)
-- [Pool Rental Waivers](https://rentalwaivers.lovable.app/waivers/pool-rental-waivers)
-- [Boat Rental Waivers](https://rentalwaivers.lovable.app/waivers/boat-rental-waivers)
-- [Airbnb Host Waivers](https://rentalwaivers.lovable.app/waivers/airbnb-host-waivers)
-- [Vacation Rental Waivers](https://rentalwaivers.lovable.app/waivers/vacation-rental-waivers)
-- [ATV Rental Waivers](https://rentalwaivers.lovable.app/waivers/atv-rental-waivers)
+- [Homepage](https://www.rentalwaivers.com/)
+- [Documentation](https://www.rentalwaivers.com/docs)
+- [Pricing](https://www.rentalwaivers.com/pricing-info)
+- [Waiver Software](https://www.rentalwaivers.com/waiver-software)
+- [Rental Waiver Software](https://www.rentalwaivers.com/rental-waiver-software)
+- [Industries](https://www.rentalwaivers.com/industries)
+- [Waiver Templates](https://www.rentalwaivers.com/waiver-templates)
+- [Waiver Laws by State](https://www.rentalwaivers.com/waiver-laws)
+- [Compare Waiver Software](https://www.rentalwaivers.com/compare)
+- [Pool Rental Waivers](https://www.rentalwaivers.com/waivers/pool-rental-waivers)
+- [Boat Rental Waivers](https://www.rentalwaivers.com/waivers/boat-rental-waivers)
+- [Airbnb Host Waivers](https://www.rentalwaivers.com/waivers/airbnb-host-waivers)
+- [Vacation Rental Waivers](https://www.rentalwaivers.com/waivers/vacation-rental-waivers)
+- [ATV Rental Waivers](https://www.rentalwaivers.com/waivers/atv-rental-waivers)
