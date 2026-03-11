@@ -75,6 +75,7 @@ const App = () => (
             <Route path="/waiver-laws" element={<WaiverLawsHubPage />} />
             <Route path="/compare" element={<CompareHubPage />} />
             <Route path="/pricing-info" element={<PricingPublicPage />} />
+            <Route path="/alternatives/:slug" element={<CompetitorAltPage />} />
 
             {/* Protected dashboard routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
