@@ -35,6 +35,15 @@ import AdminCredits from "./pages/AdminCredits";
 import SeoLanding from "./pages/SeoLanding";
 import NotFound from "./pages/NotFound";
 
+// SEO Pillar Pages
+import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
+import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
+import IndustriesHubPage from "./pages/seo/IndustriesHubPage";
+import WaiverTemplatesHubPage from "./pages/seo/WaiverTemplatesHubPage";
+import WaiverLawsHubPage from "./pages/seo/WaiverLawsHubPage";
+import CompareHubPage from "./pages/seo/CompareHubPage";
+import PricingPublicPage from "./pages/seo/PricingPublicPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -56,6 +65,17 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/docs" element={<Docs />} />
             <Route path="/docs/:articleId" element={<DocsArticle />} />
+
+            {/* SEO Pillar Pages (public) */}
+            <Route path="/waiver-software" element={<WaiverSoftwarePage />} />
+            <Route path="/rental-waiver-software" element={<RentalWaiverSoftwarePage />} />
+            <Route path="/industries" element={<IndustriesHubPage />} />
+            <Route path="/waiver-templates" element={<WaiverTemplatesHubPage />} />
+            <Route path="/waiver-laws" element={<WaiverLawsHubPage />} />
+            <Route path="/compare" element={<CompareHubPage />} />
+            <Route path="/pricing-info" element={<PricingPublicPage />} />
+
+            {/* Protected dashboard routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
             <Route path="/templates/new" element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />
@@ -73,6 +93,8 @@ const App = () => (
             <Route path="/envelopes/bulk" element={<ProtectedRoute><BulkSend /></ProtectedRoute>} />
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
             <Route path="/admin/credits" element={<ProtectedRoute><AdminCredits /></ProtectedRoute>} />
+
+            {/* SEO vertical/niche landing pages */}
             <Route path="/waivers/:slug" element={<SeoLanding />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
