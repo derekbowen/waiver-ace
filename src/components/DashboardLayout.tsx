@@ -20,31 +20,31 @@ import {
   X,
   ChevronRight,
   Zap,
-  HelpCircle,
-} from "lucide-react";
+  HelpCircle } from
+"lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Templates", href: "/templates", icon: FileText },
-  { label: "Envelopes", href: "/envelopes", icon: Mail },
-  { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  { label: "Team", href: "/settings/team", icon: Users },
-  { label: "API Keys", href: "/settings/api-keys", icon: Key },
-  { label: "Webhooks", href: "/settings/webhooks", icon: Webhook },
-  { label: "Marketplace", href: "/settings/marketplace", icon: Zap },
-  { label: "Pricing", href: "/pricing", icon: CreditCard },
-  { label: "Help", href: "/docs", icon: HelpCircle },
-  { label: "Settings", href: "/settings", icon: Settings },
-];
+{ label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+{ label: "Templates", href: "/templates", icon: FileText },
+{ label: "Envelopes", href: "/envelopes", icon: Mail },
+{ label: "Analytics", href: "/analytics", icon: BarChart3 },
+{ label: "Team", href: "/settings/team", icon: Users },
+{ label: "API Keys", href: "/settings/api-keys", icon: Key },
+{ label: "Webhooks", href: "/settings/webhooks", icon: Webhook },
+{ label: "Marketplace", href: "/settings/marketplace", icon: Zap },
+{ label: "Pricing", href: "/pricing", icon: CreditCard },
+{ label: "Help", href: "/docs", icon: HelpCircle },
+{ label: "Settings", href: "/settings", icon: Settings }];
+
 
 // Primary tabs shown in the bottom tab bar on mobile
 const mobileTabItems = navItems.slice(0, 4); // Dashboard, Templates, Envelopes, Analytics
 const mobileMoreItems = navItems.slice(4); // Team, API Keys, Webhooks, Pricing, Settings
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout({ children }: {children: React.ReactNode;}) {
   const location = useLocation();
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -71,7 +71,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <aside className="fixed inset-y-0 left-0 z-50 hidden md:flex w-64 flex-col border-r bg-card">
         <div className="flex h-16 items-center gap-2 border-b px-6">
           <img src={logo} alt="Rental Waivers" className="h-8 w-8" />
-          <span className="font-heading text-lg font-bold tracking-tight">Rental Waivers</span>
+          <span className="font-heading text-lg font-bold tracking-tight">RentalWaivers.com</span>
         </div>
 
         <nav className="flex-1 space-y-1 p-4">
@@ -83,15 +83,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 to={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                )}
-              >
+                  isActive ?
+                  "bg-primary text-primary-foreground" :
+                  "text-muted-foreground hover:bg-accent hover:text-foreground"
+                )}>
+                
                 <item.icon className="h-4 w-4" />
                 {item.label}
-              </Link>
-            );
+              </Link>);
+
           })}
         </nav>
 
@@ -138,16 +138,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Mobile "More" sheet overlay */}
-      {moreOpen && (
-        <div className="fixed inset-0 z-50 md:hidden" onClick={() => setMoreOpen(false)}>
+      {moreOpen &&
+      <div className="fixed inset-0 z-50 md:hidden" onClick={() => setMoreOpen(false)}>
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
           {/* Sheet sliding up from bottom */}
           <div
-            className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-card pb-8 animate-in slide-in-from-bottom duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
+          className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-card pb-8 animate-in slide-in-from-bottom duration-200"
+          onClick={(e) => e.stopPropagation()}>
+          
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-2">
               <div className="h-1 w-10 rounded-full bg-muted-foreground/30" />
@@ -162,23 +162,23 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
             <nav className="px-2">
               {mobileMoreItems.map((item) => {
-                const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
-                return (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    onClick={() => setMoreOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-xl mx-2 px-4 py-3 text-sm font-medium transition-colors",
-                      isActive ? "bg-primary/10 text-primary" : "text-foreground active:bg-accent"
-                    )}
-                  >
+              const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
+              return (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setMoreOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl mx-2 px-4 py-3 text-sm font-medium transition-colors",
+                    isActive ? "bg-primary/10 text-primary" : "text-foreground active:bg-accent"
+                  )}>
+                  
                     <item.icon className="h-5 w-5" />
                     <span className="flex-1">{item.label}</span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </Link>
-                );
-              })}
+                  </Link>);
+
+            })}
             </nav>
 
             {/* User info + sign out */}
@@ -188,18 +188,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
               </div>
               <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={handleSignOut}
-              >
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={handleSignOut}>
+              
                 <LogOut className="h-4 w-4" />
                 Sign out
               </Button>
             </div>
           </div>
         </div>
-      )}
+      }
 
       {/* Mobile Bottom Tab Bar */}
       <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden border-t bg-card/80 backdrop-blur-lg pb-[env(safe-area-inset-bottom)]">
@@ -213,12 +213,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1.5 text-[10px] font-medium transition-colors",
                   isActive ? "text-primary" : "text-muted-foreground active:text-foreground"
-                )}
-              >
+                )}>
+                
                 <item.icon className={cn("h-5 w-5", isActive && "stroke-[2.5px]")} />
                 {item.label}
-              </Link>
-            );
+              </Link>);
+
           })}
 
           {/* More tab */}
@@ -227,13 +227,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             className={cn(
               "flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1.5 text-[10px] font-medium transition-colors",
               isMoreActive || moreOpen ? "text-primary" : "text-muted-foreground active:text-foreground"
-            )}
-          >
+            )}>
+            
             <MoreHorizontal className={cn("h-5 w-5", (isMoreActive || moreOpen) && "stroke-[2.5px]")} />
             More
           </button>
         </div>
       </nav>
-    </div>
-  );
+    </div>);
+
 }
