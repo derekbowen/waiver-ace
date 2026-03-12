@@ -261,11 +261,10 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════ */}
       <section className="border-y bg-muted/30 py-8">
         <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div>
-              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">10,000+</p>
-              <p className="text-sm text-muted-foreground">waivers signed</p>
-            </div>
+          <p className="text-center text-base md:text-lg text-muted-foreground mb-6">
+            <span className="font-heading font-semibold text-foreground">Airbnb hosts, Swimply pool owners, and VRBO property managers</span> are already loving the pay-per-waiver model.
+          </p>
+          <div className="grid grid-cols-3 gap-6 text-center">
             <div>
               <p className="font-heading text-3xl md:text-4xl font-bold text-primary">60s</p>
               <p className="text-sm text-muted-foreground">average signing time</p>
@@ -280,15 +279,13 @@ export default function Landing() {
             </div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 mt-6 pt-6 border-t">
-            <span className="text-xs uppercase tracking-widest text-muted-foreground/50 font-medium">Integrated with</span>
+            <span className="text-xs uppercase tracking-widest text-muted-foreground/50 font-medium">Built for</span>
             <div className="flex items-center gap-6 text-muted-foreground/60">
-              <span className="text-sm font-medium">Swimply</span>
-              <span className="text-sm font-medium">ShareTribe</span>
-              <span className="text-sm font-medium">Airbnb</span>
-              <span className="text-sm font-medium">VRBO</span>
-              <a href="https://poolrentalnearme.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm font-medium hover:text-foreground transition-colors">
-                <Droplets className="h-4 w-4 text-primary/60" /> poolrentalnearme.com
-              </a>
+              <span className="text-sm font-medium">Airbnb Hosts</span>
+              <span className="text-sm font-medium">Swimply Hosts</span>
+              <span className="text-sm font-medium">VRBO Hosts</span>
+              <span className="text-sm font-medium">Pool Owners</span>
+              <span className="text-sm font-medium">Property Managers</span>
             </div>
           </div>
         </div>
