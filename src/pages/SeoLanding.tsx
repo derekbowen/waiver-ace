@@ -242,6 +242,19 @@ export default function SeoLanding() {
         </Link>
       </section>
 
+      {/* AI Q&A */}
+      <AiQuestionBox
+        pageContext={`${page.title} - ${page.subheading}`}
+        suggestedQuestions={[
+          `Are ${page.title.toLowerCase()} legally binding?`,
+          `How much do digital ${page.title.toLowerCase()} cost?`,
+          "Can guests sign waivers on their phone?",
+        ]}
+      />
+
+      {/* Internal Links */}
+      <InternalLinks currentSlug={slug} pageType="landing" />
+
       <Footer />
     </div>
   );
