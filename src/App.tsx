@@ -8,44 +8,47 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import { I18nProvider } from "@/components/I18nProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { lazy, Suspense } from "react";
+
+// Critical path — load immediately
 import Landing from "./pages/Landing";
-import KioskPage from "./pages/KioskPage";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Templates from "./pages/Templates";
-import TemplateEditor from "./pages/TemplateEditor";
-import Envelopes from "./pages/Envelopes";
-import EnvelopeDetail from "./pages/EnvelopeDetail";
-import NewEnvelope from "./pages/NewEnvelope";
 import SigningPage from "./pages/SigningPage";
 import GroupSigningPage from "./pages/GroupSigningPage";
-import Settings from "./pages/Settings";
-import ApiKeys from "./pages/ApiKeys";
-import Webhooks from "./pages/Webhooks";
-import TeamMembers from "./pages/TeamMembers";
-import Analytics from "./pages/Analytics";
-import BulkSend from "./pages/BulkSend";
-import CompletionCertificate from "./pages/CompletionCertificate";
-import Pricing from "./pages/Pricing";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import Docs from "./pages/Docs";
-import DocsArticle from "./pages/DocsArticle";
-import CustomerPortal from "./pages/CustomerPortal";
-import MarketplaceIntegration from "./pages/MarketplaceIntegration";
-import AdminCredits from "./pages/AdminCredits";
-import SeoLanding from "./pages/SeoLanding";
 import NotFound from "./pages/NotFound";
 
-// SEO Pillar Pages
-import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
-import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
-import IndustriesHubPage from "./pages/seo/IndustriesHubPage";
-import WaiverTemplatesHubPage from "./pages/seo/WaiverTemplatesHubPage";
-import WaiverLawsHubPage from "./pages/seo/WaiverLawsHubPage";
-import CompareHubPage from "./pages/seo/CompareHubPage";
-import CompetitorAltPage from "./pages/seo/CompetitorAltPage";
-import PricingPublicPage from "./pages/seo/PricingPublicPage";
+// Lazy-load everything else for faster initial load
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Templates = lazy(() => import("./pages/Templates"));
+const TemplateEditor = lazy(() => import("./pages/TemplateEditor"));
+const Envelopes = lazy(() => import("./pages/Envelopes"));
+const EnvelopeDetail = lazy(() => import("./pages/EnvelopeDetail"));
+const NewEnvelope = lazy(() => import("./pages/NewEnvelope"));
+const Settings = lazy(() => import("./pages/Settings"));
+const ApiKeys = lazy(() => import("./pages/ApiKeys"));
+const Webhooks = lazy(() => import("./pages/Webhooks"));
+const TeamMembers = lazy(() => import("./pages/TeamMembers"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+const BulkSend = lazy(() => import("./pages/BulkSend"));
+const CompletionCertificate = lazy(() => import("./pages/CompletionCertificate"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Docs = lazy(() => import("./pages/Docs"));
+const DocsArticle = lazy(() => import("./pages/DocsArticle"));
+const CustomerPortal = lazy(() => import("./pages/CustomerPortal"));
+const MarketplaceIntegration = lazy(() => import("./pages/MarketplaceIntegration"));
+const AdminCredits = lazy(() => import("./pages/AdminCredits"));
+const SeoLanding = lazy(() => import("./pages/SeoLanding"));
+const KioskPage = lazy(() => import("./pages/KioskPage"));
+const WaiverSoftwarePage = lazy(() => import("./pages/seo/WaiverSoftwarePage"));
+const RentalWaiverSoftwarePage = lazy(() => import("./pages/seo/RentalWaiverSoftwarePage"));
+const IndustriesHubPage = lazy(() => import("./pages/seo/IndustriesHubPage"));
+const WaiverTemplatesHubPage = lazy(() => import("./pages/seo/WaiverTemplatesHubPage"));
+const WaiverLawsHubPage = lazy(() => import("./pages/seo/WaiverLawsHubPage"));
+const CompareHubPage = lazy(() => import("./pages/seo/CompareHubPage"));
+const CompetitorAltPage = lazy(() => import("./pages/seo/CompetitorAltPage"));
+const PricingPublicPage = lazy(() => import("./pages/seo/PricingPublicPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +58,12 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const LazyFallback = () => (
+  <div className="flex min-h-screen items-center justify-center">
+    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -66,6 +75,7 @@ const App = () => (
         <I18nProvider>
         <AuthProvider>
           <ErrorBoundary fallbackRoute="/dashboard">
+          <Suspense fallback={<LazyFallback />}>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
@@ -111,6 +121,7 @@ const App = () => (
             <Route path="/waivers/:slug" element={<SeoLanding />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
           </ErrorBoundary>
         </AuthProvider>
         </I18nProvider>
