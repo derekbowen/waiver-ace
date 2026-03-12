@@ -16,6 +16,12 @@ serve(async (req) => {
   const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
   try {
+    // Rate limit by IP
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (!checkRateLimit(ip, { windowMs: 60_000, maxRequests: 20 })) {
+      return rateLimitResponse(corsHeaders);
+    }
+
     // Authenticate the caller
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
