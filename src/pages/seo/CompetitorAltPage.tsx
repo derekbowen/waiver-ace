@@ -4,6 +4,8 @@ import { CheckCircle, XCircle, ArrowRight, Zap, Shield, Clock, DollarSign } from
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { competitorAltPages } from "@/lib/competitor-alt-data";
+import { AiQuestionBox } from "@/components/AiQuestionBox";
+import { InternalLinks } from "@/components/InternalLinks";
 
 function Check({ val }: { val: boolean }) {
   return val
@@ -154,23 +156,21 @@ export default function CompetitorAltPage() {
       {/* FAQ */}
       <SeoFaq items={page.faqItems} />
 
+      {/* AI Q&A */}
+      <AiQuestionBox
+        pageContext={`Comparing RentalWaivers vs ${page.competitorName} - ${page.subtitle}`}
+        suggestedQuestions={[
+          `How much can I save switching from ${page.competitorName}?`,
+          `Does RentalWaivers have all ${page.competitorName} features?`,
+          "How long does it take to switch?",
+        ]}
+      />
+
       {/* CTA */}
       <SeoCta headline={page.ctaHeadline} subtext={page.ctaSubtext} />
 
       {/* Internal Links */}
-      <section className="border-t py-10">
-        <div className="container max-w-4xl">
-          <p className="text-sm text-muted-foreground">
-            <Link to="/compare" className="text-primary hover:underline">Compare all waiver software</Link>
-            {" · "}
-            <Link to="/pricing-info" className="text-primary hover:underline">See our pay-per-use pricing</Link>
-            {" · "}
-            <Link to="/rental-waiver-software" className="text-primary hover:underline">Built for rental businesses</Link>
-            {" · "}
-            <Link to="/industries" className="text-primary hover:underline">Browse by rental type</Link>
-          </p>
-        </div>
-      </section>
+      <InternalLinks currentSlug={slug} pageType="competitor" />
     </SeoPageLayout>
   );
 }

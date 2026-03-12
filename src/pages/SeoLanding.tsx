@@ -3,6 +3,8 @@ import { getLandingPageBySlug } from "@/lib/seo-landing-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
+import { AiQuestionBox } from "@/components/AiQuestionBox";
+import { InternalLinks } from "@/components/InternalLinks";
 import {
   Shield, Zap, Smartphone, FileText, Users, CheckSquare, Send,
   Globe, ClipboardList, Cloud, Coins, MonitorSmartphone, Heart,
@@ -239,6 +241,19 @@ export default function SeoLanding() {
           </Button>
         </Link>
       </section>
+
+      {/* AI Q&A */}
+      <AiQuestionBox
+        pageContext={`${page.title} - ${page.subheading}`}
+        suggestedQuestions={[
+          `Are ${page.title.toLowerCase()} legally binding?`,
+          `How much do digital ${page.title.toLowerCase()} cost?`,
+          "Can guests sign waivers on their phone?",
+        ]}
+      />
+
+      {/* Internal Links */}
+      <InternalLinks currentSlug={slug} pageType="landing" />
 
       <Footer />
     </div>
