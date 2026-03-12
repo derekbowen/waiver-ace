@@ -62,7 +62,7 @@ serve(async (req) => {
     // Assign admin role
     const { error: roleErr } = await adminClient
       .from("user_roles")
-      .insert({ user_id: user.id, role: "admin" });
+      .insert({ user_id: user.id, role: "admin", org_id: org.id });
     if (roleErr) throw roleErr;
 
     // Grant 250 free welcome credits (use internal function that has no auth check, called via service role)
