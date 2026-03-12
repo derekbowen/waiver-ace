@@ -307,7 +307,7 @@ SITEMAP_INDEX="${PUBLIC_DIR}/sm-${RAND_ID}.xml"
     echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 
     # Find all our generated sitemap files
-    for f in $(ls "${PUBLIC_DIR}"/sm-${RAND_ID}*.xml 2>/dev/null | sort); do
+    for f in $(ls "${PUBLIC_DIR}"/sm-${RAND_ID}-*.xml 2>/dev/null | sort); do
         fname=$(basename "$f")
         echo "  <sitemap>"
         echo "    <loc>${DOMAIN}/${fname}</loc>"
