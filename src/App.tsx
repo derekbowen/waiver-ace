@@ -110,6 +110,7 @@ const App = () => (
             <Route path="/waivers/:slug" element={<SeoLanding />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </ErrorBoundary>
         </AuthProvider>
         </I18nProvider>
       </BrowserRouter>
