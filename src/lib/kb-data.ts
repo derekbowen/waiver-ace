@@ -40,7 +40,7 @@ export const KB_ARTICLES: KbArticle[] = [
     content: `
 ## Getting Started
 
-Get up and running with Rental Waivers in under 5 minutes. Every new organization gets **5 free starter credits** so you can test the full flow before purchasing.
+Get up and running with Rental Waivers in under 5 minutes. Every new organization gets **250 free credits** so you can test the full flow before purchasing.
 
 ### Step 1 — Create your account
 Sign up at rentalwaivers.com with your email. Verify your email to unlock all features.
