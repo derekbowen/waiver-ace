@@ -46,7 +46,27 @@ export default function Settings() {
           setHasOrg(true);
         }
       });
-  }, [profile?.org_id]);
+
+    // Fetch referral code from profile
+    supabase
+      .from("profiles")
+      .select("referral_code")
+      .eq("user_id", user?.id ?? "")
+      .single()
+      .then(({ data }) => {
+        if (data?.referral_code) setReferralCode(data.referral_code);
+      });
+
+    // Fetch referrals
+    supabase
+      .from("referrals")
+      .select("*")
+      .eq("referrer_org_id", profile.org_id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        if (data) setReferrals(data);
+      });
+  }, [profile?.org_id, user?.id]);
 
   const handleSave = async () => {
     setSaving(true);
