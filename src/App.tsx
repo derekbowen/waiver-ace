@@ -10,14 +10,28 @@ import { I18nProvider } from "@/components/I18nProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 
-// Critical path — load immediately
+// Public / SEO pages — static imports so crawlers index them
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import SigningPage from "./pages/SigningPage";
 import GroupSigningPage from "./pages/GroupSigningPage";
 import NotFound from "./pages/NotFound";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Docs from "./pages/Docs";
+import DocsArticle from "./pages/DocsArticle";
+import CustomerPortal from "./pages/CustomerPortal";
+import SeoLanding from "./pages/SeoLanding";
+import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
+import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
+import IndustriesHubPage from "./pages/seo/IndustriesHubPage";
+import WaiverTemplatesHubPage from "./pages/seo/WaiverTemplatesHubPage";
+import WaiverLawsHubPage from "./pages/seo/WaiverLawsHubPage";
+import CompareHubPage from "./pages/seo/CompareHubPage";
+import CompetitorAltPage from "./pages/seo/CompetitorAltPage";
+import PricingPublicPage from "./pages/seo/PricingPublicPage";
 
-// Lazy-load everything else for faster initial load
+// Authenticated dashboard pages — lazy-loaded (behind login, not crawled)
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Templates = lazy(() => import("./pages/Templates"));
 const TemplateEditor = lazy(() => import("./pages/TemplateEditor"));
@@ -32,23 +46,9 @@ const Analytics = lazy(() => import("./pages/Analytics"));
 const BulkSend = lazy(() => import("./pages/BulkSend"));
 const CompletionCertificate = lazy(() => import("./pages/CompletionCertificate"));
 const Pricing = lazy(() => import("./pages/Pricing"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const Docs = lazy(() => import("./pages/Docs"));
-const DocsArticle = lazy(() => import("./pages/DocsArticle"));
-const CustomerPortal = lazy(() => import("./pages/CustomerPortal"));
 const MarketplaceIntegration = lazy(() => import("./pages/MarketplaceIntegration"));
 const AdminCredits = lazy(() => import("./pages/AdminCredits"));
-const SeoLanding = lazy(() => import("./pages/SeoLanding"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
-const WaiverSoftwarePage = lazy(() => import("./pages/seo/WaiverSoftwarePage"));
-const RentalWaiverSoftwarePage = lazy(() => import("./pages/seo/RentalWaiverSoftwarePage"));
-const IndustriesHubPage = lazy(() => import("./pages/seo/IndustriesHubPage"));
-const WaiverTemplatesHubPage = lazy(() => import("./pages/seo/WaiverTemplatesHubPage"));
-const WaiverLawsHubPage = lazy(() => import("./pages/seo/WaiverLawsHubPage"));
-const CompareHubPage = lazy(() => import("./pages/seo/CompareHubPage"));
-const CompetitorAltPage = lazy(() => import("./pages/seo/CompetitorAltPage"));
-const PricingPublicPage = lazy(() => import("./pages/seo/PricingPublicPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,6 +77,7 @@ const App = () => (
           <ErrorBoundary fallbackRoute="/dashboard">
           <Suspense fallback={<LazyFallback />}>
           <Routes>
+            {/* Public / SEO — statically loaded for crawlers */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign/:token" element={<SigningPage />} />
@@ -87,8 +88,6 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/docs" element={<Docs />} />
             <Route path="/docs/:articleId" element={<DocsArticle />} />
-
-            {/* SEO Pillar Pages (public) */}
             <Route path="/waiver-software" element={<WaiverSoftwarePage />} />
             <Route path="/rental-waiver-software" element={<RentalWaiverSoftwarePage />} />
             <Route path="/industries" element={<IndustriesHubPage />} />
@@ -97,8 +96,9 @@ const App = () => (
             <Route path="/compare" element={<CompareHubPage />} />
             <Route path="/pricing-info" element={<PricingPublicPage />} />
             <Route path="/alternatives/:slug" element={<CompetitorAltPage />} />
+            <Route path="/waivers/:slug" element={<SeoLanding />} />
 
-            {/* Protected dashboard routes */}
+            {/* Protected dashboard — lazy-loaded (not crawled) */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
             <Route path="/templates/new" element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />
@@ -117,8 +117,6 @@ const App = () => (
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
             <Route path="/admin/credits" element={<AdminRoute><AdminCredits /></AdminRoute>} />
 
-            {/* SEO vertical/niche landing pages */}
-            <Route path="/waivers/:slug" element={<SeoLanding />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
