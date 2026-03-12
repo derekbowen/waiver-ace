@@ -105,6 +105,7 @@ export default function Login() {
           }
           throw error;
         }
+        import("@/lib/gtm-events").then(({ trackSignIn }) => trackSignIn("email"));
         navigate("/dashboard");
       }
     } catch (err: any) {
