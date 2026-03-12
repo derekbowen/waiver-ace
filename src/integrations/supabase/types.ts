@@ -432,36 +432,36 @@ export type Database = {
       }
       organizations: {
         Row: {
+          brand_color: string | null
+          brand_font: string | null
           created_at: string
           email_sender_domain: string | null
           id: string
           logo_url: string | null
-          brand_color: string | null
-          brand_font: string | null
           name: string
           retention_years: number
           tier_override: string | null
           updated_at: string
         }
         Insert: {
+          brand_color?: string | null
+          brand_font?: string | null
           created_at?: string
           email_sender_domain?: string | null
           id?: string
           logo_url?: string | null
-          brand_color?: string | null
-          brand_font?: string | null
           name: string
           retention_years?: number
           tier_override?: string | null
           updated_at?: string
         }
         Update: {
+          brand_color?: string | null
+          brand_font?: string | null
           created_at?: string
           email_sender_domain?: string | null
           id?: string
           logo_url?: string | null
-          brand_color?: string | null
-          brand_font?: string | null
           name?: string
           retention_years?: number
           tier_override?: string | null
@@ -609,6 +609,8 @@ export type Database = {
       }
       templates: {
         Row: {
+          brand_color: string | null
+          brand_font: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -618,11 +620,12 @@ export type Database = {
           org_id: string
           require_photo: boolean
           require_video: boolean
-          brand_color: string | null
-          brand_font: string | null
           updated_at: string
+          video_url: string | null
         }
         Insert: {
+          brand_color?: string | null
+          brand_font?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -632,11 +635,12 @@ export type Database = {
           org_id: string
           require_photo?: boolean
           require_video?: boolean
-          brand_color?: string | null
-          brand_font?: string | null
           updated_at?: string
+          video_url?: string | null
         }
         Update: {
+          brand_color?: string | null
+          brand_font?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -646,9 +650,8 @@ export type Database = {
           org_id?: string
           require_photo?: boolean
           require_video?: boolean
-          brand_color?: string | null
-          brand_font?: string | null
           updated_at?: string
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -825,16 +828,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      add_credits: {
-        Args: {
-          p_amount: number
-          p_notes?: string
-          p_org_id: string
-          p_reference_id: string
-          p_type: string
-        }
-        Returns: number
-      }
+      add_credits:
+        | {
+            Args: {
+              p_amount: number
+              p_notes?: string
+              p_org_id: string
+              p_reference_id?: string
+              p_type?: Database["public"]["Enums"]["credit_transaction_type"]
+            }
+            Returns: {
+              new_balance: number
+              success: boolean
+            }[]
+          }
+        | {
+            Args: {
+              p_amount: number
+              p_notes?: string
+              p_org_id: string
+              p_reference_id: string
+              p_type: string
+            }
+            Returns: number
+          }
       add_credits_internal: {
         Args: {
           p_amount: number
@@ -845,21 +862,29 @@ export type Database = {
         }
         Returns: number
       }
-      deduct_credit: {
-        Args: {
-          p_org_id: string
-          p_reference_id: string
-          p_type?: string
-          p_amount?: number
-          p_notes?: string
-        }
-        Returns: {
-          error_message: string
-          success: boolean
-          new_balance: number
-          needs_recharge: boolean
-        }[]
-      }
+      deduct_credit:
+        | {
+            Args: {
+              p_amount?: number
+              p_notes?: string
+              p_org_id: string
+              p_reference_id?: string
+              p_type?: Database["public"]["Enums"]["credit_transaction_type"]
+            }
+            Returns: {
+              error_message: string
+              needs_recharge: boolean
+              new_balance: number
+              success: boolean
+            }[]
+          }
+        | {
+            Args: { p_org_id: string; p_reference_id: string; p_type?: string }
+            Returns: {
+              error_message: string
+              success: boolean
+            }[]
+          }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -921,6 +946,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "host" | "customer"
+      credit_transaction_type:
+        | "purchase"
+        | "waiver_deduction"
+        | "group_deduction"
+        | "admin_adjustment"
+        | "refund"
+        | "starter_bonus"
       envelope_status:
         | "draft"
         | "sent"
@@ -1057,6 +1089,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "host", "customer"],
+      credit_transaction_type: [
+        "purchase",
+        "waiver_deduction",
+        "group_deduction",
+        "admin_adjustment",
+        "refund",
+        "starter_bonus",
+      ],
       envelope_status: [
         "draft",
         "sent",

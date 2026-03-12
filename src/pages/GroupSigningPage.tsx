@@ -59,12 +59,12 @@ export default function GroupSigningPage() {
       if ((env.template_versions as any)?.template_id) {
         const { data: tmpl } = await supabase
           .from("templates")
-          .select("require_photo, require_video, video_url")
+          .select("require_photo, require_video")
           .eq("id", (env.template_versions as any).template_id)
           .single();
         setRequirePhoto(tmpl?.require_photo === true);
         setRequireVideo(tmpl?.require_video === true);
-        setVideoUrl(tmpl?.video_url || null);
+        setVideoUrl((tmpl as any)?.video_url || null);
       }
 
       const content = (env.template_versions as any)?.content?.body || "";
