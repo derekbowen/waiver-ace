@@ -95,8 +95,8 @@
     border-color: hsl(var(--border));
   }
   html {
-    /* Prevent bounce-scroll behind fixed elements on iOS */
     height: 100%;
+    overflow: hidden;
   }
   body {
     background-color: hsl(var(--background));
@@ -104,21 +104,35 @@
     font-family: 'DM Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    min-height: 100%;
-    /* iOS-style smooth scrolling & tap behavior */
+    height: 100%;
+    overflow: auto;
+    overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-overflow-scrolling: touch;
+  }
+  #root {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    isolation: isolate; /* create new stacking context */
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
   }
 }
 
+/* Hardware-accelerated fixed chrome (tab bar, header) — prevents paint jank */
 @layer utilities {
   .font-heading {
     font-family: var(--font-heading);
   }
   .font-body {
     font-family: var(--font-body);
+  }
+  .gpu-fixed {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 }
