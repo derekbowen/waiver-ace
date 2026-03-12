@@ -54,7 +54,7 @@ Pick a preset (pool, vacation rental, equipment, or event) or start from scratch
 ### Step 4 — Send your first waiver
 Enter a signer's email, fill in the template variables, and hit Send. The signer receives an email with a signing link. You'll see the status update in real time on your dashboard.
 
-> **5 free credits:** Every new organization starts with 5 complimentary credits. Each credit covers one signer on one envelope.
+> **250 free credits:** Every new organization starts with 250 complimentary credits. Each credit covers one signer on one envelope.
     `,
   },
   {

@@ -191,7 +191,7 @@ export default function Landing() {
               </p>
 
               <p className="text-sm text-muted-foreground mb-8 max-w-md">
-                No monthly fees. Pay per waiver starting at 6¢. No contracts.
+                <strong className="text-foreground">250 free credits</strong> to get started. No monthly fees. Pay per waiver starting at 6¢.
               </p>
 
               <div className="flex flex-col sm:flex-row items-start gap-3 mb-4">
