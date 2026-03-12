@@ -23,16 +23,17 @@
 
 set -e
 
+# Quiet mode for cron: pass --cron to suppress all output
+QUIET=false
+if [ "${1:-}" = "--cron" ]; then
+    QUIET=true
+    exec > /var/log/sitemap-generator.log 2>&1
+fi
+
 DOMAIN="https://www.poolrentalnearme.com"
 SITEMAPHOSTING_URL="https://a487260.sitemaphosting7.com/4661760/sitemap.xml"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S+00:00")
 TMPDIR=$(mktemp -d)
-
-# Generate a random prefix so filenames aren't guessable
-RAND_ID=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 8)
-echo ""
-echo "  Sitemap ID: ${RAND_ID} (save this - you'll need it for Google Search Console)"
-echo ""
 
 echo ""
 echo "=========================================="
@@ -78,6 +79,19 @@ if [ -z "$PUBLIC_DIR" ]; then
 fi
 
 echo "  Found: $PUBLIC_DIR"
+echo ""
+
+# Reuse existing sitemap ID if found, otherwise generate a new one.
+# This keeps the Google Search Console URL stable across daily runs.
+RAND_ID=""
+EXISTING=$(ls "${PUBLIC_DIR}"/sm-*.xml 2>/dev/null | head -1 | grep -oP 'sm-\K[a-z0-9]+(?=[\.-])' || true)
+if [ -n "$EXISTING" ]; then
+    RAND_ID="$EXISTING"
+    echo "  Reusing existing sitemap ID: ${RAND_ID}"
+else
+    RAND_ID=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 8)
+    echo "  Generated new sitemap ID: ${RAND_ID}"
+fi
 echo ""
 
 # --- Step 2: Collect ALL URLs from every source ---
