@@ -96,6 +96,14 @@ export default function EnvelopeDetail() {
     return () => { supabase.removeChannel(channel); };
   }, [id, fetchDetail]);
 
+  const downloadPhoto = (url: string, name: string) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `signer-photo-${name || id?.slice(0, 8)}.jpg`;
+    a.target = "_blank";
+    a.click();
+  };
+
   const copySigningLink = () => {
     if (!envelope) return;
     const url = envelope.is_group_waiver
