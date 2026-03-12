@@ -54,6 +54,7 @@ export default function Login() {
         redirect_uri: window.location.origin,
       });
       if (error) throw error;
+      import("@/lib/gtm-events").then(({ trackSignIn }) => trackSignIn("apple"));
     } catch (err: any) {
       toast.error(err.message);
     } finally {
