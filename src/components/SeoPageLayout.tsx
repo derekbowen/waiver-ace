@@ -112,6 +112,11 @@ export function SeoFaq({ items }: { items: { question: string; answer: string }[
     <section className="border-t bg-muted/30 py-16">
       <div className="container max-w-3xl">
         <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
+        {/* FAQ JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(items)) }}
+        />
         <div className="space-y-3">
           {items.map((item, i) => (
             <Card key={i} className="cursor-pointer" onClick={() => setOpen(open === i ? null : i)}>

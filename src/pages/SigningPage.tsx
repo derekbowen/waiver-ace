@@ -274,6 +274,7 @@ export default function SigningPage() {
                   <Checkbox id="agree" checked={agreed} onCheckedChange={(c) => setAgreed(c === true)} />
                   <Label htmlFor="agree" className="text-sm cursor-pointer">
                     I agree to sign this document electronically and acknowledge this constitutes a legally binding signature.
+                    I consent to the collection and storage of my signature, name, IP address, device information, and timestamp for legal record-keeping purposes.
                   </Label>
                 </div>
 
