@@ -88,6 +88,24 @@ serve(async (req) => {
       });
     }
 
+    // Check per-envelope email send cap (max 5 sends including retries)
+    const MAX_EMAILS_PER_ENVELOPE = 5;
+    const { data: sendCount } = await adminClient
+      .from('email_send_log')
+      .select('id', { count: 'exact', head: true })
+      .eq('recipient_email', envelope.signer_email)
+      .eq('template_name', 'signing_request')
+      .eq('status', 'sent')
+      .filter('metadata->>envelope_id', 'eq', envelope_id);
+
+    const existingSends = (sendCount as any)?.length ?? 0;
+    if (existingSends >= MAX_EMAILS_PER_ENVELOPE) {
+      return new Response(JSON.stringify({ error: 'Email send limit reached for this envelope' }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { data: org } = await adminClient
       .from('organizations')
       .select('name')

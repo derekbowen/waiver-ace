@@ -120,6 +120,8 @@ serve(async (_req: Request) => {
             event_type: "envelope.reminder_sent",
             metadata: { source: "auto" },
           });
+          // Increment reminder_count on the envelope
+          await supabase.from("envelopes").update({ reminder_count: (env as any).reminder_count + 1 }).eq("id", env.id);
           results.reminders_sent++;
         }
       } catch (emailErr: any) {

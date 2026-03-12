@@ -11,7 +11,6 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Auth client to verify the caller
   const anonClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? ""
@@ -24,10 +23,9 @@ serve(async (req) => {
     const user = authData.user;
     if (!user) throw new Error("Not authenticated");
 
-    const { name, retention_years } = await req.json();
+    const { name, retention_years, referral_code } = await req.json();
     if (!name?.trim()) throw new Error("Organization name is required");
 
-    // Admin client bypasses RLS
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -65,7 +63,7 @@ serve(async (req) => {
       .insert({ user_id: user.id, role: "admin", org_id: org.id });
     if (roleErr) throw roleErr;
 
-    // Grant 250 free welcome credits (use internal function that has no auth check, called via service role)
+    // Grant 250 free welcome credits
     const { error: creditErr } = await adminClient.rpc("add_credits_internal", {
       p_org_id: org.id,
       p_amount: 250,
@@ -75,7 +73,32 @@ serve(async (req) => {
     });
     if (creditErr) {
       console.error("Failed to grant welcome credits:", creditErr);
-      // Don't throw - org creation succeeded, credits are a bonus
+    }
+
+    // Track referral if a referral_code was provided
+    if (referral_code?.trim()) {
+      try {
+        const code = referral_code.trim().toUpperCase();
+        // Find the referrer by their referral code
+        const { data: referrerProfile } = await adminClient
+          .from("profiles")
+          .select("org_id, referral_code")
+          .eq("referral_code", code)
+          .single();
+
+        if (referrerProfile?.org_id && referrerProfile.org_id !== org.id) {
+          await adminClient.from("referrals").insert({
+            referrer_org_id: referrerProfile.org_id,
+            referred_org_id: org.id,
+            referred_email: user.email || "",
+            referral_code: code,
+            status: "pending",
+          });
+          console.log(`Referral tracked: ${code} -> org ${org.id}`);
+        }
+      } catch (refErr) {
+        console.error("Non-fatal: Failed to track referral:", refErr);
+      }
     }
 
     // Send welcome email
