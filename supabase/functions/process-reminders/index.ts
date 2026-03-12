@@ -54,13 +54,15 @@ serve(async (_req: Request) => {
     }
 
     // --- Send reminders for unsigned envelopes ---
+    const MAX_REMINDERS_PER_ENVELOPE = 3;
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
     const { data: pending } = await supabase
       .from("envelopes")
-      .select("id, signer_email, signer_name, signing_token, org_id")
+      .select("id, signer_email, signer_name, signing_token, org_id, reminder_count")
       .in("status", ["sent", "viewed"])
       .lt("created_at", oneDayAgo)
+      .lt("reminder_count", MAX_REMINDERS_PER_ENVELOPE)
       .limit(50);
 
     if (!pending) {
