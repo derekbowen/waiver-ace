@@ -252,6 +252,40 @@ export default function EnvelopeDetail() {
           </Card>
         </div>
 
+        {/* Signer Photo Card */}
+        {photoUrl && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Camera className="h-4 w-4" /> Signer Identity Photo
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-start gap-4">
+                <button
+                  onClick={() => setPhotoLightbox(photoUrl)}
+                  className="shrink-0 rounded-lg overflow-hidden border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer"
+                >
+                  <img src={photoUrl} alt="Signer photo" className="h-24 w-24 object-cover" />
+                </button>
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Photo captured during signing for identity verification.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => downloadPhoto(photoUrl, envelope.signer_name)}
+                  >
+                    <Download className="h-3 w-3" /> Download Photo
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {envelope.is_group_waiver && (
           <Card className="mt-6">
             <CardHeader>
@@ -266,15 +300,38 @@ export default function EnvelopeDetail() {
                 <div className="space-y-3">
                   {groupSigs.map((sig) => (
                     <div key={sig.id} className="flex items-center justify-between rounded-lg border p-3">
-                      <div>
-                        <p className="text-sm font-medium">{sig.signer_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {sig.signer_email || "No email provided"} · Signed {format(new Date(sig.signed_at), "PPpp")}
-                        </p>
+                      <div className="flex items-center gap-3 min-w-0">
+                        {groupPhotoUrls[sig.id] && (
+                          <button
+                            onClick={() => setPhotoLightbox(groupPhotoUrls[sig.id])}
+                            className="shrink-0 rounded-full overflow-hidden border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer"
+                          >
+                            <img src={groupPhotoUrls[sig.id]} alt={`${sig.signer_name} photo`} className="h-10 w-10 object-cover" />
+                          </button>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium">{sig.signer_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {sig.signer_email || "No email provided"} · Signed {format(new Date(sig.signed_at), "PPpp")}
+                          </p>
+                        </div>
                       </div>
-                      {(sig.signature_data as any)?.signature_image && (
-                        <img src={(sig.signature_data as any).signature_image} alt="Signature" className="h-8 max-w-[120px] object-contain" />
-                      )}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {groupPhotoUrls[sig.id] && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => downloadPhoto(groupPhotoUrls[sig.id], sig.signer_name)}
+                            title="Download photo"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                        {(sig.signature_data as any)?.signature_image && (
+                          <img src={(sig.signature_data as any).signature_image} alt="Signature" className="h-8 max-w-[120px] object-contain" />
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
