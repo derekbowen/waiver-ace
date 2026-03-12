@@ -6,10 +6,11 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { AuditTrailCard } from "@/components/AuditTrailCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users } from "lucide-react";
+import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users, Camera, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function EnvelopeDetail() {
   const { id } = useParams();
@@ -20,6 +21,9 @@ export default function EnvelopeDetail() {
   const [loading, setLoading] = useState(true);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoLightbox, setPhotoLightbox] = useState<string | null>(null);
+  const [groupPhotoUrls, setGroupPhotoUrls] = useState<Record<string, string>>({});
 
   const fetchDetail = useCallback(async () => {
     const [envRes, eventsRes] = await Promise.all([
