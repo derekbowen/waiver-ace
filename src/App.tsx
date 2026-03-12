@@ -66,6 +66,7 @@ const App = () => (
         <I18nProvider>
         <AuthProvider>
           <ErrorBoundary fallbackRoute="/dashboard">
+          <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign/:token" element={<SigningPage />} />
