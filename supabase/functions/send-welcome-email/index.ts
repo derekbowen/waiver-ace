@@ -11,6 +11,15 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Internal-only: require service-role key
+  const authToken = req.headers.get("Authorization")?.replace("Bearer ", "");
+  if (authToken !== Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const { email, full_name, org_name } = await req.json();
     if (!email) throw new Error("email is required");

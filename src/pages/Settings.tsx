@@ -37,8 +37,8 @@ export default function Settings() {
           setRetentionYears(data.retention_years);
           setLogoUrl(data.logo_url || "");
           setBrandColor(data.brand_color || "#162a4a");
-          setWebsiteUrl(data.website_url || "");
-          setSocialUrl(data.social_url || "");
+          setWebsiteUrl((data as any).website_url || "");
+          setSocialUrl((data as any).social_url || "");
           setHasOrg(true);
         }
       });
