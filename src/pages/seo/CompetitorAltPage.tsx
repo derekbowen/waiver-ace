@@ -4,6 +4,8 @@ import { CheckCircle, XCircle, ArrowRight, Zap, Shield, Clock, DollarSign } from
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { competitorAltPages } from "@/lib/competitor-alt-data";
+import { AiQuestionBox } from "@/components/AiQuestionBox";
+import { InternalLinks } from "@/components/InternalLinks";
 
 function Check({ val }: { val: boolean }) {
   return val
