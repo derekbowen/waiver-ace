@@ -39,6 +39,7 @@ export default function Login() {
         redirect_uri: window.location.origin,
       });
       if (error) throw error;
+      import("@/lib/gtm-events").then(({ trackSignIn }) => trackSignIn("google"));
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -53,6 +54,7 @@ export default function Login() {
         redirect_uri: window.location.origin,
       });
       if (error) throw error;
+      import("@/lib/gtm-events").then(({ trackSignIn }) => trackSignIn("apple"));
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -93,6 +95,7 @@ export default function Login() {
           },
         });
         if (error) throw error;
+        import("@/lib/gtm-events").then(({ trackSignUp }) => trackSignUp("email"));
         toast.success("Check your email to confirm your account");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -102,6 +105,7 @@ export default function Login() {
           }
           throw error;
         }
+        import("@/lib/gtm-events").then(({ trackSignIn }) => trackSignIn("email"));
         navigate("/dashboard");
       }
     } catch (err: any) {

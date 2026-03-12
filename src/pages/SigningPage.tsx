@@ -94,6 +94,9 @@ export default function SigningPage() {
       return;
     }
 
+    const consentText = "I agree to sign this document electronically and acknowledge this constitutes a legally binding signature. I consent to the collection and storage of my signature, name, IP address, device information, and timestamp for legal record-keeping purposes.";
+    const consentGivenAt = new Date().toISOString();
+
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
@@ -117,7 +120,9 @@ export default function SigningPage() {
           initials: initials.trim(),
           signature_image: signatureDataUrl,
           agreed_to_electronic_signing: true,
-          signed_at_utc: now,
+          consent_text: consentText,
+          consent_given_at: consentGivenAt,
+          signed_at_utc: consentGivenAt,
           user_agent: navigator.userAgent,
         },
         p_user_agent: navigator.userAgent,
@@ -130,6 +135,11 @@ export default function SigningPage() {
       if (!res?.success) {
         throw new Error(res?.error || "Failed to sign envelope");
       }
+
+      // Fire GTM event
+      import("@/lib/gtm-events").then(({ trackWaiverSigned }) => {
+        trackWaiverSigned(res.envelope_id);
+      });
 
       supabase.functions.invoke("send-completion-email", {
         body: { envelope_id: res.envelope_id },
@@ -264,6 +274,7 @@ export default function SigningPage() {
                   <Checkbox id="agree" checked={agreed} onCheckedChange={(c) => setAgreed(c === true)} />
                   <Label htmlFor="agree" className="text-sm cursor-pointer">
                     I agree to sign this document electronically and acknowledge this constitutes a legally binding signature.
+                    I consent to the collection and storage of my signature, name, IP address, device information, and timestamp for legal record-keeping purposes.
                   </Label>
                 </div>
 

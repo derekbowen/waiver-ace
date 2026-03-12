@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 import { buildEmail, sendEmail } from "../_shared/email-builder.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,6 +16,12 @@ serve(async (req) => {
   const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
   try {
+    // Rate limit by IP
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (!checkRateLimit(ip, { windowMs: 60_000, maxRequests: 20 })) {
+      return rateLimitResponse(corsHeaders);
+    }
+
     // Authenticate the caller
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {

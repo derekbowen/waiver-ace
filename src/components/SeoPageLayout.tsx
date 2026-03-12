@@ -4,14 +4,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { FileText, ArrowRight, Shield, ChevronDown, ChevronUp, CheckCircle } from "lucide-react";
 import { useState, useEffect, ReactNode } from "react";
+import { faqSchema, breadcrumbSchema } from "@/lib/structured-data";
 
 interface SeoPageLayoutProps {
   metaTitle: string;
   metaDescription: string;
+  canonicalPath?: string;
   children: ReactNode;
 }
 
-export function SeoPageLayout({ metaTitle, metaDescription, children }: SeoPageLayoutProps) {
+export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, children }: SeoPageLayoutProps) {
   useEffect(() => {
     document.title = metaTitle;
     const metaDesc = document.querySelector('meta[name="description"]');
@@ -22,7 +24,22 @@ export function SeoPageLayout({ metaTitle, metaDescription, children }: SeoPageL
       meta.content = metaDescription;
       document.head.appendChild(meta);
     }
-  }, [metaTitle, metaDescription]);
+
+    // Update OG tags dynamically
+    const setMeta = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property="${property}"]`) || document.querySelector(`meta[name="${property}"]`);
+      if (el) el.setAttribute("content", content);
+    };
+    setMeta("og:title", metaTitle);
+    setMeta("og:description", metaDescription);
+    setMeta("twitter:title", metaTitle);
+    setMeta("twitter:description", metaDescription);
+    if (canonicalPath) {
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) canonical.setAttribute("href", `https://www.rentalwaivers.com${canonicalPath}`);
+      setMeta("og:url", `https://www.rentalwaivers.com${canonicalPath}`);
+    }
+  }, [metaTitle, metaDescription, canonicalPath]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -95,6 +112,11 @@ export function SeoFaq({ items }: { items: { question: string; answer: string }[
     <section className="border-t bg-muted/30 py-16">
       <div className="container max-w-3xl">
         <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
+        {/* FAQ JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(items)) }}
+        />
         <div className="space-y-3">
           {items.map((item, i) => (
             <Card key={i} className="cursor-pointer" onClick={() => setOpen(open === i ? null : i)}>
