@@ -25,6 +25,13 @@ export default function EnvelopeDetail() {
   const [photoLightbox, setPhotoLightbox] = useState<string | null>(null);
   const [groupPhotoUrls, setGroupPhotoUrls] = useState<Record<string, string>>({});
 
+  const getSignedUrl = useCallback(async (key: string): Promise<string | null> => {
+    if (!key) return null;
+    const { data, error } = await supabase.storage.from("signer-photos").createSignedUrl(key, 3600);
+    if (error) { console.error("Photo URL error:", error); return null; }
+    return data.signedUrl;
+  }, []);
+
   const fetchDetail = useCallback(async () => {
     const [envRes, eventsRes] = await Promise.all([
       supabase.from("envelopes").select("*").eq("id", id).single(),
@@ -32,6 +39,11 @@ export default function EnvelopeDetail() {
     ]);
     setEnvelope(envRes.data);
     setEvents(eventsRes.data || []);
+
+    // Load signer photo
+    if (envRes.data?.photo_storage_key) {
+      getSignedUrl(envRes.data.photo_storage_key).then(setPhotoUrl);
+    }
 
     // Fetch group signatures if applicable
     if (envRes.data?.is_group_waiver) {
@@ -41,10 +53,20 @@ export default function EnvelopeDetail() {
         .eq("envelope_id", id!)
         .order("signed_at", { ascending: true });
       setGroupSigs(sigs || []);
+
+      // Load group signer photos
+      const urls: Record<string, string> = {};
+      for (const sig of (sigs || [])) {
+        if (sig.photo_storage_key) {
+          const url = await getSignedUrl(sig.photo_storage_key);
+          if (url) urls[sig.id] = url;
+        }
+      }
+      setGroupPhotoUrls(urls);
     }
 
     setLoading(false);
-  }, [id]);
+  }, [id, getSignedUrl]);
 
   useEffect(() => {
     fetchDetail();
