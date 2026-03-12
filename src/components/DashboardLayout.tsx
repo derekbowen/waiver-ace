@@ -86,11 +86,9 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
                   "bg-primary text-primary-foreground" :
                   "text-muted-foreground hover:bg-accent hover:text-foreground"
                 )}>
-                
                 <item.icon className="h-4 w-4" />
                 {item.label}
               </Link>);
-
           })}
         </nav>
 
@@ -111,15 +109,15 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
         </div>
       </aside>
 
-      {/* Mobile Header */}
-      <header className="fixed top-0 inset-x-0 z-40 flex md:hidden h-12 items-center justify-between border-b bg-card/80 backdrop-blur-lg px-4">
-        <div className="flex items-center gap-2">
-          <img src={logo} alt="Rental Waivers" className="h-6 w-6" />
-          <span className="font-heading text-base font-bold tracking-tight">
+      {/* ── Mobile Header ── */}
+      <header className="fixed top-0 inset-x-0 z-40 md:hidden h-12 flex items-center justify-between border-b bg-card px-4 gpu-fixed">
+        <div className="flex items-center gap-2 min-w-0">
+          <img src={logo} alt="Rental Waivers" className="h-6 w-6 shrink-0" />
+          <span className="font-heading text-base font-bold tracking-tight truncate">
             {currentPage?.label || "Rental Waivers"}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggle}>
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
@@ -137,72 +135,63 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
       </main>
 
       {/* Mobile "More" sheet overlay */}
-      {moreOpen &&
-      <div className="fixed inset-0 z-50 md:hidden" onClick={() => setMoreOpen(false)}>
-          {/* Backdrop */}
+      {moreOpen && (
+        <div className="fixed inset-0 z-50 md:hidden" onClick={() => setMoreOpen(false)}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-
-          {/* Sheet sliding up from bottom */}
           <div
-          className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-card pb-8 animate-in slide-in-from-bottom duration-200"
-          onClick={(e) => e.stopPropagation()}>
-          
-            {/* Drag handle */}
+            className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-card pb-8 animate-in slide-in-from-bottom duration-200"
+            onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-center pt-3 pb-2">
               <div className="h-1 w-10 rounded-full bg-muted-foreground/30" />
             </div>
-
             <div className="px-4 pb-2 flex items-center justify-between">
               <h2 className="font-heading text-lg font-semibold">More</h2>
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setMoreOpen(false)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
-
             <nav className="px-2">
               {mobileMoreItems.map((item) => {
-              const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  onClick={() => setMoreOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 rounded-xl mx-2 px-4 py-3 text-sm font-medium transition-colors",
-                    isActive ? "bg-primary/10 text-primary" : "text-foreground active:bg-accent"
-                  )}>
-                  
+                const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
+                return (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    onClick={() => setMoreOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-xl mx-2 px-4 py-3 text-sm font-medium transition-colors",
+                      isActive ? "bg-primary/10 text-primary" : "text-foreground active:bg-accent"
+                    )}>
                     <item.icon className="h-5 w-5" />
                     <span className="flex-1">{item.label}</span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   </Link>);
-
-            })}
+              })}
             </nav>
-
-            {/* User info + sign out */}
             <div className="mx-4 mt-4 pt-4 border-t">
               <div className="px-2 mb-3">
                 <p className="text-sm font-medium truncate">{profile?.full_name || profile?.email || "User"}</p>
                 <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
               </div>
               <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={handleSignOut}>
-              
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={handleSignOut}>
                 <LogOut className="h-4 w-4" />
                 Sign out
               </Button>
             </div>
           </div>
         </div>
-      }
+      )}
 
-      {/* Mobile Bottom Tab Bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden border-t bg-card/80 backdrop-blur-lg pb-[env(safe-area-inset-bottom)]">
-        <div className="flex items-stretch">
+      {/* ── Mobile Bottom Tab Bar ── */}
+      <nav
+        className="fixed bottom-0 inset-x-0 z-40 md:hidden border-t bg-card gpu-fixed"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        <div className="flex items-stretch h-14">
           {mobileTabItems.map((item) => {
             const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
             return (
@@ -210,26 +199,23 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1.5 text-[10px] font-medium transition-colors",
+                  "flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors",
                   isActive ? "text-primary" : "text-muted-foreground active:text-foreground"
                 )}>
-                
-                <item.icon className={cn("h-5 w-5", isActive && "stroke-[2.5px]")} />
-                {item.label}
+                <item.icon className={cn("h-5 w-5 shrink-0", isActive && "stroke-[2.5px]")} />
+                <span className="leading-none">{item.label}</span>
               </Link>);
-
           })}
 
           {/* More tab */}
           <button
             onClick={() => setMoreOpen(true)}
             className={cn(
-              "flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1.5 text-[10px] font-medium transition-colors",
+              "flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors",
               isMoreActive || moreOpen ? "text-primary" : "text-muted-foreground active:text-foreground"
             )}>
-            
-            <MoreHorizontal className={cn("h-5 w-5", (isMoreActive || moreOpen) && "stroke-[2.5px]")} />
-            More
+            <MoreHorizontal className={cn("h-5 w-5 shrink-0", (isMoreActive || moreOpen) && "stroke-[2.5px]")} />
+            <span className="leading-none">More</span>
           </button>
         </div>
       </nav>
