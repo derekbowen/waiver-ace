@@ -6,10 +6,11 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { AuditTrailCard } from "@/components/AuditTrailCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users } from "lucide-react";
+import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users, Camera, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function EnvelopeDetail() {
   const { id } = useParams();
@@ -20,6 +21,16 @@ export default function EnvelopeDetail() {
   const [loading, setLoading] = useState(true);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoLightbox, setPhotoLightbox] = useState<string | null>(null);
+  const [groupPhotoUrls, setGroupPhotoUrls] = useState<Record<string, string>>({});
+
+  const getSignedUrl = useCallback(async (key: string): Promise<string | null> => {
+    if (!key) return null;
+    const { data, error } = await supabase.storage.from("signer-photos").createSignedUrl(key, 3600);
+    if (error) { console.error("Photo URL error:", error); return null; }
+    return data.signedUrl;
+  }, []);
 
   const fetchDetail = useCallback(async () => {
     const [envRes, eventsRes] = await Promise.all([
@@ -29,6 +40,11 @@ export default function EnvelopeDetail() {
     setEnvelope(envRes.data);
     setEvents(eventsRes.data || []);
 
+    // Load signer photo
+    if (envRes.data?.photo_storage_key) {
+      getSignedUrl(envRes.data.photo_storage_key).then(setPhotoUrl);
+    }
+
     // Fetch group signatures if applicable
     if (envRes.data?.is_group_waiver) {
       const { data: sigs } = await supabase
@@ -37,10 +53,20 @@ export default function EnvelopeDetail() {
         .eq("envelope_id", id!)
         .order("signed_at", { ascending: true });
       setGroupSigs(sigs || []);
+
+      // Load group signer photos
+      const urls: Record<string, string> = {};
+      for (const sig of (sigs || [])) {
+        if (sig.photo_storage_key) {
+          const url = await getSignedUrl(sig.photo_storage_key);
+          if (url) urls[sig.id] = url;
+        }
+      }
+      setGroupPhotoUrls(urls);
     }
 
     setLoading(false);
-  }, [id]);
+  }, [id, getSignedUrl]);
 
   useEffect(() => {
     fetchDetail();
@@ -69,6 +95,14 @@ export default function EnvelopeDetail() {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [id, fetchDetail]);
+
+  const downloadPhoto = (url: string, name: string) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `signer-photo-${name || id?.slice(0, 8)}.jpg`;
+    a.target = "_blank";
+    a.click();
+  };
 
   const copySigningLink = () => {
     if (!envelope) return;
@@ -218,6 +252,40 @@ export default function EnvelopeDetail() {
           </Card>
         </div>
 
+        {/* Signer Photo Card */}
+        {photoUrl && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Camera className="h-4 w-4" /> Signer Identity Photo
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-start gap-4">
+                <button
+                  onClick={() => setPhotoLightbox(photoUrl)}
+                  className="shrink-0 rounded-lg overflow-hidden border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer"
+                >
+                  <img src={photoUrl} alt="Signer photo" className="h-24 w-24 object-cover" />
+                </button>
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Photo captured during signing for identity verification.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => downloadPhoto(photoUrl, envelope.signer_name)}
+                  >
+                    <Download className="h-3 w-3" /> Download Photo
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {envelope.is_group_waiver && (
           <Card className="mt-6">
             <CardHeader>
@@ -232,15 +300,38 @@ export default function EnvelopeDetail() {
                 <div className="space-y-3">
                   {groupSigs.map((sig) => (
                     <div key={sig.id} className="flex items-center justify-between rounded-lg border p-3">
-                      <div>
-                        <p className="text-sm font-medium">{sig.signer_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {sig.signer_email || "No email provided"} · Signed {format(new Date(sig.signed_at), "PPpp")}
-                        </p>
+                      <div className="flex items-center gap-3 min-w-0">
+                        {groupPhotoUrls[sig.id] && (
+                          <button
+                            onClick={() => setPhotoLightbox(groupPhotoUrls[sig.id])}
+                            className="shrink-0 rounded-full overflow-hidden border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer"
+                          >
+                            <img src={groupPhotoUrls[sig.id]} alt={`${sig.signer_name} photo`} className="h-10 w-10 object-cover" />
+                          </button>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium">{sig.signer_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {sig.signer_email || "No email provided"} · Signed {format(new Date(sig.signed_at), "PPpp")}
+                          </p>
+                        </div>
                       </div>
-                      {(sig.signature_data as any)?.signature_image && (
-                        <img src={(sig.signature_data as any).signature_image} alt="Signature" className="h-8 max-w-[120px] object-contain" />
-                      )}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {groupPhotoUrls[sig.id] && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => downloadPhoto(groupPhotoUrls[sig.id], sig.signer_name)}
+                            title="Download photo"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                        {(sig.signature_data as any)?.signature_image && (
+                          <img src={(sig.signature_data as any).signature_image} alt="Signature" className="h-8 max-w-[120px] object-contain" />
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -280,6 +371,19 @@ export default function EnvelopeDetail() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Photo Lightbox */}
+      <Dialog open={!!photoLightbox} onOpenChange={() => setPhotoLightbox(null)}>
+        <DialogContent className="max-w-lg p-2 bg-black/95 border-none">
+          {photoLightbox && (
+            <img
+              src={photoLightbox}
+              alt="Signer identity photo"
+              className="w-full h-auto rounded-lg"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
