@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,16 @@ export default function Login() {
   const [showResend, setShowResend] = useState(false);
   const [resending, setResending] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Capture referral code from URL (?ref=CODE) and persist in sessionStorage
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      sessionStorage.setItem("referral_code", ref.toUpperCase());
+      setIsSignUp(true); // Auto-switch to sign-up when arriving via referral link
+    }
+  }, [searchParams]);
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);

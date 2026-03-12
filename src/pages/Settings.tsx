@@ -24,6 +24,9 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [savingBrand, setSavingBrand] = useState(false);
   const [hasOrg, setHasOrg] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [referrals, setReferrals] = useState<any[]>([]);
 
   useEffect(() => {
     if (!profile?.org_id) return;
