@@ -206,7 +206,7 @@ export default function Landing() {
                   </Button>
                 </a>
               </div>
-              <p className="text-xs text-muted-foreground">5 free credits included · No credit card required</p>
+              <p className="text-xs text-muted-foreground">250 free credits included · No credit card required</p>
             </div>
 
             {/* Right: lifestyle image with phone mockup overlay */}
