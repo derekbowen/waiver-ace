@@ -280,6 +280,64 @@ export default function Settings() {
             </Card>
           )}
 
+          {hasOrg && referralCode && (
+            <Card className="border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Gift className="h-4 w-4 text-primary" />
+                  Refer & Earn
+                </CardTitle>
+                <CardDescription>
+                  Share your referral link. When your friend signs up and makes their first credit purchase, you both get <strong>250 free credits</strong>.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Your referral link</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      readOnly
+                      value={`https://rentalwaivers.com/login?ref=${referralCode}`}
+                      className="font-mono text-xs"
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://rentalwaivers.com/login?ref=${referralCode}`);
+                        setCopied(true);
+                        toast.success("Referral link copied!");
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                    >
+                      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Your code: <span className="font-mono font-semibold">{referralCode}</span></p>
+                </div>
+
+                {referrals.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                      Your referrals
+                    </Label>
+                    <div className="rounded-md border">
+                      {referrals.map((r) => (
+                        <div key={r.id} className="flex items-center justify-between px-3 py-2 text-sm border-b last:border-b-0">
+                          <span className="text-muted-foreground truncate max-w-[200px]">{r.referred_email}</span>
+                          <Badge variant={r.status === "completed" ? "default" : "secondary"}>
+                            {r.status === "completed" ? "250 credits earned" : "Pending first purchase"}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {hasOrg && (
             <Card>
               <CardHeader>
