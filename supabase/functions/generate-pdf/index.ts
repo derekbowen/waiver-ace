@@ -213,10 +213,10 @@ serve(async (req: Request) => {
     const hashBuffer = await crypto.subtle.digest("SHA-256", pdfBytes);
     const pdfHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
 
-    // Store in Supabase Storage
+    // Store in dedicated private waiver-pdfs bucket
     const storageKey = `waivers/${envelope.org_id}/${envelope.id}.pdf`;
     const { error: uploadErr } = await supabase.storage
-      .from("email-assets")
+      .from("waiver-pdfs")
       .upload(storageKey, pdfBytes, { contentType: "application/pdf", upsert: true });
 
     if (uploadErr) {
