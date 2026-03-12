@@ -80,8 +80,9 @@ export default function Settings() {
         toast.success("Settings saved");
       } else {
         // Use Edge Function to bypass RLS for org setup
+        const storedRef = sessionStorage.getItem("referral_code");
         const { data, error } = await supabase.functions.invoke("setup-org", {
-          body: { name: orgName, retention_years: retentionYears },
+          body: { name: orgName, retention_years: retentionYears, referral_code: storedRef || undefined },
         });
         if (error) throw error;
         if (data?.error) throw new Error(data.error);
