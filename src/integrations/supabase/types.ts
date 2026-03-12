@@ -476,6 +476,7 @@ export type Database = {
           full_name: string | null
           id: string
           org_id: string | null
+          referral_code: string | null
           updated_at: string
           user_id: string
         }
@@ -485,6 +486,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           org_id?: string | null
+          referral_code?: string | null
           updated_at?: string
           user_id: string
         }
@@ -494,6 +496,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           org_id?: string | null
+          referral_code?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -501,6 +504,57 @@ export type Database = {
           {
             foreignKeyName: "profiles_org_id_fkey"
             columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_email: string
+          referred_org_id: string | null
+          referrer_org_id: string
+          reward_credited: boolean
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_email: string
+          referred_org_id?: string | null
+          referrer_org_id: string
+          reward_credited?: boolean
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_email?: string
+          referred_org_id?: string | null
+          referrer_org_id?: string
+          reward_credited?: boolean
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_org_id_fkey"
+            columns: ["referred_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_org_id_fkey"
+            columns: ["referrer_org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]

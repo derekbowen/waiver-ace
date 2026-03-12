@@ -116,6 +116,51 @@ serve(async (req) => {
 
     console.log(`Added ${credits} credits to org ${orgId} (session: ${session.id})`);
 
+    // Check if this is the first purchase for this org — grant referral reward
+    try {
+      const { data: allPurchases } = await supabase
+        .from("credit_transactions")
+        .select("id")
+        .eq("org_id", orgId)
+        .eq("type", "purchase")
+        .limit(2);
+
+      // If this is the first purchase (only 1 purchase record = the one we just created)
+      if (allPurchases && allPurchases.length === 1) {
+        // Find pending referral for this org
+        const { data: referral } = await supabase
+          .from("referrals")
+          .select("id, referrer_org_id")
+          .eq("referred_org_id", orgId)
+          .eq("status", "pending")
+          .eq("reward_credited", false)
+          .single();
+
+        if (referral) {
+          // Grant 250 credits to the referrer
+          const { error: rewardErr } = await supabase.rpc("add_credits_internal", {
+            p_org_id: referral.referrer_org_id,
+            p_amount: 250,
+            p_reference_id: `referral_${referral.id}`,
+            p_type: "referral_bonus",
+            p_notes: "Referral reward — 250 free credits",
+          });
+
+          if (!rewardErr) {
+            await supabase
+              .from("referrals")
+              .update({ status: "completed", reward_credited: true, completed_at: new Date().toISOString() })
+              .eq("id", referral.id);
+            console.log(`Referral reward granted to org ${referral.referrer_org_id}`);
+          } else {
+            console.error("Failed to grant referral reward:", rewardErr);
+          }
+        }
+      }
+    } catch (refErr) {
+      console.error("Non-fatal: Referral reward check failed:", refErr);
+    }
+
     // Send credit purchase confirmation email
     try {
       const emailUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-credits-email`;
