@@ -371,6 +371,19 @@ export default function EnvelopeDetail() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Photo Lightbox */}
+      <Dialog open={!!photoLightbox} onOpenChange={() => setPhotoLightbox(null)}>
+        <DialogContent className="max-w-lg p-2 bg-black/95 border-none">
+          {photoLightbox && (
+            <img
+              src={photoLightbox}
+              alt="Signer identity photo"
+              className="w-full h-auto rounded-lg"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
