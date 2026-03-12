@@ -112,6 +112,16 @@ export default function SigningPage() {
         photoStorageKey = path;
       }
 
+      // Capture signer IP address for audit trail
+      let signerIp: string | null = null;
+      try {
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipRes.json();
+        signerIp = ipData.ip || null;
+      } catch {
+        // IP capture is best-effort; don't block signing
+      }
+
       const { data: result, error } = await supabase.rpc("sign_envelope", {
         p_token: token!,
         p_signer_name: fullName.trim(),
@@ -127,6 +137,7 @@ export default function SigningPage() {
         },
         p_user_agent: navigator.userAgent,
         p_photo_storage_key: photoStorageKey,
+        p_ip_address: signerIp,
       });
 
       if (error) throw error;
