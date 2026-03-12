@@ -147,6 +147,14 @@ export default function BulkSend() {
           metadata: { source: "bulk" },
         });
 
+        // Send signing email
+        const { error: emailErr } = await supabase.functions.invoke("send-signing-email", {
+          body: { envelope_id: envelope.id },
+        });
+        if (emailErr) {
+          console.error(`Failed to send email to ${email}:`, emailErr);
+        }
+
         bulkResults.push({ email, success: true });
       } catch (err: any) {
         bulkResults.push({ email, success: false, error: err.message });

@@ -19,6 +19,7 @@ export default function EnvelopeDetail() {
   const [groupSigs, setGroupSigs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const fetchDetail = useCallback(async () => {
     const [envRes, eventsRes] = await Promise.all([
@@ -101,6 +102,21 @@ export default function EnvelopeDetail() {
     }
   };
 
+  const resendEmail = async () => {
+    setResending(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-signing-email", {
+        body: { envelope_id: id },
+      });
+      if (error) throw error;
+      toast.success("Signing email resent");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to resend email");
+    } finally {
+      setResending(false);
+    }
+  };
+
   const cancelEnvelope = async () => {
     const { error } = await supabase
       .from("envelopes")
@@ -167,6 +183,11 @@ export default function EnvelopeDetail() {
                 <Button variant="outline" size="sm" onClick={copySigningLink} className="gap-2">
                   <Copy className="h-3 w-3" /> Copy Link
                 </Button>
+                {!envelope.is_group_waiver && (
+                  <Button variant="outline" size="sm" onClick={resendEmail} disabled={resending} className="gap-2">
+                    {resending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />} Resend Email
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" onClick={cancelEnvelope} className="gap-2 text-destructive">
                   <XCircle className="h-3 w-3" /> Cancel
                 </Button>

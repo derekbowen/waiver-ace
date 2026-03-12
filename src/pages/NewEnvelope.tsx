@@ -124,7 +124,18 @@ export default function NewEnvelope() {
         metadata: { is_group: isGroupWaiver, signer_email: signerEmail || null },
       });
 
-      toast.success(isGroupWaiver ? "Group waiver created! Share the link with your group." : "Envelope created! Signing link is ready.");
+      // Send signing email for individual waivers (group waivers use shareable links)
+      if (!isGroupWaiver) {
+        const { error: emailErr } = await supabase.functions.invoke("send-signing-email", {
+          body: { envelope_id: envelope.id },
+        });
+        if (emailErr) {
+          console.error("Failed to send signing email:", emailErr);
+          toast.warning("Envelope created but email failed to send. You can resend from the detail page.");
+        }
+      }
+
+      toast.success(isGroupWaiver ? "Group waiver created! Share the link with your group." : "Envelope sent! The signer will receive an email shortly.");
       navigate(`/envelopes/${envelope.id}`);
     } catch (err: any) {
       toast.error(err.message);
