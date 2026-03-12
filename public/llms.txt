@@ -4,7 +4,7 @@
 
 ## What We Do
 
-Rental Waivers automates liability waiver collection for rental and hospitality businesses. Hosts, operators, and property managers send digital waivers to guests before arrival. Guests sign on any device in under 60 seconds. Every signature is timestamped, IP-logged, and stored as a tamper-proof PDF.
+Rental Waivers automates liability waiver collection for rental and hospitality businesses. Hosts, operators, and property managers send digital waivers to guests before arrival. Guests sign on any device in under 60 seconds. Every signature is timestamped, IP-logged, and stored as a tamper-proof PDF. Airbnb hosts, Swimply pool owners, and VRBO property managers are already using the pay-per-waiver model.
 
 ## Key Features
 
