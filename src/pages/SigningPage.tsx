@@ -136,6 +136,11 @@ export default function SigningPage() {
         throw new Error(res?.error || "Failed to sign envelope");
       }
 
+      // Fire GTM event
+      import("@/lib/gtm-events").then(({ trackWaiverSigned }) => {
+        trackWaiverSigned(res.envelope_id);
+      });
+
       supabase.functions.invoke("send-completion-email", {
         body: { envelope_id: res.envelope_id },
       }).catch(() => {});
