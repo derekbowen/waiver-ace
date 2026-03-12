@@ -10,12 +10,16 @@ import { FileText, CheckCircle, Users } from "lucide-react";
 import { toast } from "sonner";
 import { SignatureCanvas } from "@/components/SignatureCanvas";
 import { PhotoCapture } from "@/components/PhotoCapture";
+import { VideoEmbed } from "@/components/VideoEmbed";
 
 export default function GroupSigningPage() {
   const { groupToken } = useParams();
   const [envelope, setEnvelope] = useState<any>(null);
   const [templateContent, setTemplateContent] = useState("");
   const [requirePhoto, setRequirePhoto] = useState(false);
+  const [requireVideo, setRequireVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoWatched, setVideoWatched] = useState(false);
   const [signatures, setSignatures] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
@@ -55,10 +59,12 @@ export default function GroupSigningPage() {
       if ((env.template_versions as any)?.template_id) {
         const { data: tmpl } = await supabase
           .from("templates")
-          .select("require_photo")
+          .select("require_photo, require_video, video_url")
           .eq("id", (env.template_versions as any).template_id)
           .single();
         setRequirePhoto(tmpl?.require_photo === true);
+        setRequireVideo(tmpl?.require_video === true);
+        setVideoUrl(tmpl?.video_url || null);
       }
 
       const content = (env.template_versions as any)?.content?.body || "";
@@ -234,7 +240,7 @@ export default function GroupSigningPage() {
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setScrolledToEnd(false); }}>
+          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setScrolledToEnd(false); setVideoWatched(false); }}>
             Next Person — Sign Another
           </Button>
         </div>
@@ -296,7 +302,11 @@ export default function GroupSigningPage() {
             </CardContent>
           </Card>
 
-          <div className={`space-y-6 transition-opacity ${scrolledToEnd ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
+          {scrolledToEnd && requireVideo && videoUrl && (
+            <VideoEmbed url={videoUrl} onWatched={() => setVideoWatched(true)} />
+          )}
+
+          <div className={`space-y-6 transition-opacity ${scrolledToEnd && (!requireVideo || videoWatched) ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">

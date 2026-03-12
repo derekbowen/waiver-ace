@@ -9,13 +9,67 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 const defaultVariables = [
   "customer_name", "booking_id", "listing_id", "date", "time",
   "host_name", "address_redacted", "rules", "state",
 ];
+
+// Questions the wizard asks per category — these fill in template variables
+interface WizardQuestion {
+  variable: string;
+  label: string;
+  placeholder: string;
+  type: "input" | "textarea" | "select";
+  options?: string[]; // for select type
+}
+
+const COMMON_QUESTIONS: WizardQuestion[] = [
+  { variable: "host_name", label: "Your business or host name", placeholder: "e.g. Sunset Pool Rentals", type: "input" },
+  { variable: "state", label: "What state are you in?", placeholder: "e.g. Florida", type: "input" },
+  { variable: "address_redacted", label: "Property or business address", placeholder: "e.g. 123 Main St, Miami, FL", type: "input" },
+];
+
+const CATEGORY_QUESTIONS: Record<string, WizardQuestion[]> = {
+  pool: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Any pool rules you want included?", placeholder: "e.g. No diving, no glass containers, children under 12 must be accompanied by an adult, maximum 8 guests...", type: "textarea" },
+  ],
+  vacation_rental: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "House rules for your rental?", placeholder: "e.g. No smoking, no parties, quiet hours after 10pm, maximum occupancy 8 guests...", type: "textarea" },
+  ],
+  equipment: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Rental terms or equipment rules?", placeholder: "e.g. Return by 6pm, no subletting, report damage immediately...", type: "textarea" },
+  ],
+  event_venue: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Venue rules?", placeholder: "e.g. No open flames, music off by 10pm, max 100 guests, no confetti...", type: "textarea" },
+  ],
+  boat_jetski: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Operating rules for the watercraft?", placeholder: "e.g. No wake zones must be observed, maximum 6 passengers, stay within marked area...", type: "textarea" },
+  ],
+  atv_offroad: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Safety rules and trail guidelines?", placeholder: "e.g. Stay on marked trails, max speed 25mph, helmets required at all times...", type: "textarea" },
+  ],
+  bounce_house: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Safety rules for the inflatables?", placeholder: "e.g. Max 6 kids at a time, remove shoes, no food inside, adult supervision required...", type: "textarea" },
+  ],
+  rv_camper: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Vehicle use rules?", placeholder: "e.g. No pets, no smoking inside, return with full tank, stay within 500 miles...", type: "textarea" },
+  ],
+  bike_scooter: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Rental rules?", placeholder: "e.g. Lock bike when unattended, no trick riding, return by 6pm, stay on paved paths...", type: "textarea" },
+  ],
+};
 
 interface TemplatePreset {
   id: string;
@@ -29,14 +83,14 @@ const TEMPLATE_PRESETS: TemplatePreset[] = [
   {
     id: "blank",
     name: "Blank Template",
-    description: "Start from scratch",
+    description: "Start from scratch with a custom waiver",
     icon: FileText,
     content: "",
   },
   {
     id: "pool",
-    name: "Pool / Hot Tub Rental",
-    description: "Swimply hosts, backyard pools, hot tubs",
+    name: "Pool / Hot Tub",
+    description: "Swimply, backyard pools, hot tubs",
     icon: Droplets,
     content: `WAIVER AND RELEASE OF LIABILITY — POOL / AQUATIC FACILITY USE
 
@@ -82,8 +136,8 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   },
   {
     id: "vacation_rental",
-    name: "Vacation Rental Property",
-    description: "Airbnb, VRBO, short-term rental homes",
+    name: "Vacation Rental",
+    description: "Airbnb, VRBO, short-term rentals",
     icon: Home,
     content: `GUEST LIABILITY WAIVER AND HOLD HARMLESS AGREEMENT — VACATION RENTAL
 
@@ -132,7 +186,7 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   {
     id: "equipment",
     name: "Equipment Rental",
-    description: "Bikes, kayaks, tools, sports gear, cameras",
+    description: "Kayaks, tools, sports gear, cameras",
     icon: Wrench,
     content: `EQUIPMENT RENTAL WAIVER AND RELEASE OF LIABILITY
 
@@ -183,7 +237,7 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   },
   {
     id: "event_venue",
-    name: "Event / Venue Rental",
+    name: "Event / Venue",
     description: "Party spaces, event halls, outdoor venues",
     icon: PartyPopper,
     content: `EVENT VENUE LIABILITY WAIVER AND RELEASE
@@ -237,8 +291,8 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   },
   {
     id: "boat_jetski",
-    name: "Boat / Jet Ski Rental",
-    description: "Watercraft, pontoons, jet skis, wave runners",
+    name: "Boat / Jet Ski",
+    description: "Watercraft, pontoons, jet skis",
     icon: Ship,
     content: `WATERCRAFT RENTAL WAIVER AND RELEASE OF LIABILITY
 
@@ -291,8 +345,8 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   },
   {
     id: "atv_offroad",
-    name: "ATV / Off-Road Vehicle",
-    description: "ATVs, UTVs, dirt bikes, off-road vehicles",
+    name: "ATV / Off-Road",
+    description: "ATVs, UTVs, dirt bikes",
     icon: CarFront,
     content: `ATV / OFF-ROAD VEHICLE RENTAL WAIVER AND RELEASE OF LIABILITY
 
@@ -346,8 +400,8 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   },
   {
     id: "bounce_house",
-    name: "Bounce House / Inflatable",
-    description: "Bounce houses, water slides, inflatable rentals",
+    name: "Bounce House",
+    description: "Inflatables, water slides",
     icon: PartyPopper,
     content: `BOUNCE HOUSE / INFLATABLE EQUIPMENT RENTAL WAIVER AND RELEASE OF LIABILITY
 
@@ -404,8 +458,8 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   },
   {
     id: "rv_camper",
-    name: "RV / Camper Van Rental",
-    description: "Motorhomes, camper vans, travel trailers",
+    name: "RV / Camper Van",
+    description: "Motorhomes, camper vans, trailers",
     icon: Truck,
     content: `RV / CAMPER VAN RENTAL AGREEMENT AND WAIVER OF LIABILITY
 
@@ -469,8 +523,8 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   },
   {
     id: "bike_scooter",
-    name: "Bike / Scooter Rental",
-    description: "Bicycles, e-bikes, electric scooters, mopeds",
+    name: "Bike / Scooter",
+    description: "Bicycles, e-bikes, scooters, mopeds",
     icon: Bike,
     content: `BICYCLE / SCOOTER RENTAL WAIVER AND RELEASE OF LIABILITY
 
@@ -530,25 +584,82 @@ By signing below, I acknowledge that I have read this waiver in its entirety, un
   },
 ];
 
+// US states for the dropdown
+const US_STATES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+  "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+  "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+  "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+  "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+  "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+  "Wisconsin", "Wyoming",
+];
+
+type WizardStep = "category" | "details" | "extras" | "preview";
+
 export default function TemplateEditor() {
   const { profile } = useAuth();
   const navigate = useNavigate();
-  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [content, setContent] = useState("");
-  const [requireSigning, setRequireSigning] = useState(false);
+
+  // Wizard state
+  const [step, setStep] = useState<WizardStep>("category");
+  const [selectedPreset, setSelectedPreset] = useState<TemplatePreset | null>(null);
+
+  // Detail answers (keyed by variable name)
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  // Extras
   const [requirePhoto, setRequirePhoto] = useState(false);
   const [requireVideo, setRequireVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
+
+  // For blank template
+  const [customName, setCustomName] = useState("");
+  const [customContent, setCustomContent] = useState("");
+
   const [saving, setSaving] = useState(false);
 
-  const pickPreset = (preset: TemplatePreset) => {
-    setSelectedPreset(preset.id);
-    setContent(preset.content);
-    if (preset.id !== "blank") {
-      setName(preset.name);
-      setDescription(preset.description);
+  const setAnswer = (variable: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [variable]: value }));
+  };
+
+  const pickCategory = (preset: TemplatePreset) => {
+    setSelectedPreset(preset);
+    if (preset.id === "blank") {
+      setStep("extras");
+    } else {
+      setStep("details");
     }
+  };
+
+  // Build the final template content by substituting business-level variables
+  const buildContent = (): string => {
+    if (!selectedPreset || selectedPreset.id === "blank") return customContent;
+
+    let content = selectedPreset.content;
+    // Only substitute business-level variables, leave per-guest ones as {{variables}}
+    const businessVars = ["host_name", "address_redacted", "rules", "state"];
+    businessVars.forEach((v) => {
+      const value = answers[v] || "";
+      if (value) {
+        content = content.replace(new RegExp(`\\{\\{${v}\\}\\}`, "g"), value);
+      }
+    });
+    return content;
+  };
+
+  const getTemplateName = (): string => {
+    if (selectedPreset?.id === "blank") return customName;
+    return selectedPreset?.name || "";
+  };
+
+  const getTemplateDescription = (): string => {
+    if (selectedPreset?.id === "blank") return "";
+    const parts: string[] = [];
+    if (answers.host_name) parts.push(answers.host_name);
+    if (answers.state) parts.push(answers.state);
+    return parts.join(" — ") || selectedPreset?.description || "";
   };
 
   const handleSave = async () => {
@@ -556,30 +667,36 @@ export default function TemplateEditor() {
       toast.error("Please set up your organization first");
       return;
     }
-    if (!name.trim()) {
+
+    const templateName = getTemplateName();
+    if (!templateName.trim()) {
       toast.error("Template name is required");
+      return;
+    }
+    if (requireVideo && !videoUrl.trim()) {
+      toast.error("Please enter a video URL when requiring a safety video");
       return;
     }
 
     setSaving(true);
     try {
-      // Create template
+      const content = buildContent();
       const { data: template, error: tErr } = await supabase
         .from("templates")
         .insert({
           org_id: profile.org_id,
-          name: name.trim(),
-          description: description.trim() || null,
+          name: templateName.trim(),
+          description: getTemplateDescription() || null,
           created_by: (await supabase.auth.getUser()).data.user?.id,
           require_photo: requirePhoto,
           require_video: requireVideo,
+          video_url: requireVideo && videoUrl.trim() ? videoUrl.trim() : null,
         })
         .select()
         .single();
 
       if (tErr) throw tErr;
 
-      // Create initial version
       const detectedVars = defaultVariables.filter((v) => content.includes(`{{${v}}}`));
       const { error: vErr } = await supabase
         .from("template_versions")
@@ -593,7 +710,7 @@ export default function TemplateEditor() {
 
       if (vErr) throw vErr;
 
-      toast.success("Template created");
+      toast.success("Template created!");
       navigate("/templates");
     } catch (err: any) {
       toast.error(err.message);
@@ -602,7 +719,16 @@ export default function TemplateEditor() {
     }
   };
 
-  if (!selectedPreset) {
+  const questions = selectedPreset && selectedPreset.id !== "blank"
+    ? CATEGORY_QUESTIONS[selectedPreset.id] || COMMON_QUESTIONS
+    : [];
+
+  const allQuestionsAnswered = questions.every(
+    (q) => q.variable === "rules" || (answers[q.variable] && answers[q.variable].trim())
+  );
+
+  // ─── Step 1: Pick a category ───────────────────────────────────────
+  if (step === "category") {
     return (
       <DashboardLayout>
         <div className="animate-fade-in max-w-4xl">
@@ -611,8 +737,8 @@ export default function TemplateEditor() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="font-heading text-2xl font-bold">Choose a Starting Point</h1>
-              <p className="text-sm text-muted-foreground mt-1">Pick a template to customize, or start from scratch</p>
+              <h1 className="font-heading text-2xl font-bold">What type of waiver do you need?</h1>
+              <p className="text-sm text-muted-foreground mt-1">Pick a category and we'll build it for you</p>
             </div>
           </div>
 
@@ -621,7 +747,7 @@ export default function TemplateEditor() {
               <Card
                 key={preset.id}
                 className="cursor-pointer hover:border-primary/50 hover:bg-accent/50 transition-colors"
-                onClick={() => pickPreset(preset)}
+                onClick={() => pickCategory(preset)}
               >
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-4">
@@ -646,99 +772,284 @@ export default function TemplateEditor() {
     );
   }
 
-  return (
-    <DashboardLayout>
-      <div className="animate-fade-in max-w-4xl">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="icon" onClick={() => setSelectedPreset(null)}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="font-heading text-2xl font-bold">New Template</h1>
-            <p className="text-sm text-muted-foreground mt-1">Create a reusable waiver template</p>
+  // ─── Step 2: Answer a few questions ────────────────────────────────
+  if (step === "details" && selectedPreset && selectedPreset.id !== "blank") {
+    return (
+      <DashboardLayout>
+        <div className="animate-fade-in max-w-2xl">
+          <div className="flex items-center gap-4 mb-2">
+            <Button variant="ghost" size="icon" onClick={() => setStep("category")}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="font-heading text-2xl font-bold">Tell us about your business</h1>
+              <p className="text-sm text-muted-foreground mt-1">We'll fill in the waiver for you — just answer a few questions</p>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-6">
+          <div className="flex items-center gap-2 mb-8">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-primary/10">
+              {selectedPreset.icon && <selectedPreset.icon className="h-3 w-3 text-primary" />}
+            </div>
+            <span className="text-sm text-muted-foreground">{selectedPreset.name}</span>
+          </div>
+
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Template Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Name</Label>
-                <Input placeholder="Pool Liability Waiver" value={name} onChange={(e) => setName(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label>Description</Label>
-                <Input placeholder="Standard waiver for pool bookings" value={description} onChange={(e) => setDescription(e.target.value)} />
-              </div>
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <Label htmlFor="require-signing" className="text-sm font-medium">Require signing before booking confirmation</Label>
-                  <p className="text-xs text-muted-foreground">When enabled, bookings won't be confirmed until the waiver is signed</p>
+            <CardContent className="pt-6 space-y-6">
+              {questions.map((q) => (
+                <div key={q.variable} className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    {q.label}
+                    {q.variable !== "rules" && <span className="text-destructive ml-1">*</span>}
+                  </Label>
+                  {q.variable === "state" ? (
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      value={answers[q.variable] || ""}
+                      onChange={(e) => setAnswer(q.variable, e.target.value)}
+                    >
+                      <option value="">Select a state...</option>
+                      {US_STATES.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  ) : q.type === "textarea" ? (
+                    <Textarea
+                      placeholder={q.placeholder}
+                      value={answers[q.variable] || ""}
+                      onChange={(e) => setAnswer(q.variable, e.target.value)}
+                      className="min-h-[100px]"
+                    />
+                  ) : (
+                    <Input
+                      placeholder={q.placeholder}
+                      value={answers[q.variable] || ""}
+                      onChange={(e) => setAnswer(q.variable, e.target.value)}
+                    />
+                  )}
                 </div>
-                <Switch id="require-signing" checked={requireSigning} onCheckedChange={setRequireSigning} />
-              </div>
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <Label htmlFor="require-photo" className="text-sm font-medium">Require Photo ID (+1 credit)</Label>
-                  <p className="text-xs text-muted-foreground">Signers must take a selfie before submitting — useful for identity verification</p>
-                </div>
-                <Switch id="require-photo" checked={requirePhoto} onCheckedChange={setRequirePhoto} />
-              </div>
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <Label htmlFor="require-video" className="text-sm font-medium">Require Safety Video (+1 credit)</Label>
-                  <p className="text-xs text-muted-foreground">Embed a video signers must watch before signing — great for safety briefings</p>
-                </div>
-                <Switch id="require-video" checked={requireVideo} onCheckedChange={setRequireVideo} />
-              </div>
-              <div className="rounded-lg border border-dashed p-4 bg-accent/30">
-                <p className="text-sm font-medium">Estimated cost per signing</p>
-                <p className="text-2xl font-bold mt-1">
-                  {1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)} credit{(1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)) > 1 ? "s" : ""}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Base: 1{requirePhoto ? " + Photo: 1" : ""}{requireVideo ? " + Video: 1" : ""}
-                  {" "}(+1 if org branding is configured)
-                </p>
-              </div>
+              ))}
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Template Content</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-3 flex flex-wrap gap-2">
-                {defaultVariables.map((v) => (
-                  <button
-                    key={v}
-                    onClick={() => setContent((c) => c + `{{${v}}}`)}
-                    className="rounded-md border bg-accent px-2 py-1 text-xs font-mono text-muted-foreground hover:bg-accent/80 transition-colors"
-                  >
-                    {`{{${v}}}`}
-                  </button>
-                ))}
-              </div>
-              <Textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="min-h-[400px] font-mono text-sm"
-              />
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => navigate("/templates")}>Cancel</Button>
-            <Button onClick={handleSave} disabled={saving} className="gap-2">
-              <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save Template"}
+          <div className="flex justify-between mt-6">
+            <Button variant="outline" onClick={() => setStep("category")}>
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back
+            </Button>
+            <Button
+              onClick={() => setStep("extras")}
+              disabled={!allQuestionsAnswered}
+              className="gap-2"
+            >
+              Next <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
-      </div>
-    </DashboardLayout>
-  );
+      </DashboardLayout>
+    );
+  }
+
+  // ─── Step 3: Extras (photo, video) ─────────────────────────────────
+  if (step === "extras") {
+    const isBlank = selectedPreset?.id === "blank";
+
+    return (
+      <DashboardLayout>
+        <div className="animate-fade-in max-w-2xl">
+          <div className="flex items-center gap-4 mb-8">
+            <Button variant="ghost" size="icon" onClick={() => setStep(isBlank ? "category" : "details")}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="font-heading text-2xl font-bold">
+                {isBlank ? "Custom Template" : "Optional Extras"}
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                {isBlank ? "Name your template and add your waiver text" : "Add photo verification or a safety video"}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {isBlank && (
+              <Card>
+                <CardContent className="pt-6 space-y-4">
+                  <div className="space-y-2">
+                    <Label>Template Name <span className="text-destructive">*</span></Label>
+                    <Input
+                      placeholder="My Custom Waiver"
+                      value={customName}
+                      onChange={(e) => setCustomName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Waiver Content</Label>
+                    <div className="mb-2 flex flex-wrap gap-2">
+                      {defaultVariables.map((v) => (
+                        <button
+                          key={v}
+                          onClick={() => setCustomContent((c) => c + `{{${v}}}`)}
+                          className="rounded-md border bg-accent px-2 py-1 text-xs font-mono text-muted-foreground hover:bg-accent/80 transition-colors"
+                        >
+                          {`{{${v}}}`}
+                        </button>
+                      ))}
+                    </div>
+                    <Textarea
+                      value={customContent}
+                      onChange={(e) => setCustomContent(e.target.value)}
+                      className="min-h-[300px] font-mono text-sm"
+                      placeholder="Paste or write your waiver text here..."
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="require-photo" className="text-sm font-medium">Require Selfie Photo (+1 credit)</Label>
+                    <p className="text-xs text-muted-foreground">Signers take a photo of themselves before submitting</p>
+                  </div>
+                  <Switch id="require-photo" checked={requirePhoto} onCheckedChange={setRequirePhoto} />
+                </div>
+
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="require-video" className="text-sm font-medium">Require Safety Video (+1 credit)</Label>
+                    <p className="text-xs text-muted-foreground">Signers must watch a video before they can sign</p>
+                  </div>
+                  <Switch id="require-video" checked={requireVideo} onCheckedChange={setRequireVideo} />
+                </div>
+
+                {requireVideo && (
+                  <div className="space-y-2 ml-4 pl-4 border-l-2 border-primary/20">
+                    <Label htmlFor="video-url">Video URL (YouTube or Vimeo)</Label>
+                    <Input
+                      id="video-url"
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Paste a YouTube or Vimeo link. Signers must watch this before they can sign.
+                    </p>
+                  </div>
+                )}
+
+                <div className="rounded-lg border border-dashed p-4 bg-accent/30">
+                  <p className="text-sm font-medium">Estimated cost per signing</p>
+                  <p className="text-2xl font-bold mt-1">
+                    {1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)} credit{(1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)) > 1 ? "s" : ""}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Base: 1{requirePhoto ? " + Photo: 1" : ""}{requireVideo ? " + Video: 1" : ""}
+                    {" "}(+1 if org branding is configured)
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={() => setStep(isBlank ? "category" : "details")}>
+                <ArrowLeft className="h-4 w-4 mr-2" /> Back
+              </Button>
+              {isBlank ? (
+                <Button
+                  onClick={handleSave}
+                  disabled={saving || !customName.trim()}
+                  className="gap-2"
+                >
+                  <Save className="h-4 w-4" /> {saving ? "Creating..." : "Create Template"}
+                </Button>
+              ) : (
+                <Button onClick={() => setStep("preview")} className="gap-2">
+                  Preview <Eye className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // ─── Step 4: Preview & Save ────────────────────────────────────────
+  if (step === "preview" && selectedPreset) {
+    const previewContent = buildContent();
+
+    return (
+      <DashboardLayout>
+        <div className="animate-fade-in max-w-2xl">
+          <div className="flex items-center gap-4 mb-8">
+            <Button variant="ghost" size="icon" onClick={() => setStep("extras")}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="font-heading text-2xl font-bold">Preview Your Waiver</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                This is what your guests will see. Items like guest name, date, and booking ID will be filled in automatically when you send the waiver.
+              </p>
+            </div>
+          </div>
+
+          <Card className="mb-6">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                {selectedPreset.icon && <selectedPreset.icon className="h-4 w-4 text-primary" />}
+                {selectedPreset.name}
+                {answers.host_name && <span className="text-muted-foreground font-normal">— {answers.host_name}</span>}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="max-h-[500px] overflow-y-auto rounded-lg border bg-accent/20 p-6 text-sm leading-relaxed whitespace-pre-wrap">
+                {previewContent}
+              </div>
+            </CardContent>
+          </Card>
+
+          {(requirePhoto || requireVideo) && (
+            <Card className="mb-6">
+              <CardContent className="pt-6">
+                <p className="text-sm font-medium mb-3">Signing extras enabled:</p>
+                <div className="space-y-2">
+                  {requirePhoto && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <ChevronRight className="h-3 w-3 text-primary" />
+                      Selfie photo required
+                    </div>
+                  )}
+                  {requireVideo && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <ChevronRight className="h-3 w-3 text-primary" />
+                      Safety video required
+                      {videoUrl && <span className="text-muted-foreground">({videoUrl})</span>}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("extras")}>
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back
+            </Button>
+            <Button onClick={handleSave} disabled={saving} className="gap-2" size="lg">
+              <Save className="h-4 w-4" /> {saving ? "Creating..." : "Create Template"}
+            </Button>
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-4 text-center">
+            You can always edit your template later. Rental Waivers is not a law firm and does not provide legal advice.
+          </p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Fallback
+  return null;
 }

@@ -10,12 +10,16 @@ import { FileText, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { SignatureCanvas } from "@/components/SignatureCanvas";
 import { PhotoCapture } from "@/components/PhotoCapture";
+import { VideoEmbed } from "@/components/VideoEmbed";
 
 export default function SigningPage() {
   const { token } = useParams();
   const [envelope, setEnvelope] = useState<any>(null);
   const [templateContent, setTemplateContent] = useState("");
   const [requirePhoto, setRequirePhoto] = useState(false);
+  const [requireVideo, setRequireVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoWatched, setVideoWatched] = useState(false);
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
   const [scrolledToEnd, setScrolledToEnd] = useState(false);
@@ -43,6 +47,8 @@ export default function SigningPage() {
       const env = data as any;
       setEnvelope(env);
       setRequirePhoto(env.require_photo === true);
+      setRequireVideo(env.require_video === true);
+      setVideoUrl(env.video_url || null);
 
       const content = env.template_content?.body || "";
       const payload = (env.payload as Record<string, any>) || {};
@@ -226,7 +232,11 @@ export default function SigningPage() {
             </CardContent>
           </Card>
 
-          <div className={`space-y-6 transition-opacity ${scrolledToEnd ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
+          {scrolledToEnd && requireVideo && videoUrl && (
+            <VideoEmbed url={videoUrl} onWatched={() => setVideoWatched(true)} />
+          )}
+
+          <div className={`space-y-6 transition-opacity ${scrolledToEnd && (!requireVideo || videoWatched) ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
