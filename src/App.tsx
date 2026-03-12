@@ -65,7 +65,7 @@ const App = () => (
         <ScrollToTop />
         <I18nProvider>
         <AuthProvider>
-          <Routes>
+          <ErrorBoundary fallbackRoute="/dashboard">
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign/:token" element={<SigningPage />} />
