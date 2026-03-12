@@ -191,13 +191,13 @@ export default function Landing() {
               </p>
 
               <p className="text-sm text-muted-foreground mb-8 max-w-md">
-                No monthly fees. Pay per waiver starting at 6¢. No contracts.
+                <strong className="text-foreground">250 free credits</strong> to get started. No monthly fees. Pay per waiver starting at 6¢.
               </p>
 
               <div className="flex flex-col sm:flex-row items-start gap-3 mb-4">
                 <Link to="/login">
                   <Button size="lg" className="gap-2 text-base px-8 py-6 shadow-lg shadow-primary/20">
-                    Start for Free <ArrowRight className="h-5 w-5" />
+                    Get 250 Free Credits <ArrowRight className="h-5 w-5" />
                   </Button>
                 </Link>
                 <a href="#how-it-works">
@@ -206,7 +206,7 @@ export default function Landing() {
                   </Button>
                 </a>
               </div>
-              <p className="text-xs text-muted-foreground">5 free credits included · No credit card required</p>
+              <p className="text-xs text-muted-foreground">250 free credits included · No credit card required</p>
             </div>
 
             {/* Right: lifestyle image with phone mockup overlay */}
@@ -780,20 +780,27 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════ */}
       <section className="bg-gradient-to-br from-primary to-primary/80 py-20">
         <div className="container text-center max-w-2xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/15 border border-primary-foreground/20 px-5 py-2 text-sm font-bold text-primary-foreground mb-6">
+            <Zap className="h-4 w-4" /> 250 Free Credits to Get Started
+          </div>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-            Protect your rental business today
+            Start sending waivers today — on us
           </h2>
-          <p className="text-primary-foreground/70 text-lg mb-4">
+          <p className="text-primary-foreground/70 text-lg mb-3">
+            Every new account gets <strong className="text-primary-foreground">250 free credits</strong> — that's up to 250 signed waivers, completely free. No monthly subscription. No credit card required.
+          </p>
+          <p className="text-primary-foreground/50 text-sm mb-8">
             Join hosts who switched from $50/month subscriptions to pay-per-waiver pricing.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-primary-foreground/50 mb-8">
             <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4" /> No credit card</span>
-            <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4" /> 5 free credits</span>
+            <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4" /> 250 free credits</span>
+            <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4" /> No monthly fees</span>
             <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4" /> All features included</span>
           </div>
           <Link to="/login">
             <Button size="lg" variant="secondary" className="gap-2 text-base px-10 py-6 shadow-lg">
-              Create Your Free Account <ArrowRight className="h-5 w-5" />
+              Get 250 Free Credits Now <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>
         </div>

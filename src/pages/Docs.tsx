@@ -215,7 +215,7 @@ export default function Docs() {
             </h2>
             <p className="text-sm text-muted-foreground mb-5 max-w-sm mx-auto">
               Create your account, set up a template, and send your first waiver
-              in under 5 minutes. Five free credits included.
+              in under 5 minutes. 250 free credits included.
             </p>
             <Link to={user ? "/dashboard" : "/login"}>
               <Button className="gap-2">
