@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Save, Globe, ExternalLink, Loader2, CreditCard, Zap, Coins, Palette, Image, Link } from "lucide-react";
+import { Save, Globe, ExternalLink, Loader2, CreditCard, Zap, Coins, Palette, Image, Link, Gift, Copy, Check, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useI18n } from "@/i18n";
+import { Badge } from "@/components/ui/badge";
 
 export default function Settings() {
   const { profile, user, wallet } = useAuth();
