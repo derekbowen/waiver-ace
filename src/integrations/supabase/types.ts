@@ -1004,6 +1004,17 @@ export type Database = {
             }
             Returns: Json
           }
+        | {
+            Args: {
+              p_ip_address?: string
+              p_photo_storage_key?: string
+              p_signature_data: Json
+              p_signer_name: string
+              p_token: string
+              p_user_agent?: string
+            }
+            Returns: Json
+          }
       view_envelope: {
         Args: { p_token: string; p_user_agent?: string }
         Returns: undefined
