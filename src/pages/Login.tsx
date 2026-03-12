@@ -95,6 +95,7 @@ export default function Login() {
           },
         });
         if (error) throw error;
+        import("@/lib/gtm-events").then(({ trackSignUp }) => trackSignUp("email"));
         toast.success("Check your email to confirm your account");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
