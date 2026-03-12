@@ -94,6 +94,9 @@ export default function SigningPage() {
       return;
     }
 
+    const consentText = "I agree to sign this document electronically and acknowledge this constitutes a legally binding signature. I consent to the collection and storage of my signature, name, IP address, device information, and timestamp for legal record-keeping purposes.";
+    const consentGivenAt = new Date().toISOString();
+
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
