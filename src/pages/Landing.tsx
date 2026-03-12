@@ -197,7 +197,7 @@ export default function Landing() {
               <div className="flex flex-col sm:flex-row items-start gap-3 mb-4">
                 <Link to="/login">
                   <Button size="lg" className="gap-2 text-base px-8 py-6 shadow-lg shadow-primary/20">
-                    Start for Free <ArrowRight className="h-5 w-5" />
+                    Get 250 Free Credits <ArrowRight className="h-5 w-5" />
                   </Button>
                 </Link>
                 <a href="#how-it-works">
