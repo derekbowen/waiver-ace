@@ -11,27 +11,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <!-- TODO: Set the document title to the name of your application -->
-    <title>Rental Waivers — E-Signatures for Marketplace Bookings</title>
-    <meta name="description" content="For marketplace, operators, and hosts: Collect e-signatures on liability waivers via API-first webhooks before confirming pool bookings.">
+    <title>Rental waivers  - protection for as little as $.10</title>
+    <meta name="description" content="Lowest price liability waivers with zero monthly fees. Collect legally-binding e-signatures online via API or in-person with our custom kiosk">
     <meta name="author" content="Rental Waivers" />
 
     
     
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/af40a9f2-a145-41c9-837d-d0817448545e?Expires=1773007701&amp;GoogleAccessId=go-api-on-aws%40gpt-engineer-390607.iam.gserviceaccount.com&amp;Signature=QidoY1nxXhHVdaK4dTbHip9XKaJLmIwsqANlAbUZ%2FtdgL%2BlU8nO%2B4rVjWlMyK4MlVy9%2BTm0SDuZ78l4E6LreiBADzd63xW%2BG%2BHzl%2BZ9LVGbH4rccEqqVKvTuEDELhHkZErFHKwp988Wr%2FTAmQcmgQ1nvUVMvj6qGFzH%2BhBMNxvXAsFj3JnWmXC1EBoQlSsaUVLPE7VMk%2FtLiDhu%2BSqLYcEfkGnkeB%2FYBBqDq5D755gNxif6NqUhknspVmhRbMVt56X3SjIdUvfAgRWmEX2pqNniRBnhUNOjjdpAPv0xN9uXjCNnZLDGo9DubLP6QAIpQqDe397p%2B%2FC%2BSVJq%2B9IeRyA%3D%3D">
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/9b42fdc6-bc0d-4e10-afb7-02038a218807?Expires=1773284744&amp;GoogleAccessId=go-api-on-aws%40gpt-engineer-390607.iam.gserviceaccount.com&amp;Signature=cCOluTm4K4RJI8DyItFDmsoNi%2BssMW0QTLdfaBBX7RJUfhsNK%2BmUXF%2FSE1muqd3lCwSuTj79%2BlPNMRpFg0tRThrjKZwRk4X9%2FqbkFXi3yVYgTzcpyKq7d6Y6jX%2FaVB1bV5BFBlyFEurB6V1ajpKQVHOdT35SQ0ftzdmikRY88hFouAoIXuXFxA7inyHnAB59l4%2FggRUPyC0SBX2ZPvyv2UtMGPrvG0HHFsRR03XShiPPyAacr4KdJptC2mIqao4xpmU8Q1dcYqZ3rvnvPDIrBP5ycHh74xTDlYhvc5X2wJQeyh%2FRSp0e6fU4o1gpFpJFIgAFVH%2FQgTz6fVz6vvr%2FEg%3D%3D">
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/af40a9f2-a145-41c9-837d-d0817448545e?Expires=1773007701&amp;GoogleAccessId=go-api-on-aws%40gpt-engineer-390607.iam.gserviceaccount.com&amp;Signature=QidoY1nxXhHVdaK4dTbHip9XKaJLmIwsqANlAbUZ%2FtdgL%2BlU8nO%2B4rVjWlMyK4MlVy9%2BTm0SDuZ78l4E6LreiBADzd63xW%2BG%2BHzl%2BZ9LVGbH4rccEqqVKvTuEDELhHkZErFHKwp988Wr%2FTAmQcmgQ1nvUVMvj6qGFzH%2BhBMNxvXAsFj3JnWmXC1EBoQlSsaUVLPE7VMk%2FtLiDhu%2BSqLYcEfkGnkeB%2FYBBqDq5D755gNxif6NqUhknspVmhRbMVt56X3SjIdUvfAgRWmEX2pqNniRBnhUNOjjdpAPv0xN9uXjCNnZLDGo9DubLP6QAIpQqDe397p%2B%2FC%2BSVJq%2B9IeRyA%3D%3D">
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/9b42fdc6-bc0d-4e10-afb7-02038a218807?Expires=1773284744&amp;GoogleAccessId=go-api-on-aws%40gpt-engineer-390607.iam.gserviceaccount.com&amp;Signature=cCOluTm4K4RJI8DyItFDmsoNi%2BssMW0QTLdfaBBX7RJUfhsNK%2BmUXF%2FSE1muqd3lCwSuTj79%2BlPNMRpFg0tRThrjKZwRk4X9%2FqbkFXi3yVYgTzcpyKq7d6Y6jX%2FaVB1bV5BFBlyFEurB6V1ajpKQVHOdT35SQ0ftzdmikRY88hFouAoIXuXFxA7inyHnAB59l4%2FggRUPyC0SBX2ZPvyv2UtMGPrvG0HHFsRR03XShiPPyAacr4KdJptC2mIqao4xpmU8Q1dcYqZ3rvnvPDIrBP5ycHh74xTDlYhvc5X2wJQeyh%2FRSp0e6fU4o1gpFpJFIgAFVH%2FQgTz6fVz6vvr%2FEg%3D%3D">
 
     <link rel="canonical" href="https://rentalwaivers.com/" />
-
-
-  <meta property="og:title" content="Rental Waivers — E-Signatures for Marketplace Bookings">
-  <meta name="twitter:title" content="Rental Waivers — E-Signatures for Marketplace Bookings">
-  <meta property="og:description" content="For marketplace, operators, and hosts: Collect e-signatures on liability waivers via API-first webhooks before confirming pool bookings.">
-  <meta name="twitter:description" content="For marketplace, operators, and hosts: Collect e-signatures on liability waivers via API-first webhooks before confirming pool bookings.">
-  <link rel="icon" href="/favicon.png" type="image/png">
+  <meta property="og:title" content="Rental waivers  - protection for as little as $.10">
+  <meta name="twitter:title" content="Rental waivers  - protection for as little as $.10">
+  <meta property="og:description" content="Lowest price liability waivers with zero monthly fees. Collect legally-binding e-signatures online via API or in-person with our custom kiosk">
+  <meta name="twitter:description" content="Lowest price liability waivers with zero monthly fees. Collect legally-binding e-signatures online via API or in-person with our custom kiosk">
 </head>
 
   <body>
