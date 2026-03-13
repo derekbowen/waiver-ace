@@ -11,5 +11,3 @@ Disallow: /admin
 Disallow: /sign/
 Disallow: /waiver/
 Disallow: /my-waivers
-
-Sitemap: https://rentalwaivers.com/sitemap.xml
