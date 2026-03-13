@@ -1,29 +1,32 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
+#
+# Hello bot! There are some routes that need
+# authentication. You should avoid them :)
+#
 
 User-agent: *
-Allow: /
+Allow: /p/
+
+Disallow: /p/p/
+Disallow: /s
+Disallow: /profile-settings
+Disallow: /l/new
+Disallow: /l/*/checkout
+Disallow: /l/*/draft
+Disallow: /l/*/pending-approval
+Disallow: /l/*/new
+Disallow: /l/*/edit
+Disallow: /inbox
+Disallow: /order
+Disallow: /sale
+Disallow: /account/
+Disallow: /listings
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /preview
+Disallow: /search
+Disallow: /api/
+Disallow: /admin/
+
+Crawl-delay: 5
+
+Sitemap: https://www.poolrentalnearme.com/sitemap-index.xml
