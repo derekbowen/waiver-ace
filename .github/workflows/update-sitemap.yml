@@ -1,0 +1,241 @@
+name: Update Sitemap Daily
+
+on:
+  schedule:
+    # Runs every night at 2:00 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allows you to run it manually from GitHub.com anytime
+
+jobs:
+  update-sitemap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Crawl URLs and generate sitemaps
+        run: |
+          set -e
+
+          DOMAIN="https://www.poolrentalnearme.com"
+          SITEMAPHOSTING_URL="https://a487260.sitemaphosting7.com/4661760/sitemap.xml"
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S+00:00")
+          RAND_ID="74buq58v"
+          OUTDIR="$RUNNER_TEMP/sitemaps"
+          mkdir -p "$OUTDIR"
+
+          echo "=== Collecting URLs ==="
+
+          URLS_FILE="$RUNNER_TEMP/all_urls.txt"
+          touch "$URLS_FILE"
+
+          # Source 1: sitemaphosting7
+          echo "Pulling from sitemaphosting7..."
+          curl -s "$SITEMAPHOSTING_URL" 2>/dev/null | \
+              grep -oP '(?<=<loc>)[^<]+' >> "$URLS_FILE" 2>/dev/null || true
+
+          # Source 2: Sharetribe sitemaps
+          echo "Pulling from Sharetribe sitemaps..."
+          curl -s "${DOMAIN}/sitemap-recent-pages.xml" 2>/dev/null | \
+              grep -oP '(?<=<loc>)[^<]+' >> "$URLS_FILE" 2>/dev/null || true
+          curl -s "${DOMAIN}/sitemap.xml" 2>/dev/null | \
+              grep -oP '(?<=<loc>)[^<]+' >> "$URLS_FILE" 2>/dev/null || true
+
+          # Source 3: Crawl hub pages
+          echo "Crawling hub pages..."
+          for hub in "/" "/p/all-locations" "/p/hosting" "/p/blog" "/p/host-advocacy" "/s"; do
+              curl -s -L "${DOMAIN}${hub}" 2>/dev/null | \
+                  grep -oP 'href="(/[^"]*)"' | \
+                  sed "s|href=\"|${DOMAIN}|;s|\"$||" >> "$URLS_FILE" 2>/dev/null || true
+          done
+
+          # Source 4: Paginated search
+          echo "Crawling search pages..."
+          for page in $(seq 1 100); do
+              RESULT=$(curl -s -L "${DOMAIN}/s?page=${page}" 2>/dev/null)
+              if echo "$RESULT" | grep -q '/l/'; then
+                  echo "$RESULT" | grep -oP 'href="(/l/[^"]*)"' | \
+                      sed "s|href=\"|${DOMAIN}|;s|\"$||" >> "$URLS_FILE" 2>/dev/null || true
+              else
+                  break
+              fi
+          done
+
+          RAW_COUNT=$(wc -l < "$URLS_FILE")
+          echo "Raw URLs collected: $RAW_COUNT"
+
+          # Clean and filter
+          cat "$URLS_FILE" | \
+              sed 's/#.*$//' | \
+              sed 's/\?.*$//' | \
+              grep -E "^https://(www\.)?poolrentalnearme\.com" | \
+              grep -v -E '\.(jpg|jpeg|png|gif|svg|css|js|ico|pdf|woff|woff2|ttf|map)' | \
+              grep -v -E '/(login|signup|password|account|admin|api|oauth|new|draft)' | \
+              grep -v -E '/l/draft/' | \
+              grep -v -E '/l/.*/new/' | \
+              grep -v -E '00000000-0000-0000' | \
+              grep -v -E '/s$' | \
+              grep -v -E 'amenities\.' | \
+              grep -v -E 'connect\.' | \
+              grep -v -E 'help\.' | \
+              grep -v -E 'go\.' | \
+              sort -u > "$RUNNER_TEMP/clean_urls.txt"
+
+          TOTAL=$(wc -l < "$RUNNER_TEMP/clean_urls.txt")
+          echo "Clean unique URLs: $TOTAL"
+
+          # Categorize URLs
+          LISTINGS="$RUNNER_TEMP/urls_listings.txt"
+          HOSTS="$RUNNER_TEMP/urls_hosts.txt"
+          EVENTS="$RUNNER_TEMP/urls_events.txt"
+          CONTENT="$RUNNER_TEMP/urls_content.txt"
+          ADVOCACY="$RUNNER_TEMP/urls_advocacy.txt"
+          SPANISH="$RUNNER_TEMP/urls_spanish.txt"
+          CORE="$RUNNER_TEMP/urls_core.txt"
+          touch "$LISTINGS" "$HOSTS" "$EVENTS" "$CONTENT" "$ADVOCACY" "$SPANISH" "$CORE"
+
+          while IFS= read -r url; do
+              case "$url" in
+                  */es/*|*/es) echo "$url" >> "$SPANISH" ;;
+                  */l/*) echo "$url" >> "$LISTINGS" ;;
+                  *become-a-*host*|*become-a-pool-host*) echo "$url" >> "$HOSTS" ;;
+                  *guide-to-*) echo "$url" >> "$EVENTS" ;;
+                  *host-advocacy*|*-pool-rental-laws*|*-pool-sharing-laws*|*advocacy*) echo "$url" >> "$ADVOCACY" ;;
+                  *poolrentalnearme.com/|*poolrentalnearme.com/p/about|*poolrentalnearme.com/p/faq|*poolrentalnearme.com/p/hosting|*poolrentalnearme.com/p/howitworksforguests|*poolrentalnearme.com/p/make-money|*poolrentalnearme.com/p/all-locations|*poolrentalnearme.com/terms-of-service|*poolrentalnearme.com/privacy-policy|*poolrentalnearme.com/p/water-savings|*poolrentalnearme.com/p/zerodrowning|*poolrentalnearme.com/p/accesstopoolrentals|*poolrentalnearme.com/p/investors|*poolrentalnearme.com/p/swimply-alternative*|*poolrentalnearme.com/p/hoa-pool-rental-defense-kit|*poolrentalnearme.com/p/pricing*)
+                      echo "$url" >> "$CORE" ;;
+                  *poolrentalnearme.com/p/las-vegas*|*poolrentalnearme.com/p/katy*|*poolrentalnearme.com/p/newyork*|*poolrentalnearme.com/p/losangeles*|*poolrentalnearme.com/p/riverside*|*poolrentalnearme.com/p/privatepoolrentals*|*poolrentalnearme.com/p/sacramento*)
+                      echo "$url" >> "$CORE" ;;
+                  */p/*) echo "$url" >> "$CONTENT" ;;
+                  *) echo "$url" >> "$CONTENT" ;;
+              esac
+          done < "$RUNNER_TEMP/clean_urls.txt"
+
+          echo "Core: $(wc -l < "$CORE"), Listings: $(wc -l < "$LISTINGS"), Hosts: $(wc -l < "$HOSTS")"
+          echo "Events: $(wc -l < "$EVENTS"), Content: $(wc -l < "$CONTENT"), Advocacy: $(wc -l < "$ADVOCACY"), Spanish: $(wc -l < "$SPANISH")"
+
+          # Generate sitemap XML function
+          generate_sitemap() {
+              local input_file="$1" sitemap_name="$2" changefreq="$3" priority="$4"
+              local count=$(wc -l < "$input_file")
+              [ "$count" -eq 0 ] && return
+
+              if [ "$count" -gt 1000 ]; then
+                  local part=1 line_num=0
+                  while IFS= read -r url; do
+                      if [ $((line_num % 1000)) -eq 0 ]; then
+                          [ "$line_num" -gt 0 ] && echo '</urlset>' >> "${OUTDIR}/${sitemap_name}-${part}.xml" && part=$((part + 1))
+                          echo '<?xml version="1.0" encoding="UTF-8"?>' > "${OUTDIR}/${sitemap_name}-${part}.xml"
+                          echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> "${OUTDIR}/${sitemap_name}-${part}.xml"
+                      fi
+                      cat >> "${OUTDIR}/${sitemap_name}-${part}.xml" <<ENTRY
+            <url>
+              <loc>${url}</loc>
+              <lastmod>${TIMESTAMP}</lastmod>
+              <changefreq>${changefreq}</changefreq>
+              <priority>${priority}</priority>
+            </url>
+          ENTRY
+                      line_num=$((line_num + 1))
+                  done < "$input_file"
+                  echo '</urlset>' >> "${OUTDIR}/${sitemap_name}-${part}.xml"
+                  echo "Created ${sitemap_name} parts 1-${part} ($count URLs)"
+              else
+                  {
+                      echo '<?xml version="1.0" encoding="UTF-8"?>'
+                      echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+                      while IFS= read -r url; do
+                          echo "  <url>"
+                          echo "    <loc>${url}</loc>"
+                          echo "    <lastmod>${TIMESTAMP}</lastmod>"
+                          echo "    <changefreq>${changefreq}</changefreq>"
+                          echo "    <priority>${priority}</priority>"
+                          echo "  </url>"
+                      done < "$input_file"
+                      echo '</urlset>'
+                  } > "${OUTDIR}/${sitemap_name}.xml"
+                  echo "Created ${sitemap_name}.xml ($count URLs)"
+              fi
+          }
+
+          generate_sitemap "$CORE"      "sm-${RAND_ID}-cr" "weekly"  "1.0"
+          generate_sitemap "$LISTINGS"  "sm-${RAND_ID}-ls" "weekly"  "0.9"
+          generate_sitemap "$HOSTS"     "sm-${RAND_ID}-ho" "weekly"  "0.8"
+          generate_sitemap "$EVENTS"    "sm-${RAND_ID}-ev" "monthly" "0.7"
+          generate_sitemap "$CONTENT"   "sm-${RAND_ID}-cn" "monthly" "0.8"
+          generate_sitemap "$ADVOCACY"  "sm-${RAND_ID}-ad" "monthly" "0.7"
+          generate_sitemap "$SPANISH"   "sm-${RAND_ID}-es" "monthly" "0.7"
+
+          # Generate sitemap index
+          {
+              echo '<?xml version="1.0" encoding="UTF-8"?>'
+              echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+              for f in $(ls "${OUTDIR}"/sm-${RAND_ID}-*.xml 2>/dev/null | sort); do
+                  fname=$(basename "$f")
+                  echo "  <sitemap><loc>${DOMAIN}/${fname}</loc><lastmod>${TIMESTAMP}</lastmod></sitemap>"
+              done
+              echo '</sitemapindex>'
+          } > "${OUTDIR}/sitemap-index.xml"
+
+          echo "=== Generated $(ls ${OUTDIR}/*.xml | wc -l) sitemap files ==="
+          ls -la "${OUTDIR}"/*.xml
+
+      - name: Deploy sitemaps to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: root
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "${{ runner.temp }}/sitemaps/*.xml"
+          target: ${{ secrets.EC2_PUBLIC_DIR }}
+          strip_components: 3
+
+      - name: Update robots.txt
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: root
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            ROBOTS="${{ secrets.EC2_PUBLIC_DIR }}/robots.txt"
+            [ -f "$ROBOTS" ] && cp "$ROBOTS" "${ROBOTS}.bak"
+            printf '%s\n' \
+              "#" \
+              "# Hello bot! There are some routes that need" \
+              "# authentication. You should avoid them :)" \
+              "#" \
+              "" \
+              "User-agent: *" \
+              "Allow: /p/" \
+              "" \
+              "Disallow: /p/p/" \
+              "Disallow: /s" \
+              "Disallow: /profile-settings" \
+              "Disallow: /l/new" \
+              "Disallow: /l/*/checkout" \
+              "Disallow: /l/*/draft" \
+              "Disallow: /l/*/pending-approval" \
+              "Disallow: /l/*/new" \
+              "Disallow: /l/*/edit" \
+              "Disallow: /inbox" \
+              "Disallow: /order" \
+              "Disallow: /sale" \
+              "Disallow: /account/" \
+              "Disallow: /listings" \
+              "Disallow: /reset-password" \
+              "Disallow: /verify-email" \
+              "Disallow: /preview" \
+              "Disallow: /search" \
+              "Disallow: /api/" \
+              "Disallow: /admin/" \
+              "" \
+              "Crawl-delay: 5" \
+              "" \
+              "Sitemap: https://www.poolrentalnearme.com/sitemap-index.xml" \
+              > "$ROBOTS"
+            echo "robots.txt updated: $(date)"
+
+      - name: Verify sitemaps
+        run: |
+          sleep 5
+          echo "Checking sitemap index..."
+          curl -s "https://www.poolrentalnearme.com/sitemap-index.xml" | head -20
+          echo ""
+          echo "Checking robots.txt..."
+          curl -s "https://www.poolrentalnearme.com/robots.txt"
