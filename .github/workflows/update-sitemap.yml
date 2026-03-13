@@ -171,7 +171,7 @@ jobs:
                   echo "  <sitemap><loc>${DOMAIN}/${fname}</loc><lastmod>${TIMESTAMP}</lastmod></sitemap>"
               done
               echo '</sitemapindex>'
-          } > "${OUTDIR}/sm-${RAND_ID}.xml"
+          } > "${OUTDIR}/sitemap-index.xml"
 
           echo "=== Generated $(ls ${OUTDIR}/*.xml | wc -l) sitemap files ==="
           ls -la "${OUTDIR}"/*.xml
@@ -182,11 +182,11 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: root
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "${{ runner.temp }}/sitemaps/sm-*.xml"
+          source: "${{ runner.temp }}/sitemaps/*.xml"
           target: ${{ secrets.EC2_PUBLIC_DIR }}
           strip_components: 3
 
-      - name: Clean robots.txt
+      - name: Update robots.txt
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -194,18 +194,48 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             ROBOTS="${{ secrets.EC2_PUBLIC_DIR }}/robots.txt"
-            if [ -f "$ROBOTS" ]; then
-              sed -i '/^[Ss]itemap:/d' "$ROBOTS"
-            else
-              echo -e "User-agent: *\nAllow: /" > "$ROBOTS"
-            fi
-            echo "Sitemap update complete: $(date)"
+            [ -f "$ROBOTS" ] && cp "$ROBOTS" "${ROBOTS}.bak"
+            printf '%s\n' \
+              "#" \
+              "# Hello bot! There are some routes that need" \
+              "# authentication. You should avoid them :)" \
+              "#" \
+              "" \
+              "User-agent: *" \
+              "Allow: /p/" \
+              "" \
+              "Disallow: /p/p/" \
+              "Disallow: /s" \
+              "Disallow: /profile-settings" \
+              "Disallow: /l/new" \
+              "Disallow: /l/*/checkout" \
+              "Disallow: /l/*/draft" \
+              "Disallow: /l/*/pending-approval" \
+              "Disallow: /l/*/new" \
+              "Disallow: /l/*/edit" \
+              "Disallow: /inbox" \
+              "Disallow: /order" \
+              "Disallow: /sale" \
+              "Disallow: /account/" \
+              "Disallow: /listings" \
+              "Disallow: /reset-password" \
+              "Disallow: /verify-email" \
+              "Disallow: /preview" \
+              "Disallow: /search" \
+              "Disallow: /api/" \
+              "Disallow: /admin/" \
+              "" \
+              "Crawl-delay: 5" \
+              "" \
+              "Sitemap: https://www.poolrentalnearme.com/sitemap-index.xml" \
+              > "$ROBOTS"
+            echo "robots.txt updated: $(date)"
 
       - name: Verify sitemaps
         run: |
           sleep 5
           echo "Checking sitemap index..."
-          curl -s "https://www.poolrentalnearme.com/sm-74buq58v.xml" | head -20
+          curl -s "https://www.poolrentalnearme.com/sitemap-index.xml" | head -20
           echo ""
           echo "Checking robots.txt..."
           curl -s "https://www.poolrentalnearme.com/robots.txt"

@@ -300,7 +300,7 @@ echo ""
 # --- Step 6: Generate sitemap index ---
 echo "[6/7] Creating sitemap index..."
 
-SITEMAP_INDEX="${PUBLIC_DIR}/sm-${RAND_ID}.xml"
+SITEMAP_INDEX="${PUBLIC_DIR}/sitemap-index.xml"
 
 {
     echo '<?xml version="1.0" encoding="UTF-8"?>'
@@ -318,7 +318,10 @@ SITEMAP_INDEX="${PUBLIC_DIR}/sm-${RAND_ID}.xml"
     echo '</sitemapindex>'
 } > "$SITEMAP_INDEX"
 
-echo "  Created sm-${RAND_ID}.xml (sitemap index)"
+# Remove old randomized index file if it exists
+rm -f "${PUBLIC_DIR}/sm-${RAND_ID}.xml" 2>/dev/null || true
+
+echo "  Created sitemap-index.xml (sitemap index)"
 echo ""
 
 # --- Step 7: Update robots.txt ---
@@ -329,23 +332,46 @@ ROBOTS_FILE="${PUBLIC_DIR}/robots.txt"
 if [ -f "$ROBOTS_FILE" ]; then
     cp "$ROBOTS_FILE" "${ROBOTS_FILE}.bak"
     echo "  Backed up robots.txt -> robots.txt.bak"
-
-    # Remove ALL existing Sitemap lines (kills the sitemaphosting7 ref)
-    # We are NOT adding the new sitemap here - competitors check robots.txt
-    sed -i '/^[Ss]itemap:/d' "$ROBOTS_FILE"
-
-    # Remove any blank lines at the end
-    sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$ROBOTS_FILE" 2>/dev/null || true
-
-    echo "  Removed old sitemaphosting7 reference"
-    echo "  NOT adding new sitemap to robots.txt (stealth mode)"
-else
-    cat > "$ROBOTS_FILE" << 'ROBOTS'
-User-agent: *
-Allow: /
-ROBOTS
-    echo "  Created new robots.txt (no sitemap reference)"
 fi
+
+# Write clean robots.txt with proper Disallow rules for Sharetribe routes
+cat > "$ROBOTS_FILE" << ROBOTS
+#
+# Hello bot! There are some routes that need
+# authentication. You should avoid them :)
+#
+
+User-agent: *
+Allow: /p/
+
+Disallow: /p/p/
+Disallow: /s
+Disallow: /profile-settings
+Disallow: /l/new
+Disallow: /l/*/checkout
+Disallow: /l/*/draft
+Disallow: /l/*/pending-approval
+Disallow: /l/*/new
+Disallow: /l/*/edit
+Disallow: /inbox
+Disallow: /order
+Disallow: /sale
+Disallow: /account/
+Disallow: /listings
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /preview
+Disallow: /search
+Disallow: /api/
+Disallow: /admin/
+
+Crawl-delay: 5
+
+Sitemap: ${DOMAIN}/sitemap-index.xml
+ROBOTS
+
+echo "  Wrote robots.txt with Sharetribe Disallow rules"
+echo "  Sitemap reference: ${DOMAIN}/sitemap-index.xml"
 
 echo ""
 
@@ -358,31 +384,25 @@ echo "  Total URLs indexed: $TOTAL_URLS"
 echo "  Files created in:   $PUBLIC_DIR"
 echo ""
 echo "  Sitemap files:"
-ls -la "${PUBLIC_DIR}"/sm-${RAND_ID}*.xml 2>/dev/null | awk '{print "    " $NF " (" $5 " bytes)"}'
+ls -la "${PUBLIC_DIR}"/sm-${RAND_ID}-*.xml 2>/dev/null | awk '{print "    " $NF " (" $5 " bytes)"}'
+echo "    sitemap-index.xml"
 echo ""
-echo "  robots.txt: NO sitemap reference (stealth mode)"
+echo "  robots.txt: Updated with Disallow rules + sitemap-index.xml reference"
 echo ""
 echo "=========================================="
-echo "  IMPORTANT: NEXT STEP"
+echo "  NEXT STEPS"
 echo "=========================================="
 echo ""
-echo "  Go to Google Search Console:"
-echo "    https://search.google.com/search-console"
+echo "  1. Go to Google Search Console:"
+echo "     https://search.google.com/search-console"
 echo ""
-echo "  1. Select your poolrentalnearme.com property"
-echo "  2. Go to Sitemaps (left sidebar)"
-echo "  3. In 'Add a new sitemap' enter:"
+echo "  2. Select your poolrentalnearme.com property"
+echo "  3. Go to Sitemaps (left sidebar)"
+echo "  4. Submit: sitemap-index.xml"
 echo ""
-echo "     sm-${RAND_ID}.xml"
-echo ""
-echo "  4. Click Submit"
-echo ""
-echo "  That's it. Google will find all your pages through"
-echo "  the sitemap index, but competitors won't know the"
-echo "  URL because it's not in robots.txt."
-echo ""
-echo "  Verify the file is accessible:"
-echo "    curl -s ${DOMAIN}/sm-${RAND_ID}.xml | head -30"
+echo "  Verify:"
+echo "    curl -s ${DOMAIN}/sitemap-index.xml | head -20"
+echo "    curl -s ${DOMAIN}/robots.txt"
 echo ""
 echo "  No restart needed. Takes effect immediately."
 echo "=========================================="
