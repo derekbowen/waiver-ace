@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://www.rentalwaivers.com/sitemap-core.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.rentalwaivers.com/sitemap-waivers.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.rentalwaivers.com/sitemap-alternatives.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.rentalwaivers.com/sitemap-templates.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.rentalwaivers.com/sitemap-industries.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.rentalwaivers.com/sitemap-laws.xml</loc>
+  </sitemap>
+</sitemapindex>

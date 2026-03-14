@@ -4,29 +4,17 @@
 #
 
 User-agent: *
-Allow: /p/
+Allow: /
 
-Disallow: /p/p/
-Disallow: /s
-Disallow: /profile-settings
-Disallow: /l/new
-Disallow: /l/*/checkout
-Disallow: /l/*/draft
-Disallow: /l/*/pending-approval
-Disallow: /l/*/new
-Disallow: /l/*/edit
-Disallow: /inbox
-Disallow: /order
-Disallow: /sale
-Disallow: /account/
-Disallow: /listings
-Disallow: /reset-password
-Disallow: /verify-email
-Disallow: /preview
-Disallow: /search
-Disallow: /api/
+Disallow: /dashboard
+Disallow: /templates
+Disallow: /envelopes
+Disallow: /settings
+Disallow: /analytics
+Disallow: /pricing
 Disallow: /admin/
+Disallow: /login
+Disallow: /sign/
+Disallow: /my-waivers
 
-Crawl-delay: 5
-
-Sitemap: https://www.poolrentalnearme.com/sitemap-index.xml
+Sitemap: https://www.rentalwaivers.com/sitemap.xml
