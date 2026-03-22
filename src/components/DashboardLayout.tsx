@@ -30,6 +30,7 @@ const navItems = [
 { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 { label: "Templates", href: "/templates", icon: FileText },
 { label: "Envelopes", href: "/envelopes", icon: Mail },
+{ label: "PhotoSell", href: "/photosell", icon: Sparkles },
 { label: "Analytics", href: "/analytics", icon: BarChart3 },
 { label: "Team", href: "/settings/team", icon: Users },
 { label: "API Keys", href: "/settings/api-keys", icon: Key },
