@@ -21,6 +21,7 @@ import Privacy from "./pages/Privacy";
 import Docs from "./pages/Docs";
 import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
+import Unsubscribe from "./pages/Unsubscribe";
 import SeoLanding from "./pages/SeoLanding";
 import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
 import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
@@ -98,6 +99,7 @@ const App = () => (
             <Route path="/pricing-info" element={<PricingPublicPage />} />
             <Route path="/alternatives/:slug" element={<CompetitorAltPage />} />
             <Route path="/waivers/:slug" element={<SeoLanding />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
 
             {/* Protected dashboard — lazy-loaded (not crawled) */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
