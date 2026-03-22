@@ -40,6 +40,7 @@ const EnvelopeDetail = lazy(() => import("./pages/EnvelopeDetail"));
 const NewEnvelope = lazy(() => import("./pages/NewEnvelope"));
 const Settings = lazy(() => import("./pages/Settings"));
 const ApiKeys = lazy(() => import("./pages/ApiKeys"));
+const PhotoSell = lazy(() => import("./pages/PhotoSell"));
 const Webhooks = lazy(() => import("./pages/Webhooks"));
 const TeamMembers = lazy(() => import("./pages/TeamMembers"));
 const Analytics = lazy(() => import("./pages/Analytics"));
@@ -114,6 +115,7 @@ const App = () => (
             <Route path="/settings/marketplace" element={<ProtectedRoute><MarketplaceIntegration /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/envelopes/bulk" element={<ProtectedRoute><BulkSend /></ProtectedRoute>} />
+            <Route path="/photosell" element={<ProtectedRoute><PhotoSell /></ProtectedRoute>} />
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
             <Route path="/admin/credits" element={<AdminRoute><AdminCredits /></AdminRoute>} />
 

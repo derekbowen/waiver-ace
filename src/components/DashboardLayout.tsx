@@ -19,7 +19,8 @@ import {
   X,
   ChevronRight,
   Zap,
-  HelpCircle } from
+  HelpCircle,
+  Sparkles } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ const navItems = [
 { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 { label: "Templates", href: "/templates", icon: FileText },
 { label: "Envelopes", href: "/envelopes", icon: Mail },
+{ label: "PhotoSell", href: "/photosell", icon: Sparkles },
 { label: "Analytics", href: "/analytics", icon: BarChart3 },
 { label: "Team", href: "/settings/team", icon: Users },
 { label: "API Keys", href: "/settings/api-keys", icon: Key },
@@ -40,8 +42,8 @@ const navItems = [
 
 
 // Primary tabs shown in the bottom tab bar on mobile
-const mobileTabItems = navItems.slice(0, 4); // Dashboard, Templates, Envelopes, Analytics
-const mobileMoreItems = navItems.slice(4); // Team, API Keys, Webhooks, Pricing, Settings
+const mobileTabItems = navItems.slice(0, 4); // Dashboard, Templates, Envelopes, PhotoSell
+const mobileMoreItems = navItems.slice(4); // Analytics, Team, API Keys, Webhooks, Pricing, Settings
 
 export function DashboardLayout({ children }: {children: React.ReactNode;}) {
   const location = useLocation();
