@@ -437,18 +437,53 @@ export default function PhotoSell() {
                     </div>
                   )}
 
+                  {/* Processing stepper */}
+                  {(isUploading || isAnalyzing || isEnhancing) && (
+                    <div className="rounded-lg border bg-muted/30 p-4 space-y-3 animate-fade-in">
+                      <p className="text-sm font-semibold">Processing…</p>
+                      {[
+                        { key: "upload", label: "Uploading photo", done: !isUploading && selectedJob.status !== "uploading", active: isUploading },
+                        { key: "analyze", label: "AI analyzing composition, lighting & clutter", done: ["analyzed", "enhancing", "completed"].includes(selectedJob.status), active: isAnalyzing },
+                        { key: "enhance", label: "Generating enhanced image", done: selectedJob.status === "completed", active: isEnhancing },
+                      ].map((step, i) => {
+                        const isPast = step.done && !step.active;
+                        const isCurrent = step.active;
+                        return (
+                          <div key={step.key} className="flex items-center gap-3">
+                            <div className={cn(
+                              "h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold transition-colors",
+                              isPast ? "bg-primary text-primary-foreground" :
+                              isCurrent ? "bg-primary/20 text-primary border-2 border-primary" :
+                              "bg-muted text-muted-foreground"
+                            )}>
+                              {isPast ? <CheckCircle className="h-4 w-4" /> : isCurrent ? <Loader2 className="h-4 w-4 animate-spin" /> : i + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={cn("text-sm", isCurrent ? "font-medium text-foreground" : isPast ? "text-muted-foreground line-through" : "text-muted-foreground")}>
+                                {step.label}
+                              </p>
+                              {isCurrent && (
+                                <Progress value={undefined} className="h-1.5 mt-1.5 w-full [&>div]:animate-pulse" />
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   {/* Action buttons */}
                   <div className="flex flex-wrap gap-2">
-                    {selectedJob.status === "pending" && (
+                    {selectedJob.status === "pending" && !isAnalyzing && (
                       <Button onClick={handleAnalyze} disabled={isAnalyzing} className="gap-2">
-                        {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                        {isAnalyzing ? "Analyzing…" : "Analyze Photo"}
+                        <Sparkles className="h-4 w-4" />
+                        Analyze Photo
                       </Button>
                     )}
-                    {selectedJob.status === "analyzed" && (
+                    {selectedJob.status === "analyzed" && !isEnhancing && (
                       <Button onClick={handleEnhance} disabled={isEnhancing || selectedEnhancements.length === 0} className="gap-2">
-                        {isEnhancing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                        {isEnhancing ? "Enhancing…" : `Enhance (5 credits)`}
+                        <Sparkles className="h-4 w-4" />
+                        Enhance (5 credits)
                       </Button>
                     )}
                     {selectedJob.status === "completed" && selectedJob.processed_keys?.[0] && (
