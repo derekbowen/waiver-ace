@@ -19,7 +19,8 @@ import {
   X,
   ChevronRight,
   Zap,
-  HelpCircle } from
+  HelpCircle,
+  Sparkles } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
