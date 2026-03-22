@@ -448,7 +448,7 @@ export default function PhotoSell() {
                     {selectedJob.status === "analyzed" && (
                       <Button onClick={handleEnhance} disabled={isEnhancing || selectedEnhancements.length === 0} className="gap-2">
                         {isEnhancing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                        {isEnhancing ? "Enhancing…" : `Enhance (1 credit)`}
+                        {isEnhancing ? "Enhancing…" : `Enhance (5 credits)`}
                       </Button>
                     )}
                     {selectedJob.status === "completed" && selectedJob.processed_keys?.[0] && (
