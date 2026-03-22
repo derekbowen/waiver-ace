@@ -99,6 +99,7 @@ const App = () => (
             <Route path="/pricing-info" element={<PricingPublicPage />} />
             <Route path="/alternatives/:slug" element={<CompetitorAltPage />} />
             <Route path="/waivers/:slug" element={<SeoLanding />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
 
             {/* Protected dashboard — lazy-loaded (not crawled) */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
