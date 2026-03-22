@@ -40,6 +40,7 @@ const EnvelopeDetail = lazy(() => import("./pages/EnvelopeDetail"));
 const NewEnvelope = lazy(() => import("./pages/NewEnvelope"));
 const Settings = lazy(() => import("./pages/Settings"));
 const ApiKeys = lazy(() => import("./pages/ApiKeys"));
+const PhotoSell = lazy(() => import("./pages/PhotoSell"));
 const Webhooks = lazy(() => import("./pages/Webhooks"));
 const TeamMembers = lazy(() => import("./pages/TeamMembers"));
 const Analytics = lazy(() => import("./pages/Analytics"));
