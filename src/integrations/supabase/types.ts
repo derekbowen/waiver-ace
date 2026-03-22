@@ -469,6 +469,68 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_jobs: {
+        Row: {
+          analysis_json: Json | null
+          completed_at: string | null
+          created_at: string
+          credits_used: number
+          error_message: string | null
+          id: string
+          org_id: string
+          original_content_type: string | null
+          original_filename: string | null
+          original_storage_key: string | null
+          processed_keys: Json | null
+          processing_time_ms: number | null
+          settings: Json | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          analysis_json?: Json | null
+          completed_at?: string | null
+          created_at?: string
+          credits_used?: number
+          error_message?: string | null
+          id?: string
+          org_id: string
+          original_content_type?: string | null
+          original_filename?: string | null
+          original_storage_key?: string | null
+          processed_keys?: Json | null
+          processing_time_ms?: number | null
+          settings?: Json | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          analysis_json?: Json | null
+          completed_at?: string | null
+          created_at?: string
+          credits_used?: number
+          error_message?: string | null
+          id?: string
+          org_id?: string
+          original_content_type?: string | null
+          original_filename?: string | null
+          original_storage_key?: string | null
+          processed_keys?: Json | null
+          processing_time_ms?: number | null
+          settings?: Json | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_jobs_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
