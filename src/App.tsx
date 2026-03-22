@@ -21,6 +21,7 @@ import Privacy from "./pages/Privacy";
 import Docs from "./pages/Docs";
 import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
+import Unsubscribe from "./pages/Unsubscribe";
 import SeoLanding from "./pages/SeoLanding";
 import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
 import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
