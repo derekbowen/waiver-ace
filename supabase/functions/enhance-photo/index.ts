@@ -55,7 +55,8 @@ serve(async (req) => {
       p_org_id: profile.org_id,
       p_reference_id: job_id,
       p_type: "waiver_deduction",
-      p_notes: "PhotoSell enhancement credit",
+      p_amount: 5,
+      p_notes: "PhotoSell enhancement — 5 credits",
     });
 
     const result = deductResult?.[0];
