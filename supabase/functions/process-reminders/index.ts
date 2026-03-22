@@ -7,7 +7,16 @@ import { buildEmail, sendEmail } from "../_shared/email-builder.ts";
 // 1. Sends reminder emails for unsigned envelopes older than 24 hours
 // 2. Expires envelopes past their expires_at date and notifies signers
 
-serve(async (_req: Request) => {
+serve(async (req: Request) => {
+  // Auth: only allow internal calls with the service-role key
+  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
+  if (token !== Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
