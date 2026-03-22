@@ -135,7 +135,7 @@ serve(async (req) => {
       // Refund credit on failure
       await supabase.rpc("add_credits", {
         p_org_id: profile.org_id,
-        p_amount: 1,
+        p_amount: 5,
         p_reference_id: job_id,
         p_type: "refund",
         p_notes: "PhotoSell enhancement failed - refund",
