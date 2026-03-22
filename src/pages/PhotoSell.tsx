@@ -281,7 +281,7 @@ export default function PhotoSell() {
               <CreditCardIcon className="h-3 w-3" />
               {wallet.credits} credits
             </Badge>
-            <span className="text-xs text-muted-foreground">1 credit per enhancement</span>
+            <span className="text-xs text-muted-foreground">5 credits per enhancement</span>
           </div>
         </div>
 
@@ -448,7 +448,7 @@ export default function PhotoSell() {
                     {selectedJob.status === "analyzed" && (
                       <Button onClick={handleEnhance} disabled={isEnhancing || selectedEnhancements.length === 0} className="gap-2">
                         {isEnhancing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                        {isEnhancing ? "Enhancing…" : `Enhance (1 credit)`}
+                        {isEnhancing ? "Enhancing…" : `Enhance (5 credits)`}
                       </Button>
                     )}
                     {selectedJob.status === "completed" && selectedJob.processed_keys?.[0] && (
