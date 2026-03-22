@@ -42,8 +42,8 @@ const navItems = [
 
 
 // Primary tabs shown in the bottom tab bar on mobile
-const mobileTabItems = navItems.slice(0, 4); // Dashboard, Templates, Envelopes, Analytics
-const mobileMoreItems = navItems.slice(4); // Team, API Keys, Webhooks, Pricing, Settings
+const mobileTabItems = navItems.slice(0, 4); // Dashboard, Templates, Envelopes, PhotoSell
+const mobileMoreItems = navItems.slice(4); // Analytics, Team, API Keys, Webhooks, Pricing, Settings
 
 export function DashboardLayout({ children }: {children: React.ReactNode;}) {
   const location = useLocation();

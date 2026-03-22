@@ -115,6 +115,7 @@ const App = () => (
             <Route path="/settings/marketplace" element={<ProtectedRoute><MarketplaceIntegration /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/envelopes/bulk" element={<ProtectedRoute><BulkSend /></ProtectedRoute>} />
+            <Route path="/photosell" element={<ProtectedRoute><PhotoSell /></ProtectedRoute>} />
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
             <Route path="/admin/credits" element={<AdminRoute><AdminCredits /></AdminRoute>} />
 
