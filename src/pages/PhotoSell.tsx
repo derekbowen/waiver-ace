@@ -281,7 +281,7 @@ export default function PhotoSell() {
               <CreditCardIcon className="h-3 w-3" />
               {wallet.credits} credits
             </Badge>
-            <span className="text-xs text-muted-foreground">1 credit per enhancement</span>
+            <span className="text-xs text-muted-foreground">5 credits per enhancement</span>
           </div>
         </div>
 
