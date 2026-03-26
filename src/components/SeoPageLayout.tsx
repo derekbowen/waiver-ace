@@ -77,7 +77,8 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
             <Link to="/waiver-laws" className="hover:text-foreground transition-colors">Waiver Laws</Link>
             <Link to="/pricing-info" className="hover:text-foreground transition-colors">Pricing</Link>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <Link to="/login">
               <Button size="sm">Get Started Free</Button>
             </Link>
