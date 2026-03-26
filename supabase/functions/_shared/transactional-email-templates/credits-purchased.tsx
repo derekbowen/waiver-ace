@@ -24,7 +24,7 @@ const CreditsPurchasedEmail = ({
   return (
     <Html lang="en" dir="ltr">
       <Head />
-      <Preview>{credits} credits added to your {SITE_NAME} account</Preview>
+      <Preview>{`${credits} credits added to your ${SITE_NAME} account`}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Text style={brand}>{SITE_NAME}</Text>
