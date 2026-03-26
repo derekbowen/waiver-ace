@@ -104,6 +104,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
               <li><Link to="/waiver-laws" className="text-muted-foreground hover:text-foreground transition-colors">Waiver Laws by State</Link></li>
               <li><Link to="/industries" className="text-muted-foreground hover:text-foreground transition-colors">Industries</Link></li>
               <li><Link to="/docs" className="text-muted-foreground hover:text-foreground transition-colors">API Reference</Link></li>
+              <li><Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors">Blog</Link></li>
             </ul>
 
             <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4 mt-8 text-foreground">Compare</h3>

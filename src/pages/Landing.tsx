@@ -116,6 +116,9 @@ export default function Landing() {
             <Link to="/my-waivers">
               <Button variant="ghost" size="sm">My Waivers</Button>
             </Link>
+            <Link to="/blog">
+              <Button variant="ghost" size="sm">Blog</Button>
+            </Link>
             <Link to="/login">
               <Button variant="ghost" size="sm">Sign in</Button>
             </Link>
@@ -154,6 +157,7 @@ export default function Landing() {
                   <a href="#pricing" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Pricing</a>
                   <Link to="/waiver-laws" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Waiver Laws</Link>
                   <Link to="/my-waivers" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">My Waivers</Link>
+                  <Link to="/blog" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Blog</Link>
 
                   <div className="my-2 border-t" />
                   <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Sign In</Link>

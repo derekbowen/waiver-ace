@@ -31,6 +31,8 @@ import WaiverLawsHubPage from "./pages/seo/WaiverLawsHubPage";
 import CompareHubPage from "./pages/seo/CompareHubPage";
 import CompetitorAltPage from "./pages/seo/CompetitorAltPage";
 import PricingPublicPage from "./pages/seo/PricingPublicPage";
+import BlogHubPage from "./pages/seo/BlogHubPage";
+import BlogArticlePage from "./pages/seo/BlogArticlePage";
 
 // Authenticated dashboard pages — lazy-loaded (behind login, not crawled)
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -99,6 +101,8 @@ const App = () => (
             <Route path="/pricing-info" element={<PricingPublicPage />} />
             <Route path="/alternatives/:slug" element={<CompetitorAltPage />} />
             <Route path="/waivers/:slug" element={<SeoLanding />} />
+            <Route path="/blog" element={<BlogHubPage />} />
+            <Route path="/blog/:slug" element={<BlogArticlePage />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
 
             {/* Protected dashboard — lazy-loaded (not crawled) */}

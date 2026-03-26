@@ -139,8 +139,12 @@ export default function BlogArticlePage() {
       {/* AI Q&A */}
       <section className="container max-w-3xl py-12">
         <AiQuestionBox
-          contextLabel={article.title}
-          contextHint={`Ask any question about ${article.title.toLowerCase()}`}
+          pageContext={article.title}
+          suggestedQuestions={[
+            `What makes ${article.title.toLowerCase().includes('waiver') ? 'a waiver' : 'this'} legally enforceable?`,
+            "How does pay-per-waiver pricing work?",
+            "Can guests sign on their phone?",
+          ]}
         />
       </section>
 
