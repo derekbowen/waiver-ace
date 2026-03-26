@@ -119,6 +119,7 @@ export default function Landing() {
             <Link to="/blog">
               <Button variant="ghost" size="sm">Blog</Button>
             </Link>
+            <LanguageSwitcher />
             <Link to="/login">
               <Button variant="ghost" size="sm">Sign in</Button>
             </Link>
