@@ -35,9 +35,26 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
     setMeta("twitter:title", metaTitle);
     setMeta("twitter:description", metaDescription);
     if (canonicalPath) {
+      const fullUrl = `https://www.rentalwaivers.com${canonicalPath}`;
       const canonical = document.querySelector('link[rel="canonical"]');
-      if (canonical) canonical.setAttribute("href", `https://www.rentalwaivers.com${canonicalPath}`);
-      setMeta("og:url", `https://www.rentalwaivers.com${canonicalPath}`);
+      if (canonical) canonical.setAttribute("href", fullUrl);
+      setMeta("og:url", fullUrl);
+
+      // hreflang tags
+      const hreflangs = [
+        { lang: "en", href: fullUrl },
+        { lang: "es", href: `${fullUrl}${canonicalPath.includes("?") ? "&" : "?"}lang=es` },
+        { lang: "x-default", href: fullUrl },
+      ];
+      // Remove old hreflangs
+      document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
+      hreflangs.forEach(({ lang, href }) => {
+        const link = document.createElement("link");
+        link.rel = "alternate";
+        link.hreflang = lang;
+        link.href = href;
+        document.head.appendChild(link);
+      });
     }
   }, [metaTitle, metaDescription, canonicalPath]);
 
