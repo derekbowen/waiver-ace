@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { FileText, ArrowRight, Shield, ChevronDown, ChevronUp, CheckCircle } from "lucide-react";
 import { useState, useEffect, ReactNode } from "react";
 import { faqSchema, breadcrumbSchema } from "@/lib/structured-data";
