@@ -1,6 +1,7 @@
 import { Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock,
   Smartphone, Droplets, Home, Wrench, PartyPopper, Zap, Globe,
@@ -119,6 +120,7 @@ export default function Landing() {
             <Link to="/blog">
               <Button variant="ghost" size="sm">Blog</Button>
             </Link>
+            <LanguageSwitcher />
             <Link to="/login">
               <Button variant="ghost" size="sm">Sign in</Button>
             </Link>

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { FileText, ArrowRight, Shield, ChevronDown, ChevronUp, CheckCircle } from "lucide-react";
 import { useState, useEffect, ReactNode } from "react";
 import { faqSchema, breadcrumbSchema } from "@/lib/structured-data";
@@ -40,10 +41,11 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
       if (canonical) canonical.setAttribute("href", fullUrl);
       setMeta("og:url", fullUrl);
 
-      // hreflang tags
+      // hreflang tags for all supported languages
+      const sep = canonicalPath.includes("?") ? "&" : "?";
+      const langs = ["en", "es", "fr", "de", "pt", "zh", "ja", "ko", "it", "ar", "hi"];
       const hreflangs = [
-        { lang: "en", href: fullUrl },
-        { lang: "es", href: `${fullUrl}${canonicalPath.includes("?") ? "&" : "?"}lang=es` },
+        ...langs.map((lang) => ({ lang, href: lang === "en" ? fullUrl : `${fullUrl}${sep}lang=${lang}` })),
         { lang: "x-default", href: fullUrl },
       ];
       // Remove old hreflangs
@@ -76,7 +78,8 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
             <Link to="/waiver-laws" className="hover:text-foreground transition-colors">Waiver Laws</Link>
             <Link to="/pricing-info" className="hover:text-foreground transition-colors">Pricing</Link>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <Link to="/login">
               <Button size="sm">Get Started Free</Button>
             </Link>

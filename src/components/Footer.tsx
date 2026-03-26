@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { FileText, Mail, MapPin, ExternalLink } from "lucide-react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const waiverPages = [
   { label: "Pool Rental Waivers", slug: "pool-rental-waivers" },
@@ -145,6 +146,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
               <p>&copy; {new Date().getFullYear()} Rental Waivers — a product of <a href="https://10000solutions.com" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground transition-colors">10,000 Solutions LLC</a>. All rights reserved.</p>
             </div>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <LanguageSwitcher variant="outline" />
               <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
               <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
               <a href="mailto:hello@rentalwaivers.com" className="hover:text-foreground transition-colors">Contact</a>
