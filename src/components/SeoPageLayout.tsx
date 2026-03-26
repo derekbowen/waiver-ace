@@ -41,10 +41,11 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
       if (canonical) canonical.setAttribute("href", fullUrl);
       setMeta("og:url", fullUrl);
 
-      // hreflang tags
+      // hreflang tags for all supported languages
+      const sep = canonicalPath.includes("?") ? "&" : "?";
+      const langs = ["en", "es", "fr", "de", "pt", "zh", "ja", "ko", "it", "ar", "hi"];
       const hreflangs = [
-        { lang: "en", href: fullUrl },
-        { lang: "es", href: `${fullUrl}${canonicalPath.includes("?") ? "&" : "?"}lang=es` },
+        ...langs.map((lang) => ({ lang, href: lang === "en" ? fullUrl : `${fullUrl}${sep}lang=${lang}` })),
         { lang: "x-default", href: fullUrl },
       ];
       // Remove old hreflangs
