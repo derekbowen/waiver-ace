@@ -1,11 +1,9 @@
-#
-# Hello bot! There are some routes that need
-# authentication. You should avoid them :)
-#
+# https://www.rentalwaivers.com/robots.txt
 
 User-agent: *
 Allow: /
 
+# Authenticated / private routes
 Disallow: /dashboard
 Disallow: /templates
 Disallow: /envelopes
@@ -16,5 +14,21 @@ Disallow: /admin/
 Disallow: /login
 Disallow: /sign/
 Disallow: /my-waivers
+Disallow: /photosell
+Disallow: /unsubscribe
+
+# Block query-string crawl traps
+Disallow: /*?*
+
+# Googlebot — allow full crawl budget
+User-agent: Googlebot
+Allow: /
+
+# Crawl-delay for less-capable bots
+User-agent: Bingbot
+Crawl-delay: 1
+
+User-agent: Yandex
+Crawl-delay: 2
 
 Sitemap: https://www.rentalwaivers.com/sitemap.xml
