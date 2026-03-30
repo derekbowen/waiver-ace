@@ -58,6 +58,50 @@ export type Database = {
           },
         ]
       }
+      credit_disputes: {
+        Row: {
+          created_at: string
+          credits_granted: number
+          credits_requested: number
+          details: string | null
+          id: string
+          org_id: string
+          reason: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits_granted?: number
+          credits_requested: number
+          details?: string | null
+          id?: string
+          org_id: string
+          reason: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits_granted?: number
+          credits_requested?: number
+          details?: string | null
+          id?: string
+          org_id?: string
+          reason?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_disputes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_transactions: {
         Row: {
           balance_after: number
