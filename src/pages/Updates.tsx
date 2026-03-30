@@ -248,6 +248,10 @@ const updates: Update[] = [
 ];
 
 export default function Updates() {
+  useEffect(() => {
+    document.title = "Product Updates | Rental Waivers";
+  }, []);
+
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
