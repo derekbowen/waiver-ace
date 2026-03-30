@@ -101,10 +101,9 @@ serve(async (req: Request) => {
             role: "user",
             content: [
               {
-                type: "file",
-                file: {
-                  filename: file.name,
-                  file_data: `data:${mimeType};base64,${base64}`,
+                type: "image_url",
+                image_url: {
+                  url: `data:${mimeType};base64,${base64}`,
                 },
               },
               {
