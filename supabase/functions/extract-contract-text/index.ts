@@ -90,7 +90,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3-flash-preview",
         messages: [
           {
             role: "system",
@@ -101,10 +101,9 @@ serve(async (req: Request) => {
             role: "user",
             content: [
               {
-                type: "file",
-                file: {
-                  filename: file.name,
-                  file_data: `data:${mimeType};base64,${base64}`,
+                type: "image_url",
+                image_url: {
+                  url: `data:${mimeType};base64,${base64}`,
                 },
               },
               {
@@ -120,6 +119,18 @@ serve(async (req: Request) => {
     if (!aiResp.ok) {
       const errText = await aiResp.text();
       console.error("AI extraction error:", aiResp.status, errText);
+      if (aiResp.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Rate limited — please try again in a moment" }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (aiResp.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "AI credits exhausted — please add funds" }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       return new Response(
         JSON.stringify({ error: "Failed to extract text from document" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
