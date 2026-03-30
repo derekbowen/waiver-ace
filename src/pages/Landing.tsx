@@ -79,6 +79,8 @@ export default function Landing() {
                   <Link to="/waiver-laws" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Waiver Laws</Link>
                   <div className="my-2 border-t" />
                   <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent font-medium">Sign In</Link>
+                  <div className="my-2 border-t" />
+                  <div className="px-3"><LanguageSwitcher variant="outline" /></div>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -327,7 +329,7 @@ export default function Landing() {
             Buy credits when you need them. No contracts, no expiration.
           </p>
 
-          <div className="grid gap-3 grid-cols-2 md:grid-cols-5">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
             {CREDIT_PACKAGES.map((pkg) => (
               <div key={pkg.id} className={`rounded-xl border p-5 text-center transition-shadow hover:shadow-md ${pkg.popular ? "border-primary border-2 relative" : "bg-card"}`}>
                 {pkg.popular && <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-bold px-2.5 py-0.5 rounded-full">BEST VALUE</div>}
@@ -368,7 +370,7 @@ export default function Landing() {
               { them: "API locked behind premium", us: "Full API on every account" },
               { them: "Per-seat pricing for teams", us: "Unlimited team members" },
             ].map((row, i) => (
-              <div key={i} className="grid grid-cols-2 gap-3 text-sm">
+              <div key={i} className="flex flex-col sm:grid sm:grid-cols-2 gap-1 sm:gap-3 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground line-through decoration-destructive/40">
                   {row.them}
                 </div>
