@@ -1,59 +1,60 @@
 
 
-## Security Scan Fixes -- 2 Errors + 1 Warning
+## Document Storage with Smart Pricing
 
-### Error 1: Drop legacy signer-photos upload policy
+### Pricing Recommendation
 
-The old `Anyone can upload signer photos` policy on `storage.objects` is still active. Because permissive policies combine with OR, it completely bypasses the new envelope-scoped policy.
+Given your existing pay-per-waiver credits model, here's what makes sense:
 
-**Migration:** Drop the old policy by name.
+**Hybrid approach: Free tier + credit-based upgrades**
 
-```sql
-DROP POLICY IF EXISTS "Anyone can upload signer photos" ON storage.objects;
-```
+- Every org gets **100MB free storage** (covers most small hosts)
+- Completed waiver PDFs are stored automatically (no extra charge -- already paid via waiver credit)
+- Custom file uploads cost **1 credit per file** (up to 25MB each)
+- Orgs can see their storage usage on the Settings/Dashboard page
 
-### Error 2: Prevent non-admin self-escalation on user_roles
+This keeps it simple, aligned with your existing credit system, and avoids adding a separate subscription tier.
 
-Currently, only the "Admins can insert org roles" INSERT policy exists. A non-admin authenticated user has no matching INSERT policy, but the scanner flags this as a risk. To make intent explicit, add a restrictive policy that denies all INSERT unless the caller is an admin.
+### What Gets Built
 
-**Migration:**
+1. **Database: `documents` table + storage tracking**
+   - `documents` table: id, org_id, user_id, filename, storage_key, file_size, content_type, source (waiver_pdf | user_upload), envelope_id (nullable), created_at
+   - Add `storage_used_bytes` column to `wallets` table for fast quota checks
+   - RLS: org members can SELECT, admins can INSERT/DELETE
 
-```sql
--- Make the existing admin INSERT policy restrictive instead of permissive,
--- so non-admins are explicitly blocked from inserting any roles.
-DROP POLICY IF EXISTS "Admins can insert org roles" ON public.user_roles;
+2. **Storage bucket: `org-documents`**
+   - Private bucket, paths scoped by org_id
+   - RLS policies restricting access to org members
 
-CREATE POLICY "Admins can insert org roles"
-  ON public.user_roles
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    has_role(auth.uid(), 'admin'::app_role)
-    AND org_id = get_user_org_id(auth.uid())
-    AND role <> 'admin'::app_role
-  );
-```
+3. **Edge function: `upload-document`**
+   - Validates file size (25MB max), content type whitelist
+   - Checks storage quota (100MB free)
+   - Deducts 1 credit for user uploads (waiver PDFs are free)
+   - Returns signed upload URL
 
-This is already the current policy but we need to verify it's the ONLY insert policy. If it is, non-admins cannot insert because no permissive INSERT policy matches them. The scanner may be overly cautious -- but we can reinforce by confirming no other INSERT path exists.
+4. **Frontend: Document Manager UI**
+   - New "Documents" section in the dashboard sidebar
+   - Upload button, file list with download/delete, storage usage bar
+   - Filter by source (waivers vs uploads)
+   - Credit cost warning before upload
 
-### Warning: Protect team_invites UPDATE
+5. **Auto-link waiver PDFs**
+   - After waiver completion, the existing `generate-pdf` function inserts a row into `documents` with source = `waiver_pdf` (no credit charge)
 
-Add an UPDATE policy so only the invited user (matching email) or an admin can update invite rows (e.g., setting `accepted_at`).
+### Technical Details
 
-**Migration:**
+- Files stored in `org-documents` bucket under path `{org_id}/{document_id}/{filename}`
+- Download via time-limited signed URLs (matching existing waiver PDF pattern)
+- Content type whitelist: PDF, DOCX, XLSX, JPG, PNG, WEBP
+- Storage quota enforced server-side in the edge function
+- `storage_used_bytes` updated via trigger on documents INSERT/DELETE
 
-```sql
-CREATE POLICY "Invited user can accept invite"
-  ON public.team_invites
-  FOR UPDATE
-  TO authenticated
-  USING (email = (SELECT email FROM auth.users WHERE id = auth.uid()))
-  WITH CHECK (email = (SELECT email FROM auth.users WHERE id = auth.uid()));
-```
+### Files Changed
 
-### Summary
-
-- 1 migration with 3 SQL statements
-- No code changes needed
-- All 25 "Anonymous Access" warnings are false positives (policies require `authenticated` or `service_role` internally)
+- 1 migration (documents table, wallets column, storage bucket, RLS, trigger)
+- 1 new edge function (`upload-document/index.ts`)
+- 1 new page (`src/pages/Documents.tsx`)
+- Update `src/App.tsx` (add route)
+- Update `src/components/DashboardLayout.tsx` (add nav item)
+- Update `generate-pdf` edge function (auto-insert document row)
 
