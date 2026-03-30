@@ -203,6 +203,8 @@ function PriorityBadge({ priority }: { priority: string }) {
 export default function ContractScanner() {
   const { profile, user } = useAuth();
   const [contractText, setContractText] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [analysis, setAnalysis] = useState<ContractAnalysis | null>(null);
