@@ -203,6 +203,8 @@ function PriorityBadge({ priority }: { priority: string }) {
 export default function ContractScanner() {
   const { profile, user } = useAuth();
   const [contractText, setContractText] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [analysis, setAnalysis] = useState<ContractAnalysis | null>(null);
@@ -237,6 +239,41 @@ export default function ContractScanner() {
   const addonCredits = ADDONS.reduce((sum, a) => sum + (enabledAddons[a.key] ? a.credits : 0), 0);
   const totalEstimate = baseCredits + addonCredits;
   const activeAddonCount = Object.values(enabledAddons).filter(Boolean).length;
+
+  const handleFileExtract = useCallback(async (file: File) => {
+    setIsExtracting(true);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) { toast.error("Not authenticated"); return; }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-contract-text`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${session.session.access_token}` },
+          body: formData,
+        }
+      );
+
+      const json = await resp.json();
+      if (!resp.ok) {
+        toast.error(json.error || "Failed to extract text");
+        setUploadedFile(null);
+        return;
+      }
+
+      setContractText(json.text);
+      toast.success(`Extracted ${json.text.length.toLocaleString()} characters from ${file.name}`);
+    } catch {
+      toast.error("Failed to extract text from file");
+      setUploadedFile(null);
+    } finally {
+      setIsExtracting(false);
+    }
+  }, []);
 
   const analyzeContract = useCallback(async () => {
     if (!contractText.trim() || contractText.trim().length < 100) {
@@ -354,18 +391,97 @@ export default function ContractScanner() {
           <>
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Paste Your Contract</CardTitle>
+                <CardTitle className="text-lg">Upload or Paste Your Contract</CardTitle>
                 <CardDescription>
-                  Paste the full text of the contract you want analyzed. 10 credits per page.
+                  Upload a PDF/DOCX file or paste the text directly. 10 credits per page.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Textarea
-                  value={contractText}
-                  onChange={(e) => setContractText(e.target.value)}
-                  placeholder="Paste your contract text here..."
-                  className="min-h-[200px] font-mono text-sm"
-                />
+                {/* File upload zone */}
+                <label
+                  className={`relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 cursor-pointer transition-colors ${
+                    uploadedFile ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50"
+                  }`}
+                  onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file && (file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+                      setUploadedFile(file);
+                      setContractText("");
+                      handleFileExtract(file);
+                    } else {
+                      toast.error("Please upload a PDF or DOCX file");
+                    }
+                  }}
+                >
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.docx"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setUploadedFile(file);
+                        setContractText("");
+                        handleFileExtract(file);
+                      }
+                      e.target.value = "";
+                    }}
+                  />
+                  {isExtracting ? (
+                    <>
+                      <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                      <span className="text-sm text-muted-foreground">Extracting text from {uploadedFile?.name}…</span>
+                    </>
+                  ) : uploadedFile ? (
+                    <>
+                      <FileText className="h-8 w-8 text-primary" />
+                      <span className="text-sm font-medium">{uploadedFile.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {(uploadedFile.size / 1024).toFixed(0)} KB • Text extracted ✓
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setUploadedFile(null);
+                          setContractText("");
+                        }}
+                      >
+                        Remove & start over
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-8 w-8 text-muted-foreground" />
+                      <span className="text-sm font-medium">Drop a PDF or DOCX here, or click to browse</span>
+                      <span className="text-xs text-muted-foreground">Max 25MB • We extract the text automatically</span>
+                    </>
+                  )}
+                </label>
+
+                {!uploadedFile && (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <Separator className="flex-1" />
+                      <span className="text-xs text-muted-foreground">OR</span>
+                      <Separator className="flex-1" />
+                    </div>
+                    <Textarea
+                      value={contractText}
+                      onChange={(e) => setContractText(e.target.value)}
+                      placeholder="Paste your contract text here..."
+                      className="min-h-[200px] font-mono text-sm"
+                    />
+                  </>
+                )}
+
                 {contractText.length > 0 && (
                   <div className="text-xs text-muted-foreground flex flex-wrap gap-4">
                     <span>{contractText.length.toLocaleString()} chars</span>
