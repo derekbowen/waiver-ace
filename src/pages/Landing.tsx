@@ -5,7 +5,8 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock,
   Smartphone, Droplets, Home, Wrench, PartyPopper, Zap,
-  DollarSign, ChevronDown, Menu, Star, QrCode, Code
+  DollarSign, ChevronDown, Menu, Star, QrCode, Code,
+  FileSearch, FolderOpen, AlertTriangle, Sparkles
 } from "lucide-react";
 import {
   DropdownMenu,
