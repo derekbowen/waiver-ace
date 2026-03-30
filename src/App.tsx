@@ -55,6 +55,7 @@ const MarketplaceIntegration = lazy(() => import("./pages/MarketplaceIntegration
 const AdminCredits = lazy(() => import("./pages/AdminCredits"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const ContractScanner = lazy(() => import("./pages/ContractScanner"));
+const Documents = lazy(() => import("./pages/Documents"));
 
 const queryClient = new QueryClient({
   defaultOptions: {

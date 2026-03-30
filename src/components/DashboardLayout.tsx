@@ -21,7 +21,8 @@ import {
   Zap,
   HelpCircle,
   Sparkles,
-  FileSearch } from
+  FileSearch,
+  FolderOpen } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
