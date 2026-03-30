@@ -250,15 +250,6 @@ const updates: Update[] = [
 export default function Updates() {
   return (
     <>
-      <Helmet>
-        <title>Product Updates | Rental Waivers</title>
-        <meta
-          name="description"
-          content="See what's new at Rental Waivers. Latest features, improvements, and updates to the lowest-cost digital waiver platform."
-        />
-      </Helmet>
-
-      {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
