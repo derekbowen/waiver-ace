@@ -221,9 +221,9 @@ export default function ContractScanner() {
   const { data: pastScans, refetch: refetchScans } = useQuery({
     queryKey: ["contract-scans"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("contract_scans").select("*")
-        .order("created_at", { ascending: false }).limit(10);
+      const { data, error } = await (supabase
+        .from("contract_scans" as any).select("*")
+        .order("created_at", { ascending: false }).limit(10) as any);
       if (error) throw error;
       return data;
     },
@@ -251,10 +251,10 @@ export default function ContractScanner() {
       const orgId = profile?.org_id;
       if (!orgId) { toast.error("No organization found"); setIsAnalyzing(false); return; }
 
-      const { data: scan, error: scanError } = await supabase
-        .from("contract_scans")
-        .insert({ org_id: orgId, user_id: user?.id || "", filename: "pasted-text", status: "pending" } as never)
-        .select("id").single();
+      const { data: scan, error: scanError } = await (supabase
+        .from("contract_scans" as any)
+        .insert({ org_id: orgId, user_id: user?.id || "", filename: "pasted-text", status: "pending" })
+        .select("id").single() as any);
       if (scanError || !scan) { toast.error("Failed to create scan record"); setIsAnalyzing(false); return; }
 
       await new Promise(r => setTimeout(r, 500));
