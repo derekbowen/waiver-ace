@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
