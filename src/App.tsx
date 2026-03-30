@@ -22,6 +22,7 @@ import Docs from "./pages/Docs";
 import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
 import Unsubscribe from "./pages/Unsubscribe";
+import Updates from "./pages/Updates";
 import SeoLanding from "./pages/SeoLanding";
 import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
 import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
@@ -109,6 +110,7 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogArticlePage />} />
             <Route path="/contract-scanner-info" element={<ContractScannerPage />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/updates" element={<Updates />} />
 
             {/* Protected dashboard — lazy-loaded (not crawled) */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
