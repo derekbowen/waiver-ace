@@ -229,6 +229,18 @@ serve(async (req: Request) => {
       pdf_hash: pdfHash,
     }).eq("id", envelope_id);
 
+    // Auto-register as a document (no credit charge for waiver PDFs)
+    await supabase.from("documents").insert({
+      org_id: envelope.org_id,
+      user_id: authData.user.id,
+      filename: `waiver-${envelope.id.slice(0, 8)}.pdf`,
+      storage_key: storageKey,
+      file_size: pdfBytes.length,
+      content_type: "application/pdf",
+      source: "waiver_pdf",
+      envelope_id: envelope.id,
+    });
+
     return new Response(pdfBytes, {
       headers: {
         ...corsHeaders,

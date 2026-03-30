@@ -99,6 +99,60 @@ export type Database = {
           },
         ]
       }
+      documents: {
+        Row: {
+          content_type: string
+          created_at: string
+          envelope_id: string | null
+          file_size: number
+          filename: string
+          id: string
+          org_id: string
+          source: string
+          storage_key: string
+          user_id: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          envelope_id?: string | null
+          file_size?: number
+          filename: string
+          id?: string
+          org_id: string
+          source?: string
+          storage_key: string
+          user_id: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          envelope_id?: string | null
+          file_size?: number
+          filename?: string
+          id?: string
+          org_id?: string
+          source?: string
+          storage_key?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_envelope_id_fkey"
+            columns: ["envelope_id"]
+            isOneToOne: false
+            referencedRelation: "envelopes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -817,6 +871,7 @@ export type Database = {
           credits: number
           id: string
           org_id: string
+          storage_used_bytes: number
           stripe_customer_id: string | null
           stripe_payment_method_id: string | null
           updated_at: string
@@ -829,6 +884,7 @@ export type Database = {
           credits?: number
           id?: string
           org_id: string
+          storage_used_bytes?: number
           stripe_customer_id?: string | null
           stripe_payment_method_id?: string | null
           updated_at?: string
@@ -841,6 +897,7 @@ export type Database = {
           credits?: number
           id?: string
           org_id?: string
+          storage_used_bytes?: number
           stripe_customer_id?: string | null
           stripe_payment_method_id?: string | null
           updated_at?: string

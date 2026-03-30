@@ -55,6 +55,7 @@ const MarketplaceIntegration = lazy(() => import("./pages/MarketplaceIntegration
 const AdminCredits = lazy(() => import("./pages/AdminCredits"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const ContractScanner = lazy(() => import("./pages/ContractScanner"));
+const Documents = lazy(() => import("./pages/Documents"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -127,6 +128,7 @@ const App = () => (
             <Route path="/photosell" element={<ProtectedRoute><PhotoSell /></ProtectedRoute>} />
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
             <Route path="/contract-scanner" element={<ProtectedRoute><ContractScanner /></ProtectedRoute>} />
+            <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
             <Route path="/admin/credits" element={<AdminRoute><AdminCredits /></AdminRoute>} />
 
             <Route path="*" element={<NotFound />} />
