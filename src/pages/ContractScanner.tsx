@@ -240,7 +240,41 @@ export default function ContractScanner() {
   const totalEstimate = baseCredits + addonCredits;
   const activeAddonCount = Object.values(enabledAddons).filter(Boolean).length;
 
-  const analyzeContract = useCallback(async () => {
+  const handleFileExtract = useCallback(async (file: File) => {
+    setIsExtracting(true);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) { toast.error("Not authenticated"); return; }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-contract-text`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${session.session.access_token}` },
+          body: formData,
+        }
+      );
+
+      const json = await resp.json();
+      if (!resp.ok) {
+        toast.error(json.error || "Failed to extract text");
+        setUploadedFile(null);
+        return;
+      }
+
+      setContractText(json.text);
+      toast.success(`Extracted ${json.text.length.toLocaleString()} characters from ${file.name}`);
+    } catch {
+      toast.error("Failed to extract text from file");
+      setUploadedFile(null);
+    } finally {
+      setIsExtracting(false);
+    }
+  }, []);
+
     if (!contractText.trim() || contractText.trim().length < 100) {
       toast.error("Please paste at least 100 characters of contract text");
       return;
