@@ -150,7 +150,7 @@ export default function Dashboard() {
             <CardContent className="flex flex-wrap gap-3">
               <Button asChild variant="outline" size="sm">
                 <a
-                  href={`href={`sms:+19092728096?body=${encodeURIComponent(?body=${encodeURIComponent(
+                  href={`sms:+19092728096?body=${encodeURIComponent(
                     `Hi, I'm using Rental Waivers. My name is ${profile?.full_name || "a customer"} and I need some assistance today.`
                   )}`}
                 >
