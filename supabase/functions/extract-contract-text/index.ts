@@ -119,6 +119,18 @@ serve(async (req: Request) => {
     if (!aiResp.ok) {
       const errText = await aiResp.text();
       console.error("AI extraction error:", aiResp.status, errText);
+      if (aiResp.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Rate limited — please try again in a moment" }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (aiResp.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "AI credits exhausted — please add funds" }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       return new Response(
         JSON.stringify({ error: "Failed to extract text from document" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
