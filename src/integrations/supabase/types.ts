@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.4"
   }
   public: {
     Tables: {
@@ -51,6 +51,68 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "api_keys_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_scans: {
+        Row: {
+          analysis_json: Json | null
+          completed_at: string | null
+          contract_type: string | null
+          created_at: string
+          credits_used: number
+          error_message: string | null
+          file_size_bytes: number | null
+          file_storage_key: string | null
+          filename: string | null
+          id: string
+          org_id: string
+          page_count: number | null
+          risk_score: number | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          analysis_json?: Json | null
+          completed_at?: string | null
+          contract_type?: string | null
+          created_at?: string
+          credits_used?: number
+          error_message?: string | null
+          file_size_bytes?: number | null
+          file_storage_key?: string | null
+          filename?: string | null
+          id?: string
+          org_id: string
+          page_count?: number | null
+          risk_score?: number | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          analysis_json?: Json | null
+          completed_at?: string | null
+          contract_type?: string | null
+          created_at?: string
+          credits_used?: number
+          error_message?: string | null
+          file_size_bytes?: number | null
+          file_storage_key?: string | null
+          filename?: string | null
+          id?: string
+          org_id?: string
+          page_count?: number | null
+          risk_score?: number | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_scans_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"

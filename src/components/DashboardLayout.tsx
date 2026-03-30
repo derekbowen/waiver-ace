@@ -20,7 +20,8 @@ import {
   ChevronRight,
   Zap,
   HelpCircle,
-  Sparkles } from
+  Sparkles,
+  FileSearch } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ const navItems = [
 { label: "Templates", href: "/templates", icon: FileText },
 { label: "Envelopes", href: "/envelopes", icon: Mail },
 { label: "PhotoSell", href: "/photosell", icon: Sparkles },
+{ label: "Contracts", href: "/contract-scanner", icon: FileSearch },
 { label: "Analytics", href: "/analytics", icon: BarChart3 },
 { label: "Team", href: "/settings/team", icon: Users },
 { label: "API Keys", href: "/settings/api-keys", icon: Key },
