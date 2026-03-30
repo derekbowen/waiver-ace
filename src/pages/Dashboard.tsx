@@ -7,7 +7,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Mail, CheckCircle, Clock, Coins, AlertTriangle } from "lucide-react";
+import { FileText, Mail, CheckCircle, Clock, Coins, AlertTriangle, MessageSquare, ReceiptText } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -140,6 +140,33 @@ export default function Dashboard() {
             </Card>
           ))}
         </div>
+
+        {/* Help & Support section */}
+        {profile?.org_id && (
+          <Card className="mt-6">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Need Help?</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-3">
+              <Button asChild variant="outline" size="sm">
+                <a
+                  href={`sms:+19515550199?body=${encodeURIComponent(
+                    `Hi, I'm using Rental Waivers. My name is ${profile?.full_name || "a customer"} and I need some assistance today.`
+                  )}`}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Text Us
+                </a>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link to="/credit-dispute">
+                  <ReceiptText className="h-4 w-4 mr-2" />
+                  Credit Dispute
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </DashboardLayout>
   );
