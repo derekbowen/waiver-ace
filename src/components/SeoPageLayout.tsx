@@ -77,6 +77,7 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
             <Link to="/compare" className="hover:text-foreground transition-colors">Compare</Link>
             <Link to="/waiver-laws" className="hover:text-foreground transition-colors">Waiver Laws</Link>
             <Link to="/pricing-info" className="hover:text-foreground transition-colors">Pricing</Link>
+            <Link to="/contract-scanner-info" className="hover:text-foreground transition-colors">Contract Scanner</Link>
           </nav>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />

@@ -33,6 +33,7 @@ import CompetitorAltPage from "./pages/seo/CompetitorAltPage";
 import PricingPublicPage from "./pages/seo/PricingPublicPage";
 import BlogHubPage from "./pages/seo/BlogHubPage";
 import BlogArticlePage from "./pages/seo/BlogArticlePage";
+import ContractScannerPage from "./pages/seo/ContractScannerPage";
 
 // Authenticated dashboard pages — lazy-loaded (behind login, not crawled)
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -53,6 +54,7 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const MarketplaceIntegration = lazy(() => import("./pages/MarketplaceIntegration"));
 const AdminCredits = lazy(() => import("./pages/AdminCredits"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
+const ContractScanner = lazy(() => import("./pages/ContractScanner"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -103,6 +105,7 @@ const App = () => (
             <Route path="/waivers/:slug" element={<SeoLanding />} />
             <Route path="/blog" element={<BlogHubPage />} />
             <Route path="/blog/:slug" element={<BlogArticlePage />} />
+            <Route path="/contract-scanner-info" element={<ContractScannerPage />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
 
             {/* Protected dashboard — lazy-loaded (not crawled) */}
@@ -123,6 +126,7 @@ const App = () => (
             <Route path="/envelopes/bulk" element={<ProtectedRoute><BulkSend /></ProtectedRoute>} />
             <Route path="/photosell" element={<ProtectedRoute><PhotoSell /></ProtectedRoute>} />
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
+            <Route path="/contract-scanner" element={<ProtectedRoute><ContractScanner /></ProtectedRoute>} />
             <Route path="/admin/credits" element={<AdminRoute><AdminCredits /></AdminRoute>} />
 
             <Route path="*" element={<NotFound />} />
