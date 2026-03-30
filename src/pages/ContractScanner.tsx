@@ -275,6 +275,7 @@ export default function ContractScanner() {
     }
   }, []);
 
+  const analyzeContract = useCallback(async () => {
     if (!contractText.trim() || contractText.trim().length < 100) {
       toast.error("Please paste at least 100 characters of contract text");
       return;
