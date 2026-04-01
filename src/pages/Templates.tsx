@@ -6,7 +6,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { QrCodeDialog } from "@/components/QrCodeDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, FileText, ChevronRight } from "lucide-react";
+import { Plus, FileText, ChevronRight, Copy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Template {
