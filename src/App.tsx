@@ -23,6 +23,7 @@ import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
 import Unsubscribe from "./pages/Unsubscribe";
 import Updates from "./pages/Updates";
+import FindMyWaiver from "./pages/FindMyWaiver";
 import SeoLanding from "./pages/SeoLanding";
 import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
 import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
