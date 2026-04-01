@@ -88,19 +88,7 @@ export default function Templates() {
     }
   };
 
-  useEffect(() => {
-    if (!profile?.org_id) { setLoading(false); return; }
-    supabase
-      .from("templates")
-      .select("*")
-      .eq("org_id", profile.org_id)
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (error) toast.error(error.message);
-        setTemplates((data as Template[]) || []);
-        setLoading(false);
-      });
-  }, [profile?.org_id]);
+  // fetchTemplates already called via useEffect above
 
   return (
     <DashboardLayout>
