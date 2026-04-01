@@ -957,6 +957,7 @@ export default function TemplateEditor() {
                   </p>
                 </div>
 
+                <div className="rounded-lg border border-dashed p-4 bg-accent/30">
                   <p className="text-sm font-medium">Estimated cost per signing</p>
                   <p className="text-2xl font-bold mt-1">
                     {1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)} credit{(1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)) > 1 ? "s" : ""}
