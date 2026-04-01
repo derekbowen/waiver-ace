@@ -66,6 +66,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
               <li><Link to="/pricing-info" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
               <li><Link to="/docs" className="text-muted-foreground hover:text-foreground transition-colors">API Documentation</Link></li>
               <li><Link to="/my-waivers" className="text-muted-foreground hover:text-foreground transition-colors">Customer Portal</Link></li>
+              <li><Link to="/find-my-waiver" className="text-muted-foreground hover:text-foreground transition-colors">Find My Waiver</Link></li>
               <li><Link to="/contract-scanner-info" className="text-muted-foreground hover:text-foreground transition-colors">Contract Scanner</Link></li>
             </ul>
           </div>
