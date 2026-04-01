@@ -941,7 +941,22 @@ export default function TemplateEditor() {
                   </div>
                 )}
 
-                <div className="rounded-lg border border-dashed p-4 bg-accent/30">
+                <div className="space-y-2 rounded-lg border p-4">
+                  <Label htmlFor="default-expiration">Default Expiration (days)</Label>
+                  <Input
+                    id="default-expiration"
+                    type="number"
+                    min="1"
+                    max="365"
+                    placeholder="e.g. 7 (leave blank for no auto-expiration)"
+                    value={defaultExpirationDays}
+                    onChange={(e) => setDefaultExpirationDays(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Waivers created from this template will automatically expire after this many days if unsigned.
+                  </p>
+                </div>
+
                   <p className="text-sm font-medium">Estimated cost per signing</p>
                   <p className="text-2xl font-bold mt-1">
                     {1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)} credit{(1 + (requirePhoto ? 1 : 0) + (requireVideo ? 1 : 0)) > 1 ? "s" : ""}
