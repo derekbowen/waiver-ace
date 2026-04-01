@@ -466,6 +466,38 @@ export default function ContractScanner() {
                   )}
                 </label>
 
+                {/* Extracted text preview */}
+                {uploadedFile && contractText.length > 0 && !isExtracting && (
+                  <div className="rounded-lg border bg-muted/30 overflow-hidden">
+                    <button
+                      type="button"
+                      className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium hover:bg-muted/50 transition-colors"
+                      onClick={() => setExpandedClauses(prev => {
+                        const next = new Set(prev);
+                        next.has(-1) ? next.delete(-1) : next.add(-1);
+                        return next;
+                      })}
+                    >
+                      <span className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-primary" />
+                        Preview Extracted Text
+                        <Badge variant="outline" className="text-xs font-normal">{contractText.length.toLocaleString()} chars</Badge>
+                      </span>
+                      {expandedClauses.has(-1) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </button>
+                    {expandedClauses.has(-1) && (
+                      <div className="border-t px-4 py-3">
+                        <pre className="max-h-[300px] overflow-y-auto text-xs font-mono whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                          {contractText}
+                        </pre>
+                        <p className="text-xs text-muted-foreground/60 mt-2">
+                          If the extraction looks wrong, click "Remove & start over" and try pasting the text manually.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {!uploadedFile && (
                   <>
                     <div className="flex items-center gap-3">
