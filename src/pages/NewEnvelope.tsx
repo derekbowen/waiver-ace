@@ -35,10 +35,12 @@ export default function NewEnvelope() {
     if (!profile?.org_id) return;
     supabase
       .from("templates")
-      .select("id, name")
+      .select("id, name, default_expiration_days")
       .eq("org_id", profile.org_id)
       .eq("is_active", true)
-      .then(({ data }) => setTemplates(data || []));
+      .then(({ data }) => {
+        setTemplates(data || []);
+      });
   }, [profile?.org_id]);
 
   const handleCreate = async () => {
