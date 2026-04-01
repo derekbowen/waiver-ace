@@ -613,6 +613,7 @@ export default function TemplateEditor() {
   const [requirePhoto, setRequirePhoto] = useState(false);
   const [requireVideo, setRequireVideo] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+  const [defaultExpirationDays, setDefaultExpirationDays] = useState<string>("");
 
   // For blank template
   const [customName, setCustomName] = useState("");
