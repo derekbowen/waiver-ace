@@ -827,6 +827,7 @@ export type Database = {
           brand_font: string | null
           created_at: string
           created_by: string | null
+          default_expiration_days: number | null
           description: string | null
           id: string
           is_active: boolean
@@ -842,6 +843,7 @@ export type Database = {
           brand_font?: string | null
           created_at?: string
           created_by?: string | null
+          default_expiration_days?: number | null
           description?: string | null
           id?: string
           is_active?: boolean
@@ -857,6 +859,7 @@ export type Database = {
           brand_font?: string | null
           created_at?: string
           created_by?: string | null
+          default_expiration_days?: number | null
           description?: string | null
           id?: string
           is_active?: boolean
@@ -1120,6 +1123,18 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      find_waivers_by_email: {
+        Args: { p_email: string }
+        Returns: {
+          created_at: string
+          envelope_id: string
+          org_name: string
+          signed_at: string
+          signer_name: string
+          status: string
+          template_name: string
+        }[]
       }
       get_envelope_by_token: { Args: { p_token: string }; Returns: Json }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
