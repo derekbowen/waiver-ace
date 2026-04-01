@@ -82,7 +82,29 @@ export default function Envelopes() {
             <h1 className="font-heading text-2xl font-bold">Envelopes</h1>
             <p className="text-sm text-muted-foreground mt-1">Track all waiver signatures</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              disabled={filtered.length === 0}
+              onClick={() => {
+                const header = "Signer Name,Signer Email,Status,Booking ID,Created At\n";
+                const rows = filtered.map((e) =>
+                  `"${(e.signer_name || "").replace(/"/g, '""')}","${e.signer_email}","${e.status}","${e.booking_id || ""}","${format(new Date(e.created_at), "yyyy-MM-dd HH:mm")}"`
+                ).join("\n");
+                const blob = new Blob([header + rows], { type: "text/csv" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `waivers-export-${format(new Date(), "yyyy-MM-dd")}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                toast.success(`Exported ${filtered.length} records`);
+              }}
+            >
+              <Download className="h-4 w-4" /> Export CSV
+            </Button>
             <Button variant="outline" onClick={() => navigate("/envelopes/bulk")} className="gap-2">
               <Plus className="h-4 w-4" /> Bulk Send
             </Button>
