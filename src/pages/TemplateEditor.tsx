@@ -692,7 +692,8 @@ export default function TemplateEditor() {
           require_photo: requirePhoto,
           require_video: requireVideo,
           video_url: requireVideo && videoUrl.trim() ? videoUrl.trim() : null,
-        })
+          default_expiration_days: defaultExpirationDays ? parseInt(defaultExpirationDays) : null,
+        } as any)
         .select()
         .single();
 
