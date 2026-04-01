@@ -193,7 +193,13 @@ export default function NewEnvelope() {
           <Card>
             <CardHeader><CardTitle className="text-base">Template</CardTitle></CardHeader>
             <CardContent>
-              <Select value={templateId} onValueChange={setTemplateId}>
+              <Select value={templateId} onValueChange={(v) => {
+                setTemplateId(v);
+                const tmpl = templates.find((t: any) => t.id === v);
+                if (tmpl?.default_expiration_days) {
+                  setExpiresInDays(String(tmpl.default_expiration_days));
+                }
+              }}>
                 <SelectTrigger><SelectValue placeholder="Select a template" /></SelectTrigger>
                 <SelectContent>
                 {templates.filter((t) => t.id).map((t) => (
