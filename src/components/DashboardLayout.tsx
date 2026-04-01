@@ -22,7 +22,8 @@ import {
   HelpCircle,
   Sparkles,
   FileSearch,
-  FolderOpen } from
+  FolderOpen,
+  ScrollText } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,7 @@ const navItems = [
 { label: "Contracts", href: "/contract-scanner", icon: FileSearch },
 { label: "Documents", href: "/documents", icon: FolderOpen },
 { label: "Analytics", href: "/analytics", icon: BarChart3 },
+{ label: "Audit Log", href: "/audit-log", icon: ScrollText },
 { label: "Team", href: "/settings/team", icon: Users },
 { label: "API Keys", href: "/settings/api-keys", icon: Key },
 { label: "Webhooks", href: "/settings/webhooks", icon: Webhook },

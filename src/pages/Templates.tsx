@@ -6,7 +6,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { QrCodeDialog } from "@/components/QrCodeDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, FileText, ChevronRight } from "lucide-react";
+import { Plus, FileText, ChevronRight, Copy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Template {
@@ -21,9 +21,10 @@ export default function Templates() {
   const { profile } = useAuth();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
+  const [duplicating, setDuplicating] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchTemplates = () => {
     if (!profile?.org_id) { setLoading(false); return; }
     supabase
       .from("templates")
@@ -35,7 +36,59 @@ export default function Templates() {
         setTemplates((data as Template[]) || []);
         setLoading(false);
       });
-  }, [profile?.org_id]);
+  };
+
+  useEffect(() => { fetchTemplates(); }, [profile?.org_id]);
+
+  const handleDuplicate = async (e: React.MouseEvent, t: Template) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!profile?.org_id) return;
+    setDuplicating(t.id);
+    try {
+      // Get current version content
+      const { data: version } = await supabase
+        .from("template_versions")
+        .select("content, variables")
+        .eq("template_id", t.id)
+        .eq("is_current", true)
+        .single();
+
+      // Create new template
+      const { data: newTemplate, error: tErr } = await supabase
+        .from("templates")
+        .insert({
+          org_id: profile.org_id,
+          name: `${t.name} (Copy)`,
+          description: t.description,
+          is_active: true,
+          created_by: (await supabase.auth.getUser()).data.user?.id,
+        } as any)
+        .select()
+        .single();
+      if (tErr) throw tErr;
+
+      // Create version
+      if (version && newTemplate) {
+        await supabase.from("template_versions").insert({
+          template_id: (newTemplate as any).id,
+          version: 1,
+          content: version.content,
+          variables: version.variables,
+          is_current: true,
+        });
+      }
+
+      toast.success("Template duplicated!");
+      fetchTemplates();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to duplicate");
+    } finally {
+      setDuplicating(null);
+    }
+  };
+
+  // fetchTemplates already called via useEffect above
 
   return (
     <DashboardLayout>
@@ -82,7 +135,17 @@ export default function Templates() {
                         <p className="text-sm text-muted-foreground">{t.description || "No description"}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        title="Duplicate template"
+                        disabled={duplicating === t.id}
+                        onClick={(e) => handleDuplicate(e, t)}
+                      >
+                        {duplicating === t.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Copy className="h-4 w-4" />}
+                      </Button>
                       <span className={`text-xs px-2 py-1 rounded-full ${t.is_active ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"}`}>
                         {t.is_active ? "Active" : "Inactive"}
                       </span>

@@ -23,6 +23,7 @@ import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
 import Unsubscribe from "./pages/Unsubscribe";
 import Updates from "./pages/Updates";
+import FindMyWaiver from "./pages/FindMyWaiver";
 import SeoLanding from "./pages/SeoLanding";
 import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
 import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
@@ -58,6 +59,7 @@ const KioskPage = lazy(() => import("./pages/KioskPage"));
 const ContractScanner = lazy(() => import("./pages/ContractScanner"));
 const Documents = lazy(() => import("./pages/Documents"));
 const CreditDispute = lazy(() => import("./pages/CreditDispute"));
+const AuditLog = lazy(() => import("./pages/AuditLog"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -111,6 +113,7 @@ const App = () => (
             <Route path="/contract-scanner-info" element={<ContractScannerPage />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/updates" element={<Updates />} />
+            <Route path="/find-my-waiver" element={<FindMyWaiver />} />
 
             {/* Protected dashboard — lazy-loaded (not crawled) */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -133,6 +136,7 @@ const App = () => (
             <Route path="/contract-scanner" element={<ProtectedRoute><ContractScanner /></ProtectedRoute>} />
             <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
             <Route path="/credit-dispute" element={<ProtectedRoute><CreditDispute /></ProtectedRoute>} />
+            <Route path="/audit-log" element={<ProtectedRoute><AuditLog /></ProtectedRoute>} />
             <Route path="/admin/credits" element={<AdminRoute><AdminCredits /></AdminRoute>} />
 
             <Route path="*" element={<NotFound />} />

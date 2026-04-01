@@ -613,6 +613,7 @@ export default function TemplateEditor() {
   const [requirePhoto, setRequirePhoto] = useState(false);
   const [requireVideo, setRequireVideo] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+  const [defaultExpirationDays, setDefaultExpirationDays] = useState<string>("");
 
   // For blank template
   const [customName, setCustomName] = useState("");
@@ -691,7 +692,8 @@ export default function TemplateEditor() {
           require_photo: requirePhoto,
           require_video: requireVideo,
           video_url: requireVideo && videoUrl.trim() ? videoUrl.trim() : null,
-        })
+          default_expiration_days: defaultExpirationDays ? parseInt(defaultExpirationDays) : null,
+        } as any)
         .select()
         .single();
 
@@ -938,6 +940,22 @@ export default function TemplateEditor() {
                     </p>
                   </div>
                 )}
+
+                <div className="space-y-2 rounded-lg border p-4">
+                  <Label htmlFor="default-expiration">Default Expiration (days)</Label>
+                  <Input
+                    id="default-expiration"
+                    type="number"
+                    min="1"
+                    max="365"
+                    placeholder="e.g. 7 (leave blank for no auto-expiration)"
+                    value={defaultExpirationDays}
+                    onChange={(e) => setDefaultExpirationDays(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Waivers created from this template will automatically expire after this many days if unsigned.
+                  </p>
+                </div>
 
                 <div className="rounded-lg border border-dashed p-4 bg-accent/30">
                   <p className="text-sm font-medium">Estimated cost per signing</p>
