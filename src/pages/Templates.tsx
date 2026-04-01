@@ -21,7 +21,72 @@ export default function Templates() {
   const { profile } = useAuth();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
+  const [duplicating, setDuplicating] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const fetchTemplates = () => {
+    if (!profile?.org_id) { setLoading(false); return; }
+    supabase
+      .from("templates")
+      .select("*")
+      .eq("org_id", profile.org_id)
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) toast.error(error.message);
+        setTemplates((data as Template[]) || []);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => { fetchTemplates(); }, [profile?.org_id]);
+
+  const handleDuplicate = async (e: React.MouseEvent, t: Template) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!profile?.org_id) return;
+    setDuplicating(t.id);
+    try {
+      // Get current version content
+      const { data: version } = await supabase
+        .from("template_versions")
+        .select("content, variables")
+        .eq("template_id", t.id)
+        .eq("is_current", true)
+        .single();
+
+      // Create new template
+      const { data: newTemplate, error: tErr } = await supabase
+        .from("templates")
+        .insert({
+          org_id: profile.org_id,
+          name: `${t.name} (Copy)`,
+          description: t.description,
+          is_active: true,
+          created_by: (await supabase.auth.getUser()).data.user?.id,
+        } as any)
+        .select()
+        .single();
+      if (tErr) throw tErr;
+
+      // Create version
+      if (version && newTemplate) {
+        await supabase.from("template_versions").insert({
+          template_id: (newTemplate as any).id,
+          version: 1,
+          content: version.content,
+          variables: version.variables,
+          is_current: true,
+        });
+      }
+
+      toast.success("Template duplicated!");
+      fetchTemplates();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to duplicate");
+    } finally {
+      setDuplicating(null);
+    }
+  };
 
   useEffect(() => {
     if (!profile?.org_id) { setLoading(false); return; }
