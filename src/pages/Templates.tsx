@@ -135,7 +135,17 @@ export default function Templates() {
                         <p className="text-sm text-muted-foreground">{t.description || "No description"}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        title="Duplicate template"
+                        disabled={duplicating === t.id}
+                        onClick={(e) => handleDuplicate(e, t)}
+                      >
+                        {duplicating === t.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Copy className="h-4 w-4" />}
+                      </Button>
                       <span className={`text-xs px-2 py-1 rounded-full ${t.is_active ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"}`}>
                         {t.is_active ? "Active" : "Inactive"}
                       </span>
