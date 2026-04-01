@@ -113,6 +113,7 @@ const App = () => (
             <Route path="/contract-scanner-info" element={<ContractScannerPage />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/updates" element={<Updates />} />
+            <Route path="/find-my-waiver" element={<FindMyWaiver />} />
 
             {/* Protected dashboard — lazy-loaded (not crawled) */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
