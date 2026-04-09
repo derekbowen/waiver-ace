@@ -64,7 +64,7 @@ function StatusBadgeLocal({ status }: { status: JobStatus }) {
 }
 
 export default function PhotoSell() {
-  const { profile, wallet } = useAuth();
+  const { user, profile, wallet } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [jobs, setJobs] = useState<PhotoJob[]>([]);
