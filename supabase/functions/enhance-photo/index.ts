@@ -117,6 +117,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "google/gemini-3.1-flash-image-preview",
+        modalities: ["image", "text"],
         messages: [
           {
             role: "user",
@@ -152,21 +153,34 @@ serve(async (req) => {
 
     const aiData = await aiResponse.json();
     const content = aiData.choices?.[0]?.message?.content;
+    const images = aiData.choices?.[0]?.message?.images;
 
-    // The image model returns content with inline images
-    // Check if we got an image back
+    // The image model returns images in a separate "images" array
     let enhancedImageData: string | null = null;
 
-    if (Array.isArray(content)) {
+    // Check the images array first (primary response format)
+    if (Array.isArray(images) && images.length > 0) {
+      for (const img of images) {
+        if (img.type === "image_url" && img.image_url?.url) {
+          enhancedImageData = img.image_url.url;
+          break;
+        }
+      }
+    }
+
+    // Fallback: check if content has inline images
+    if (!enhancedImageData && Array.isArray(content)) {
       for (const part of content) {
         if (part.type === "image_url" && part.image_url?.url) {
           enhancedImageData = part.image_url.url;
           break;
         }
       }
-    } else if (typeof content === "string" && content.startsWith("data:image")) {
+    } else if (!enhancedImageData && typeof content === "string" && content.startsWith("data:image")) {
       enhancedImageData = content;
     }
+
+    console.log("AI response has images:", !!enhancedImageData, "images array length:", images?.length ?? 0);
 
     const processedKeys: string[] = [];
 

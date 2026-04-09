@@ -64,7 +64,7 @@ function StatusBadgeLocal({ status }: { status: JobStatus }) {
 }
 
 export default function PhotoSell() {
-  const { profile, wallet } = useAuth();
+  const { user, profile, wallet } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [jobs, setJobs] = useState<PhotoJob[]>([]);
@@ -141,7 +141,7 @@ export default function PhotoSell() {
       const { error: insertError } = await supabase.from("photo_jobs").insert({
         id: jobId,
         org_id: profile.org_id,
-        user_id: profile.id,
+        user_id: user!.id,
         status: "pending",
         original_storage_key: storageKey,
         original_filename: file.name,
