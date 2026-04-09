@@ -22,7 +22,7 @@ const REASONS = [
 ];
 
 export default function CreditDispute() {
-  const { user } = useAuth();
+  const { user, refreshWallet } = useAuth();
   const navigate = useNavigate();
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
