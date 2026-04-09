@@ -60,6 +60,7 @@ const ContractScanner = lazy(() => import("./pages/ContractScanner"));
 const Documents = lazy(() => import("./pages/Documents"));
 const CreditDispute = lazy(() => import("./pages/CreditDispute"));
 const AuditLog = lazy(() => import("./pages/AuditLog"));
+const ListingAnalyzer = lazy(() => import("./pages/ListingAnalyzer"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
