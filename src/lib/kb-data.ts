@@ -26,6 +26,7 @@ export const KB_CATEGORIES: KbCategory[] = [
   { id: "api", label: "API Reference", icon: "Code", description: "REST API endpoints, authentication, and examples", color: "bg-cyan-500/10 text-cyan-600" },
   { id: "webhooks", label: "Webhooks", icon: "Webhook", description: "Real-time event notifications with HMAC signatures", color: "bg-rose-500/10 text-rose-600" },
   { id: "team", label: "Team & Roles", icon: "Users", description: "Invite members, assign roles, manage access", color: "bg-amber-500/10 text-amber-600" },
+  { id: "tools", label: "AI Tools", icon: "Sparkles", description: "Contract Scanner, Listing Analyzer, Document Storage, and PhotoSell", color: "bg-pink-500/10 text-pink-600" },
   { id: "legal", label: "Legal & Compliance", icon: "Scale", description: "E-SIGN Act, UETA, audit trails, enforceability", color: "bg-emerald-500/10 text-emerald-600" },
 ];
 
@@ -54,7 +55,7 @@ Pick a preset (pool, vacation rental, equipment, or event) or start from scratch
 ### Step 4 — Send your first waiver
 Enter a signer's email, fill in the template variables, and hit Send. The signer receives an email with a signing link. You'll see the status update in real time on your dashboard.
 
-> **250 free credits:** Every new organization starts with 250 complimentary credits. Each credit covers one signer on one envelope.
+> **250 free credits:** Every new organization starts with 250 complimentary credits. Each credit covers one signer on one envelope. Credits also power AI tools like the Contract Scanner (10 credits), Listing Analyzer (40 credits), and PhotoSell (5 credits).
     `,
   },
   {
@@ -375,6 +376,17 @@ Any platform that can make HTTP requests or fire webhooks can integrate with Ren
 - For group waivers, 1 credit is consumed each time a person signs through the group link.
 - **Credits never expire.**
 
+### Credit Costs by Feature
+
+| Feature | Credit Cost |
+|---------|-------------|
+| Send a waiver | 1 credit |
+| Group waiver (per signer) | 1 credit |
+| Contract Scanner | 10 credits |
+| Listing Analyzer | 40 credits |
+| PhotoSell enhancement | 5 credits |
+| Document upload | 2 credits |
+
 ### Credit Packages
 
 | Package | Credits | Per Waiver | Savings |
@@ -649,6 +661,159 @@ The Customer Portal at \`/my-waivers\` lets signers look up their own waivers wi
 4. They can view or download completed waivers as PDF
 
 > **Privacy:** Only the exact email used when the waiver was sent will show results. No account or password required.
+    `,
+  },
+
+  // ─── AI Tools ───
+  {
+    id: "contract-scanner",
+    title: "Contract Scanner",
+    description: "Upload a rental contract and get an instant AI risk analysis.",
+    category: "tools",
+    icon: "ScanSearch",
+    content: `
+## Contract Scanner
+
+The Contract Scanner uses AI to analyze rental contracts and identify missing clauses, liability gaps, and legal red flags.
+
+### How to use it
+1. Go to **Contract Scanner** from the sidebar
+2. Paste contract text directly **or** upload a PDF/DOCX file
+3. Review the extracted text preview to confirm accuracy
+4. Click **"Analyze Contract"** — costs **10 credits**
+
+### What you get
+- **Risk score** — Overall risk level (Low / Medium / High / Critical)
+- **Missing fields** — Required clauses that are absent (e.g., liability limitation, indemnification)
+- **Compliance issues** — Language that may not hold up in court
+- **Recommendations** — Specific suggestions to strengthen your contract
+
+### Supported formats
+- Plain text (paste directly)
+- PDF files
+- DOCX files
+
+### History
+All scans are saved. View past results anytime from the Contract Scanner page without spending additional credits.
+    `,
+  },
+  {
+    id: "listing-analyzer",
+    title: "Listing Analyzer",
+    description: "Get an AI-powered audit of your rental listing with a health score.",
+    category: "tools",
+    icon: "BarChart3",
+    content: `
+## Listing Analyzer
+
+Paste any rental listing URL and get a comprehensive AI audit with a 0–100 health score and prioritized recommendations.
+
+### How to use it
+1. Go to **Listing Analyzer** from the sidebar
+2. Paste your listing URL (Airbnb, VRBO, Swimply, PoolRentalNearMe, or any platform)
+3. Select the platform from the dropdown
+4. Click **"Analyze My Listing"** — costs **40 credits**
+
+### What you get
+- **Overall health score** (0–100) with current vs. potential comparison
+- **Category breakdown:** Title, Description, Photos, Pricing, SEO, Reviews, Amenities, Conversion
+- **Color-coded priorities:** Red = Critical, Orange = High, Yellow = Medium, Green = Good
+- **Top 3 priority actions** to improve your listing
+- **Estimated revenue increase** if recommendations are followed
+- **Downloadable PDF report** with executive summary
+
+### History
+Past analyses are saved and can be viewed anytime without spending credits again. Download PDF reports from any previous analysis.
+    `,
+  },
+  {
+    id: "document-storage",
+    title: "Document Storage",
+    description: "Store contracts, insurance docs, and rental agreements securely.",
+    category: "tools",
+    icon: "FolderOpen",
+    content: `
+## Document Storage
+
+A secure vault for your rental documents — contracts, insurance certificates, property records, and more.
+
+### How to use it
+1. Go to **Documents** from the sidebar
+2. Click **"Upload Document"** and select a file
+3. Each upload costs **2 credits**
+4. View, download, or delete documents anytime
+
+### Storage details
+- **100 MB free** storage per organization
+- **90-day retention** for manually uploaded documents
+- **2-year retention** for auto-generated waiver PDFs
+- Supported file types: PDF, DOCX, images, and more
+
+### Waiver PDFs
+Signed waivers are automatically stored as tamper-proof PDFs with SHA-256 hashing. These are stored separately and don't count against your upload quota.
+
+> **Tip:** Use Document Storage to keep insurance certificates alongside your waivers for complete legal protection.
+    `,
+  },
+  {
+    id: "photo-enhance",
+    title: "PhotoSell (AI Photo Enhancement)",
+    description: "Enhance your rental listing photos with AI-powered improvements.",
+    category: "tools",
+    icon: "Camera",
+    content: `
+## PhotoSell — AI Photo Enhancement
+
+Upload a photo of your rental property and get AI-powered enhancements to make your listing stand out.
+
+### How to use it
+1. Go to **PhotoSell** from the sidebar
+2. Upload a property photo (JPEG, PNG, or WebP)
+3. Click **"Enhance Photo"** — costs **5 credits**
+4. View the before/after comparison
+5. Download the enhanced version
+
+### What the AI does
+- **Sky replacement** — Overcast sky? AI replaces it with a vibrant blue sky
+- **Color boosting** — Enhances colors to make the space look inviting
+- **Quality analysis** — Rates your photo's composition, lighting, and appeal
+- **Brightness & contrast** — Balances lighting for a professional look
+
+### Tips for best results
+- Use well-lit photos taken during daytime
+- Include the full space in the frame
+- Original photos work better than already-edited ones
+    `,
+  },
+  {
+    id: "credit-disputes",
+    title: "Credit Disputes",
+    description: "Request a credit refund if something went wrong.",
+    category: "tools",
+    icon: "AlertTriangle",
+    content: `
+## Credit Disputes
+
+If credits were deducted incorrectly or a feature didn't work as expected, you can submit a credit dispute.
+
+### How to submit
+1. Go to **Settings → Credit Dispute** from the sidebar
+2. Select a reason (e.g., "Feature didn't work", "Duplicate charge", "Technical error")
+3. Enter the number of credits you're requesting back
+4. Add any details to help us review your case
+5. Submit — your dispute will be reviewed
+
+### What happens next
+- Disputes are reviewed and processed automatically or by an admin
+- If approved, credits are added back to your wallet immediately
+- You'll see the updated balance right away
+- The dispute status updates to "approved" or "denied"
+
+### Common reasons
+- Waiver failed to send but credits were deducted
+- Contract scan returned an error
+- Listing analysis didn't complete
+- Duplicate charge from a technical glitch
     `,
   },
 
