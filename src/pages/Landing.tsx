@@ -6,7 +6,8 @@ import {
   Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock,
   Smartphone, Droplets, Home, Wrench, PartyPopper, Zap,
   DollarSign, ChevronDown, Menu, Star, QrCode, Code,
-  FileSearch, FolderOpen, AlertTriangle, Sparkles
+  FileSearch, FolderOpen, AlertTriangle, Sparkles,
+  BarChart3, Camera, ScanSearch, Upload
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -224,14 +225,14 @@ export default function Landing() {
               "Group waivers — one link, unlimited signers",
               "QR code kiosk mode for walk-ins",
               "Full REST API & real-time webhooks",
-              "Automatic reminder emails",
-              "Drawn signature with audit trail",
+              "AI contract scanner & risk analysis",
+              "Listing analyzer with SEO scoring",
+              "Secure document storage & management",
+              "Drawn signature with full audit trail",
               "IP address, timestamp & device logging",
               "SHA-256 tamper-proof PDFs",
-              "7-year encrypted storage",
               "Unlimited team members",
-              "Auto-recharge credits",
-              "Analytics dashboard",
+              "Analytics dashboard & auto-recharge",
             ].map((feature) => (
               <div key={feature} className="flex items-start gap-2.5">
                 <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
@@ -296,6 +297,65 @@ export default function Landing() {
               </div>
               <p className="text-center text-xs text-muted-foreground mt-3">3 of 6 guests signed</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          AI POWER TOOLS
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-16 md:py-20">
+        <div className="container max-w-4xl">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary mb-4">
+              <Sparkles className="h-3.5 w-3.5" /> AI-Powered Tools
+            </div>
+            <h2 className="font-heading text-2xl md:text-3xl font-bold mb-2">
+              More than just waivers
+            </h2>
+            <p className="text-muted-foreground">
+              Built-in tools to protect your business and grow your revenue.
+            </p>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-3">
+            {[
+              {
+                icon: ScanSearch,
+                title: "Contract Scanner",
+                desc: "Upload any rental contract and get an instant AI risk analysis. Spot missing clauses, liability gaps, and legal red flags in seconds.",
+                credit: "10 credits",
+                link: "/contract-scanner",
+              },
+              {
+                icon: BarChart3,
+                title: "Listing Analyzer",
+                desc: "Paste your Airbnb, VRBO, or Swimply URL. Get a 0–100 health score with prioritized fixes for SEO, pricing, and conversion.",
+                credit: "40 credits",
+                link: "/listing-analyzer",
+              },
+              {
+                icon: FolderOpen,
+                title: "Document Storage",
+                desc: "Store contracts, insurance docs, and rental agreements in one secure vault. 100 MB free per account with 90-day retention.",
+                credit: "2 credits/upload",
+                link: "/documents",
+              },
+            ].map((tool) => (
+              <div key={tool.title} className="rounded-xl border bg-card p-6 flex flex-col">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-3">
+                  <tool.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-heading font-semibold mb-1.5">{tool.title}</h3>
+                <p className="text-sm text-muted-foreground flex-1 mb-3">{tool.desc}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">{tool.credit}</span>
+                  <Link to={tool.link} className="text-xs text-primary hover:text-primary/80 font-medium inline-flex items-center gap-1">
+                    Learn more <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
