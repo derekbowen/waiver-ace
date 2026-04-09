@@ -133,6 +133,7 @@ export default function Landing() {
               <p className="text-xs text-muted-foreground">monthly fees</p>
             </div>
           </div>
+          <p className="text-sm text-muted-foreground mt-6">Used by pool hosts, bounce house rentals, kayak tours, and escape rooms across the US.</p>
         </div>
       </section>
 
