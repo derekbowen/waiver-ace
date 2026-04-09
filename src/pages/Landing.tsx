@@ -225,14 +225,14 @@ export default function Landing() {
               "Group waivers — one link, unlimited signers",
               "QR code kiosk mode for walk-ins",
               "Full REST API & real-time webhooks",
-              "Automatic reminder emails",
-              "Drawn signature with audit trail",
+              "AI contract scanner & risk analysis",
+              "Listing analyzer with SEO scoring",
+              "Secure document storage & management",
+              "Drawn signature with full audit trail",
               "IP address, timestamp & device logging",
               "SHA-256 tamper-proof PDFs",
-              "7-year encrypted storage",
               "Unlimited team members",
-              "Auto-recharge credits",
-              "Analytics dashboard",
+              "Analytics dashboard & auto-recharge",
             ].map((feature) => (
               <div key={feature} className="flex items-start gap-2.5">
                 <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
