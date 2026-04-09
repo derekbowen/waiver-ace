@@ -376,6 +376,17 @@ Any platform that can make HTTP requests or fire webhooks can integrate with Ren
 - For group waivers, 1 credit is consumed each time a person signs through the group link.
 - **Credits never expire.**
 
+### Credit Costs by Feature
+
+| Feature | Credit Cost |
+|---------|-------------|
+| Send a waiver | 1 credit |
+| Group waiver (per signer) | 1 credit |
+| Contract Scanner | 10 credits |
+| Listing Analyzer | 40 credits |
+| PhotoSell enhancement | 5 credits |
+| Document upload | 2 credits |
+
 ### Credit Packages
 
 | Package | Credits | Per Waiver | Savings |
