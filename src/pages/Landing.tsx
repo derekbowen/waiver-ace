@@ -96,24 +96,23 @@ export default function Landing() {
       <section className="pt-24 pb-12 md:pt-32 md:pb-16">
         <div className="container max-w-3xl text-center">
           <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-5">
-            Digital waivers.
+            Stop Losing Guests to
             <br />
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">6¢ each. No monthly fee.</span>
+            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Unsigned Waivers</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
-            Send a link. Guest signs on their phone in 60 seconds.
-            You get a legally-binding PDF with full audit trail.
+            Send a link. They sign in 60 seconds on their phone. You get a legally-binding PDF. 6¢ each. No monthly fee.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-3">
             <Link to="/login">
-              <Button size="lg" className="gap-2 text-base px-8 py-6 shadow-lg shadow-primary/20 w-full sm:w-auto">
-                Get 250 Free Credits <ArrowRight className="h-5 w-5" />
+              <Button size="lg" className="gap-2 text-base px-8 py-6 shadow-lg bg-[hsl(220,90%,45%)] hover:bg-[hsl(220,90%,38%)] text-white border-0 w-full sm:w-auto">
+                Send Your First Waiver Free <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
           </div>
-          <p className="text-xs text-muted-foreground">No credit card required · All features included · ESIGN Act compliant</p>
+          <p className="text-xs text-muted-foreground">No credit card. No monthly fee. Cancel anytime.</p>
         </div>
       </section>
 
