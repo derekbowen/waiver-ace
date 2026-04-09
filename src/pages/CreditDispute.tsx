@@ -72,6 +72,7 @@ export default function CreditDispute() {
           remaining: data.remaining_disputes,
         });
         toast.success(`${data.credits_granted} credits have been refunded!`);
+        refreshWallet();
       }
     } catch {
       toast.error("Something went wrong");
