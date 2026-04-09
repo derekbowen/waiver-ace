@@ -26,6 +26,7 @@ export const KB_CATEGORIES: KbCategory[] = [
   { id: "api", label: "API Reference", icon: "Code", description: "REST API endpoints, authentication, and examples", color: "bg-cyan-500/10 text-cyan-600" },
   { id: "webhooks", label: "Webhooks", icon: "Webhook", description: "Real-time event notifications with HMAC signatures", color: "bg-rose-500/10 text-rose-600" },
   { id: "team", label: "Team & Roles", icon: "Users", description: "Invite members, assign roles, manage access", color: "bg-amber-500/10 text-amber-600" },
+  { id: "tools", label: "AI Tools", icon: "Sparkles", description: "Contract Scanner, Listing Analyzer, Document Storage, and PhotoSell", color: "bg-pink-500/10 text-pink-600" },
   { id: "legal", label: "Legal & Compliance", icon: "Scale", description: "E-SIGN Act, UETA, audit trails, enforceability", color: "bg-emerald-500/10 text-emerald-600" },
 ];
 
