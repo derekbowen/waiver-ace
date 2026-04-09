@@ -6,7 +6,8 @@ import {
   Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock,
   Smartphone, Droplets, Home, Wrench, PartyPopper, Zap,
   DollarSign, ChevronDown, Menu, Star, QrCode, Code,
-  FileSearch, FolderOpen, AlertTriangle, Sparkles
+  FileSearch, FolderOpen, AlertTriangle, Sparkles,
+  BarChart3, Camera, ScanSearch, Upload
 } from "lucide-react";
 import {
   DropdownMenu,
