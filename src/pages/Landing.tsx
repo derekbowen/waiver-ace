@@ -199,6 +199,21 @@ export default function Landing() {
             ))}
           </div>
 
+          <div className="mt-8 text-center">
+            <p className="text-xs text-muted-foreground mb-3">Works with your favorite platforms</p>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+              <span>Airbnb</span>
+              <span className="text-border">·</span>
+              <span>VRBO</span>
+              <span className="text-border">·</span>
+              <span>Swimply</span>
+              <span className="text-border">·</span>
+              <a href="https://bookmypool.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium">BookMyPool.com</a>
+              <span className="text-border">·</span>
+              <span>PoolRentalNearMe</span>
+            </div>
+          </div>
+
           <p className="text-center mt-6">
             <Link to="/industries" className="text-sm text-primary hover:text-primary/80 font-medium inline-flex items-center gap-1">
               View all industries <ArrowRight className="h-3.5 w-3.5" />
