@@ -168,7 +168,7 @@ export default function ListingAnalyzer() {
         .from("listing_analyses")
         .insert({
           org_id: profile!.org_id!,
-          user_id: profile!.user_id,
+          user_id: user!.id,
           listing_url: url.trim(),
           platform,
           status: "pending",
