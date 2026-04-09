@@ -23,7 +23,8 @@ import {
   Sparkles,
   FileSearch,
   FolderOpen,
-  ScrollText } from
+  ScrollText,
+  BarChart } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ const navItems = [
 { label: "Envelopes", href: "/envelopes", icon: Mail },
 { label: "PhotoSell", href: "/photosell", icon: Sparkles },
 { label: "Contracts", href: "/contract-scanner", icon: FileSearch },
+{ label: "Listing Analyzer", href: "/listing-analyzer", icon: BarChart },
 { label: "Documents", href: "/documents", icon: FolderOpen },
 { label: "Analytics", href: "/analytics", icon: BarChart3 },
 { label: "Audit Log", href: "/audit-log", icon: ScrollText },

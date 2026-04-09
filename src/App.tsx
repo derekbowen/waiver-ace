@@ -60,6 +60,7 @@ const ContractScanner = lazy(() => import("./pages/ContractScanner"));
 const Documents = lazy(() => import("./pages/Documents"));
 const CreditDispute = lazy(() => import("./pages/CreditDispute"));
 const AuditLog = lazy(() => import("./pages/AuditLog"));
+const ListingAnalyzer = lazy(() => import("./pages/ListingAnalyzer"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -137,6 +138,7 @@ const App = () => (
             <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
             <Route path="/credit-dispute" element={<ProtectedRoute><CreditDispute /></ProtectedRoute>} />
             <Route path="/audit-log" element={<ProtectedRoute><AuditLog /></ProtectedRoute>} />
+            <Route path="/listing-analyzer" element={<ProtectedRoute><ListingAnalyzer /></ProtectedRoute>} />
             <Route path="/admin/credits" element={<AdminRoute><AdminCredits /></AdminRoute>} />
 
             <Route path="*" element={<NotFound />} />
