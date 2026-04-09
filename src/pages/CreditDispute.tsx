@@ -22,7 +22,7 @@ const REASONS = [
 ];
 
 export default function CreditDispute() {
-  const { user } = useAuth();
+  const { user, refreshWallet } = useAuth();
   const navigate = useNavigate();
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
@@ -72,6 +72,7 @@ export default function CreditDispute() {
           remaining: data.remaining_disputes,
         });
         toast.success(`${data.credits_granted} credits have been refunded!`);
+        refreshWallet();
       }
     } catch {
       toast.error("Something went wrong");
