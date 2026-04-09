@@ -141,7 +141,7 @@ export default function PhotoSell() {
       const { error: insertError } = await supabase.from("photo_jobs").insert({
         id: jobId,
         org_id: profile.org_id,
-        user_id: profile.id,
+        user_id: user!.id,
         status: "pending",
         original_storage_key: storageKey,
         original_filename: file.name,
