@@ -119,7 +119,7 @@ export default function ListingAnalyzer() {
   const [pastAnalyses, setPastAnalyses] = useState<PastAnalysis[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const { credits, loading: walletLoading } = useWallet();
   const { toast } = useToast();
 
