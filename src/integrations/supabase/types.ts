@@ -471,6 +471,60 @@ export type Database = {
           },
         ]
       }
+      listing_analyses: {
+        Row: {
+          categories: Json | null
+          created_at: string
+          credits_charged: number
+          estimated_revenue_increase: string | null
+          id: string
+          listing_url: string
+          org_id: string
+          overall_score: number | null
+          platform: string
+          potential_score: number | null
+          status: string
+          summary: string | null
+          top_priorities: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categories?: Json | null
+          created_at?: string
+          credits_charged?: number
+          estimated_revenue_increase?: string | null
+          id?: string
+          listing_url: string
+          org_id: string
+          overall_score?: number | null
+          platform: string
+          potential_score?: number | null
+          status?: string
+          summary?: string | null
+          top_priorities?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          categories?: Json | null
+          created_at?: string
+          credits_charged?: number
+          estimated_revenue_increase?: string | null
+          id?: string
+          listing_url?: string
+          org_id?: string
+          overall_score?: number | null
+          platform?: string
+          potential_score?: number | null
+          status?: string
+          summary?: string | null
+          top_priorities?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       marketplace_integrations: {
         Row: {
           api_base_url: string | null
