@@ -58,6 +58,53 @@ export type Database = {
           },
         ]
       }
+      contract_scans: {
+        Row: {
+          analysis_json: Json | null
+          created_at: string
+          credits_charged: number
+          error_message: string | null
+          filename: string
+          id: string
+          org_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_json?: Json | null
+          created_at?: string
+          credits_charged?: number
+          error_message?: string | null
+          filename?: string
+          id?: string
+          org_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_json?: Json | null
+          created_at?: string
+          credits_charged?: number
+          error_message?: string | null
+          filename?: string
+          id?: string
+          org_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_scans_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_disputes: {
         Row: {
           created_at: string
