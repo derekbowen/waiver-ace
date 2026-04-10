@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 const defaultVariables = [
@@ -68,6 +68,10 @@ const CATEGORY_QUESTIONS: Record<string, WizardQuestion[]> = {
   bike_scooter: [
     ...COMMON_QUESTIONS,
     { variable: "rules", label: "Rental rules?", placeholder: "e.g. Lock bike when unattended, no trick riding, return by 6pm, stay on paved paths...", type: "textarea" },
+  ],
+  prnm_pool_agreement: [
+    ...COMMON_QUESTIONS,
+    { variable: "rules", label: "Host rules & permissions (children allowed, smoking, pets, music, food, alcohol, grilling, glass containers, max swimmers, etc.)?", placeholder: "e.g. No glass containers, children allowed with supervision, no smoking, max 10 swimmers, no pets in pool area...", type: "textarea" },
   ],
 };
 
@@ -581,6 +585,129 @@ This Agreement shall be governed by the laws of the State of {{state}}.
 DISCLAIMER: This waiver template is provided as a starting point only. Rental Waivers is not a law firm and does not provide legal advice. Consult a licensed attorney in your jurisdiction to ensure your waiver is legally enforceable.
 
 By signing below, I acknowledge that I have read this waiver in its entirety, understand its contents, and voluntarily agree to its terms.`,
+  },
+  {
+    id: "prnm_pool_agreement",
+    name: "PRNM Pool Use Agreement",
+    description: "PoolRentalNearMe.com comprehensive pool waiver",
+    icon: Shield,
+    content: `PRIVATE POOL USE AGREEMENT & LIABILITY WAIVER
+
+Provided free by PoolRentalNearMe.com | Digital version at RentalWaivers.com
+
+This Agreement is entered into on the date indicated below between the Pool Owner/Host and the Guest/User for the temporary, private use of a residential swimming pool.
+
+SECTION 1 — PARTY INFORMATION
+
+POOL OWNER / HOST
+Full Legal Name: {{host_name}}
+
+GUEST / USER
+Full Legal Name: {{customer_name}}
+Booking ID: {{booking_id}}
+Date of Use: {{date}}
+Time of Use: {{time}}
+Property Location: {{address_redacted}}
+State: {{state}}
+
+SECTION 2 — POOL USE DETAILS
+Number of Guests in Party: ___
+Agreed-Upon Fee: ___
+Security Deposit Amount: ___
+
+SECTION 3 — SCOPE OF USE
+3.1. The Pool Owner grants the Guest a limited, temporary, non-exclusive, and revocable license to use the swimming pool and designated pool area at the property identified above, for the date and time specified above, subject to the terms and conditions of this Agreement.
+
+3.2. The Guest acknowledges that the pool is a private residential pool and is NOT a public or commercial swimming facility. As such, it is not subject to public pool regulations, commercial safety codes, lifeguard requirements, or public health department water quality standards. The Guest accepts the pool in its current condition.
+
+3.3. Use of the pool is limited to the Guest and the individuals identified in this Agreement. The Guest may not sublicense, transfer, or allow access to any person not listed herein without prior written consent of the Pool Owner.
+
+3.4. Access is limited to the pool and designated pool area only. The Guest shall not enter, access, or use any other area of the property, including but not limited to the home, garage, sheds, or other structures, unless expressly authorized by the Pool Owner.
+
+SECTION 4 — HOST RULES & PERMISSIONS
+{{rules}}
+
+SECTION 5 — ASSUMPTION OF RISK
+
+PLEASE READ CAREFULLY. THIS SECTION AFFECTS YOUR LEGAL RIGHTS.
+
+5.1. The Guest acknowledges that the use of a swimming pool and surrounding areas involves inherent risks, including but not limited to: drowning, near-drowning, spinal cord injuries, traumatic brain injuries, slip-and-fall injuries, sunburn, heat stroke, dehydration, skin irritation or allergic reactions to pool chemicals, cuts, abrasions, broken bones, muscle strains, electrocution, and other injuries or death.
+
+5.2. The Guest voluntarily assumes all risks associated with the use of the pool, pool area, and any related facilities or equipment, whether known or unknown, foreseeable or unforeseeable, and whether caused by the negligence of the Pool Owner or otherwise.
+
+5.3. The Guest acknowledges that no lifeguard is present and that supervision of all swimmers, including minors, is the sole responsibility of the Guest.
+
+5.4. The Guest represents that all members of their party are able to swim or will be under the direct supervision of a competent adult swimmer at all times while in or near the pool.
+
+SECTION 6 — WAIVER, RELEASE & HOLD HARMLESS
+
+PLEASE READ CAREFULLY. BY SIGNING THIS AGREEMENT, YOU ARE GIVING UP CERTAIN LEGAL RIGHTS, INCLUDING THE RIGHT TO SUE.
+
+6.1. RELEASE. The Guest, on behalf of themselves and their minor children, heirs, executors, administrators, successors, and assigns, hereby releases, waives, discharges, and covenants not to sue the Pool Owner, their family members, agents, representatives, insurers, and any affiliated platforms (including PoolRentalNearMe.com and RentalWaivers.com) (collectively, the "Released Parties") from any and all liability, claims, demands, actions, or causes of action arising out of or related to any loss, damage, injury, or death that may be sustained by the Guest or any member of the Guest's party while using the pool or pool area, whether caused by the negligence of the Released Parties or otherwise.
+
+6.2. INDEMNIFICATION. The Guest agrees to indemnify, defend, and hold harmless the Released Parties from and against any and all claims, liabilities, damages, losses, costs, and expenses (including reasonable attorney's fees) arising from or related to the Guest's use of the pool, the Guest's breach of this Agreement, or any act or omission of the Guest or any member of the Guest's party.
+
+6.3. PROPERTY DAMAGE. The Guest shall be financially responsible for any damage caused to the pool, pool area, equipment, furniture, or any other property of the Pool Owner by the Guest or any member of the Guest's party during the period of use. The Pool Owner may deduct the cost of repairs or replacement from the security deposit, if applicable.
+
+SECTION 7 — GUEST OBLIGATIONS & CONDUCT
+
+7.1. The Guest agrees to: Supervise all minors at all times. Children must be accompanied by a responsible adult in the water.
+7.2. The Guest agrees to: Not engage in, or permit others to engage in, running, diving (unless expressly permitted), horseplay, roughhousing, or any other dangerous behavior in or around the pool area.
+7.3. The Guest agrees to: Not introduce any glass, sharp objects, or hazardous materials into the pool or pool area.
+7.4. The Guest agrees to: Not introduce any chemicals, soaps, detergents, or substances into the pool water.
+7.5. The Guest agrees to: Leave the pool and pool area in the same condition as found upon arrival.
+7.6. The Guest agrees to: Report any damage, incidents, injuries, or safety concerns to the Pool Owner immediately.
+7.7. The Guest agrees to: Comply with all posted rules, the Host Rules in Section 4, and any verbal instructions from the Pool Owner.
+7.8. The Guest agrees to: Not exceed the maximum occupancy established by the Pool Owner.
+7.9. The Guest agrees to: Ensure all guests in the party are aware of and comply with the terms of this Agreement.
+7.10. The Guest agrees to: Inform the Pool Owner of any known allergies to pool chemicals (chlorine, bromine, salt, etc.) prior to entering the pool.
+
+SECTION 8 — HOST OBLIGATIONS
+
+8.1. The Pool Owner agrees to provide access to the pool and designated pool area at the agreed-upon time and for the agreed-upon duration.
+8.2. The Pool Owner agrees to maintain the pool in a reasonably clean and safe condition suitable for recreational use.
+8.3. The Pool Owner agrees to disclose any known hazards, defects, or conditions of the pool or pool area that could affect the safety of the Guest.
+8.4. The Pool Owner represents that they have the legal right and authority to grant temporary use of the pool and that such use does not violate any HOA rules, local ordinances, lease agreements, or other restrictions applicable to the property.
+
+SECTION 9 — CANCELLATION & REFUNDS
+
+9.1. The Pool Owner may cancel the reservation at any time for any reason. In the event of cancellation by the Pool Owner, the Guest shall receive a full refund of all fees paid.
+9.2. The Guest may cancel the reservation with a full refund if cancellation is made more than 48 hours before the scheduled start time. Cancellations within 48 hours of the scheduled start time may be subject to the Pool Owner's cancellation policy.
+9.3. If the Pool Owner fails to provide access to the pool within 30 minutes of the scheduled start time, the reservation shall be deemed cancelled by the Pool Owner, and the Guest shall be entitled to a full refund.
+
+SECTION 10 — SECURITY DEPOSIT
+
+10.1. The Pool Owner may require a security deposit as indicated in Section 2 to cover potential property damage during the period of use.
+10.2. The security deposit shall be returned in full within 48 hours of the end of the reservation, provided no damage has occurred. Normal wear and tear shall not be grounds for withholding the deposit.
+10.3. If damage exceeds the security deposit amount, the Guest agrees to be responsible for the full cost of repair or replacement.
+
+SECTION 11 — PHOTO, VIDEO & PRIVACY
+
+11.1. The Guest shall not photograph, video record, or otherwise capture images of the Pool Owner's property, home, or personal belongings beyond the pool area without express permission.
+11.2. The Guest shall not post the exact address or identifiable images of the property on social media or any public platform without the Pool Owner's prior written consent.
+
+SECTION 12 — MEDICAL & ALLERGY DISCLOSURE
+
+12.1. The Guest represents that neither the Guest nor any member of their party has a medical condition that would make pool use inadvisable, unless disclosed below.
+
+SECTION 13 — MINOR PARTICIPANTS
+
+13.1. By signing this Agreement, the Guest represents that they are the parent or legal guardian of all minor children in their party, or have been authorized by the parent/legal guardian to sign on their behalf.
+13.2. The Guest assumes full responsibility for the supervision and safety of all minors and agrees that all terms of this Agreement, including the assumption of risk and waiver of liability, apply equally to all minor participants.
+
+SECTION 14 — GENERAL PROVISIONS
+
+14.1. GOVERNING LAW. This Agreement shall be governed by the laws of the State of {{state}}.
+14.2. SEVERABILITY. If any provision of this Agreement is found to be unenforceable or invalid, the remaining provisions shall remain in full force and effect.
+14.3. ENTIRE AGREEMENT. This Agreement constitutes the entire agreement between the parties and supersedes all prior negotiations, representations, or agreements relating to the subject matter herein.
+14.4. MODIFICATION. This Agreement may not be modified except in writing signed by both parties.
+14.5. PLATFORM DISCLAIMER. PoolRentalNearMe.com and RentalWaivers.com provide this template as a convenience and do not act as a party to this Agreement. Neither platform provides legal advice. Users are encouraged to consult with a licensed attorney in their jurisdiction to ensure this Agreement meets applicable state and local requirements.
+
+BY SIGNING BELOW, I ACKNOWLEDGE THAT I HAVE READ THIS ENTIRE AGREEMENT, FULLY UNDERSTAND ITS TERMS, AND AGREE TO BE BOUND BY ITS PROVISIONS. I AM SIGNING THIS AGREEMENT VOLUNTARILY AND OF MY OWN FREE WILL.
+
+This waiver template is provided free of charge by PoolRentalNearMe.com. Digital waivers, e-signatures, and automated delivery available at RentalWaivers.com.
+
+DISCLAIMER: This document is a template and does not constitute legal advice. Consult a licensed attorney in your state for review.`,
   },
 ];
 
