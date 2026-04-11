@@ -14,6 +14,8 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -62,3 +64,13 @@ jobs:
         with:
           name: RentalWaivers-Android
           path: android/app/build/outputs/bundle/release/*.aab
+          compression-level: 0
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-v1.0.${{ github.run_number }}
+          name: Android Build ${{ github.run_number }}
+          files: android/app/build/outputs/bundle/release/app-release.aab
+          draft: false
+          prerelease: true
