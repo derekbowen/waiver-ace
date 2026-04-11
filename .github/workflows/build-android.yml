@@ -45,9 +45,17 @@ jobs:
       - name: Sync web assets to Android
         run: npx cap sync android
 
+      - name: Generate upload keystore
+        run: |
+          keytool -genkeypair -v -storetype PKCS12 -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass android -keypass android -dname "CN=Rental Waivers, OU=Mobile, O=Rental Waivers, L=Unknown, ST=Unknown, C=US"
+
       - name: Build release AAB
         working-directory: android
         run: ./gradlew bundleRelease
+
+      - name: Sign AAB with upload key
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore upload-keystore.jks -storepass android -keypass android android/app/build/outputs/bundle/release/app-release.aab upload
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
