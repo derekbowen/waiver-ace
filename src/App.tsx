@@ -40,6 +40,7 @@ import IndustryDetailPage from "./pages/seo/IndustryDetailPage";
 import WaiverTemplatePage from "./pages/seo/WaiverTemplatePage";
 import WaiverLawStatePage from "./pages/seo/WaiverLawStatePage";
 import IndustryStateMatrixPage from "./pages/seo/IndustryStateMatrixPage";
+import EmbedGenerator from "./pages/embed/EmbedGenerator";
 
 // Authenticated dashboard pages — lazy-loaded (behind login, not crawled)
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -123,6 +124,7 @@ const App = () => (
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/updates" element={<Updates />} />
             <Route path="/find-my-waiver" element={<FindMyWaiver />} />
+            <Route path="/embed/generator" element={<EmbedGenerator />} />
 
             {/* Protected dashboard — lazy-loaded (not crawled) */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
