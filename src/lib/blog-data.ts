@@ -1198,10 +1198,14 @@ export const blogArticles: BlogArticle[] = [
   },
 ];
 
+import { longTailBlogArticles } from "./blog-data-longtail";
+
+export const allBlogArticles: BlogArticle[] = [...blogArticles, ...longTailBlogArticles];
+
 export function getBlogArticle(slug: string): BlogArticle | undefined {
-  return blogArticles.find(a => a.slug === slug);
+  return allBlogArticles.find(a => a.slug === slug);
 }
 
 export function getRelatedArticles(slugs: string[]): BlogArticle[] {
-  return slugs.map(s => blogArticles.find(a => a.slug === s)).filter(Boolean) as BlogArticle[];
+  return slugs.map(s => allBlogArticles.find(a => a.slug === s)).filter(Boolean) as BlogArticle[];
 }
