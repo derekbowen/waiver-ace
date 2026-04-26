@@ -35,15 +35,26 @@ export default function SigningPage() {
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const [accessError, setAccessError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchEnvelope = async () => {
       if (!token) { setLoading(false); return; }
 
       const { data, error } = await supabase.rpc("get_envelope_by_token", {
         p_token: token,
+        p_user_agent: navigator.userAgent,
       });
 
       if (error || !data) {
+        setLoading(false);
+        return;
+      }
+
+      // The hardened RPC now returns { error, message } for rate-limit /
+      // email-mismatch refusals — surface those instead of trying to render.
+      if ((data as any).error) {
+        setAccessError((data as any).message || "Access denied");
         setLoading(false);
         return;
       }
@@ -195,6 +206,17 @@ export default function SigningPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (accessError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="text-center max-w-md">
+          <h1 className="font-heading text-2xl font-bold mb-2">Can't open this waiver</h1>
+          <p className="text-muted-foreground">{accessError}</p>
+        </div>
       </div>
     );
   }
