@@ -3,6 +3,8 @@ import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta } from "@/components
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, AlertTriangle, CheckCircle, Scale, ArrowRight } from "lucide-react";
 import { getStateLawPage } from "@/lib/state-waiver-laws";
+import { allIndustryPages } from "@/lib/industry-pages";
+import { matrixUrl } from "@/lib/industry-state-matrix";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
 import { JsonLd } from "@/components/JsonLd";
