@@ -358,62 +358,89 @@ export default function CustomerPortal() {
           </div>
         ) : null}
 
-        <h3 className="font-heading text-lg font-bold mb-4">Your Waivers</h3>
+        {(() => {
+          const pending = waivers.filter((w) => ["sent", "viewed", "draft"].includes(w.status));
+          const history = waivers.filter((w) => !["sent", "viewed", "draft"].includes(w.status));
 
-        {waivers.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center text-muted-foreground">
-              No waivers found for this email address.
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {waivers.map((waiver) => {
-              const config = STATUS_CONFIG[waiver.status] || STATUS_CONFIG.draft;
-              const Icon = config.icon;
-              const listingTitle = (waiver.payload as any)?.listing_title;
-              const needsSign = waiver.status === "sent" || waiver.status === "viewed";
-              const canSign = needsSign && canSignFromHere && !!waiver.signing_token;
+          const renderRow = (waiver: WaiverEntry) => {
+            const config = STATUS_CONFIG[waiver.status] || STATUS_CONFIG.draft;
+            const Icon = config.icon;
+            const listingTitle = (waiver.payload as any)?.listing_title;
+            const needsSign = waiver.status === "sent" || waiver.status === "viewed";
+            const canSign = needsSign && canSignFromHere && !!waiver.signing_token;
 
-              return (
-                <Card key={waiver.id} className={needsSign ? "border-amber-300" : ""}>
-                  <CardContent className="py-4 flex items-center gap-4">
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${config.bg}`}>
-                      <Icon className={`h-5 w-5 ${config.color}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">
-                        {listingTitle || waiver.template_name || `Booking ${waiver.booking_id || waiver.id.slice(0, 8)}`}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {waiver.org_name ? `${waiver.org_name} · ` : ""}
-                        {waiver.signed_at
-                          ? `Signed ${new Date(waiver.signed_at).toLocaleDateString()}`
-                          : `Sent ${new Date(waiver.created_at).toLocaleDateString()}`}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs font-medium ${config.color}`}>
-                        {config.label}
-                      </span>
-                      {canSign && (
-                        <Button
-                          size="sm"
-                          onClick={() => (window.location.href = `/sign/${waiver.signing_token}`)}
-                        >
-                          Sign Now
-                        </Button>
-                      )}
-                      {needsSign && !canSign && (
-                        <span className="text-xs text-muted-foreground">Sign in to continue</span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+            return (
+              <Card key={waiver.id} className={needsSign ? "border-amber-300" : ""}>
+                <CardContent className="py-4 flex items-center gap-4">
+                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${config.bg}`}>
+                    <Icon className={`h-5 w-5 ${config.color}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">
+                      {listingTitle || waiver.template_name || `Booking ${waiver.booking_id || waiver.id.slice(0, 8)}`}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {waiver.org_name ? `${waiver.org_name} · ` : ""}
+                      {waiver.signed_at
+                        ? `Signed ${new Date(waiver.signed_at).toLocaleDateString()}`
+                        : `Sent ${new Date(waiver.created_at).toLocaleDateString()}`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-xs font-medium ${config.color}`}>
+                      {config.label}
+                    </span>
+                    {canSign && (
+                      <Button
+                        size="sm"
+                        onClick={() => (window.location.href = `/sign/${waiver.signing_token}`)}
+                      >
+                        Continue signing
+                      </Button>
+                    )}
+                    {needsSign && !canSign && (
+                      <span className="text-xs text-muted-foreground">Sign in to continue</span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          };
+
+          if (waivers.length === 0) {
+            return (
+              <Card>
+                <CardContent className="py-12 text-center text-muted-foreground">
+                  No waivers found for this email address.
+                </CardContent>
+              </Card>
+            );
+          }
+
+          return (
+            <>
+              {pending.length > 0 && (
+                <section className="mb-8">
+                  <h3 className="font-heading text-lg font-bold mb-4 flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-amber-600" />
+                    Pending ({pending.length})
+                  </h3>
+                  <div className="space-y-3">{pending.map(renderRow)}</div>
+                </section>
+              )}
+
+              {history.length > 0 && (
+                <section>
+                  <h3 className="font-heading text-lg font-bold mb-4 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                    History ({history.length})
+                  </h3>
+                  <div className="space-y-3">{history.map(renderRow)}</div>
+                </section>
+              )}
+            </>
+          );
+        })()}
 
         <p className="text-center text-xs text-muted-foreground mt-8">
           Powered by Rental Waivers
