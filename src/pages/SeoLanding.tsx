@@ -36,14 +36,27 @@ export default function SeoLanding() {
   useEffect(() => {
     if (page) {
       document.title = page.metaTitle;
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) metaDesc.setAttribute("content", page.metaDescription);
-      else {
-        const meta = document.createElement("meta");
-        meta.name = "description";
-        meta.content = page.metaDescription;
-        document.head.appendChild(meta);
+      const setMetaName = (name: string, content: string) => {
+        let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
+        if (!el) { el = document.createElement("meta"); el.name = name; document.head.appendChild(el); }
+        el.setAttribute("content", content);
+      };
+      setMetaName("description", page.metaDescription);
+      setMetaName("robots", "index,follow,max-image-preview:large");
+
+      const fullUrl = `https://www.rentalwaivers.com/waivers/${page.slug}`;
+      let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.rel = "canonical";
+        document.head.appendChild(canonical);
       }
+      canonical.setAttribute("href", fullUrl);
+    } else {
+      // Unknown slug — don't let Google index this 404-ish view
+      let robots = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+      if (!robots) { robots = document.createElement("meta"); robots.name = "robots"; document.head.appendChild(robots); }
+      robots.setAttribute("content", "noindex,nofollow");
     }
   }, [page]);
 
