@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta } from "@/components/SeoPageLayout";
 import { Card, CardContent } from "@/components/ui/card";
-import { Waves, Bike, Ship, Zap, Snowflake, Truck, PartyPopper, CarFront, Wrench, Tent, ArrowRight } from "lucide-react";
+import { Waves, Bike, Ship, Zap, Snowflake, Truck, PartyPopper, CarFront, Wrench, Tent, ArrowRight, Target, DoorClosed, Activity, Axe, Mountain, Plane, Flag, Wind, Heart } from "lucide-react";
 
 const industries = [
   { name: "Kayak Rentals", slug: "kayak-rental-waiver-software", icon: Waves, desc: "Digital waivers for kayak and paddle sport rental operators" },
@@ -19,6 +19,18 @@ const industries = [
   { name: "Horse & Trail Rides", slug: "horse-rental-waiver-software", icon: Waves, desc: "Equestrian liability waivers for trail riding operations" },
   { name: "Tool Rentals", slug: "tool-rental-waiver-software", icon: Wrench, desc: "Hardware and power tool rental liability management" },
   { name: "Party Rentals", slug: "party-rental-waiver-software", icon: PartyPopper, desc: "Event equipment rental waivers for tables, tents, and gear" },
+  { name: "Snowmobile Rentals", slug: "snowmobile-rental-waiver-software", icon: Snowflake, desc: "Backcountry and trail snowmobile waivers with avalanche disclosure" },
+  { name: "Paintball Fields", slug: "paintball-waiver-software", icon: Target, desc: "Eye-protection enforcement and field-rules waivers for paintball operators" },
+  { name: "Escape Rooms", slug: "escape-room-waiver-software", icon: DoorClosed, desc: "Claustrophobia, sensory, and emergency-exit acknowledgment waivers" },
+  { name: "Trampoline Parks", slug: "trampoline-park-waiver-software", icon: Activity, desc: "Double-bounce, age-zone, and concussion waivers for trampoline parks" },
+  { name: "Axe Throwing", slug: "axe-throwing-waiver-software", icon: Axe, desc: "Sober-throwing and lane-discipline waivers for axe throwing venues" },
+  { name: "Surfboard Rentals", slug: "surfboard-rental-waiver-software", icon: Waves, desc: "Swim-ability and reef-hazard waivers for surf rental shops" },
+  { name: "Segway Tours", slug: "segway-tour-waiver-software", icon: Zap, desc: "Weight, balance, and traffic waivers for Segway tour operators" },
+  { name: "Drone Rentals", slug: "drone-rental-waiver-software", icon: Plane, desc: "FAA Part 107 / TRUST waivers and operator-liability for drone rentals" },
+  { name: "Climbing Gyms", slug: "climbing-gym-waiver-software", icon: Mountain, desc: "Belay-test and lead-certification waivers for indoor climbing facilities" },
+  { name: "Go-Kart Tracks", slug: "go-kart-rental-waiver-software", icon: Flag, desc: "No-bumping, flag-discipline, and helmet waivers for karting tracks" },
+  { name: "Zipline Tours", slug: "zipline-tour-waiver-software", icon: Wind, desc: "Weight-range, harness, and guide-compliance waivers for zipline operators" },
+  { name: "Fitness & Yoga Studios", slug: "fitness-class-waiver-software", icon: Heart, desc: "PAR-Q health screening and recurring-membership waivers for studios" },
 ];
 
 export default function IndustriesHubPage() {
