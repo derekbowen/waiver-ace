@@ -323,6 +323,50 @@ export default function Landing() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
+          EMBED ANYWHERE
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-16 md:py-20 border-t">
+        <div className="container max-w-4xl">
+          <div className="grid gap-10 md:grid-cols-2 items-center">
+            <div className="order-2 md:order-1 rounded-xl border bg-card p-5 font-mono text-xs overflow-hidden">
+              <div className="text-muted-foreground mb-2">{`<!-- Drop into any page -->`}</div>
+              <div><span className="text-primary">&lt;iframe</span></div>
+              <div className="pl-4">src="https://rentalwaivers.com</div>
+              <div className="pl-8">/embed/generator"</div>
+              <div className="pl-4">width="100%"</div>
+              <div className="pl-4">height="600"</div>
+              <div><span className="text-primary">/&gt;</span></div>
+              <div className="mt-3 text-muted-foreground">{`// Auto-resizes via postMessage`}</div>
+            </div>
+            <div className="order-1 md:order-2">
+              <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground mb-4">
+                <Code className="h-3.5 w-3.5" /> Embed Anywhere
+              </div>
+              <h2 className="font-heading text-2xl md:text-3xl font-bold mb-3">
+                Drop waivers into any website
+              </h2>
+              <p className="text-muted-foreground mb-5">
+                Embed the waiver generator or signing flow directly on your site, booking page, or marketplace listing. One iframe — auto-resizing, mobile-ready, no redirects.
+              </p>
+              <ul className="space-y-2 text-sm">
+                {[
+                  "Generator embed for self-serve template creation",
+                  "Sign embed for in-page envelope signing",
+                  "postMessage resize events for seamless layout",
+                  "Works on Wix, WordPress, Squarespace, Webflow",
+                ].map((text) => (
+                  <li key={text} className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
           AI POWER TOOLS
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-16 md:py-20">
