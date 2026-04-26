@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -94,9 +93,21 @@ export default function EmbedGenerator() {
     [industrySlug]
   );
   const stateName = useMemo(
-    () => stateWaiverLawPages.find((s) => s.slug === stateSlug)?.name || "",
+    () => stateWaiverLawPages.find((s) => s.slug === stateSlug)?.state || "",
     [stateSlug]
   );
+
+  // Set title + noindex without react-helmet-async
+  useEffect(() => {
+    document.title = "Free Waiver Generator | RentalWaivers";
+    let meta = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "robots";
+      document.head.appendChild(meta);
+    }
+    meta.content = "noindex";
+  }, []);
 
   const upgradeUrl = useMemo(() => {
     const u = new URLSearchParams();
@@ -158,10 +169,6 @@ export default function EmbedGenerator() {
 
   return (
     <>
-      <Helmet>
-        <title>Free Waiver Generator | RentalWaivers</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
       <div
         ref={containerRef}
         className="min-h-[400px] bg-background text-foreground p-4 sm:p-6"
