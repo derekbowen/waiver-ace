@@ -179,7 +179,9 @@ const additionalIndustries: IndustryPage[] = [
   } as IndustryPage;
 });
 
-export const allIndustryPages = [...industryPages, ...additionalIndustries];
+import { extraIndustryPages } from "./industry-pages-extra";
+
+export const allIndustryPages = [...industryPages, ...additionalIndustries, ...extraIndustryPages];
 
 export function getIndustryPage(slug: string): IndustryPage | undefined {
   return allIndustryPages.find((p) => p.slug === slug);

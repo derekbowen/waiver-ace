@@ -358,6 +358,10 @@ export const waiverTemplatePages: WaiverTemplatePage[] = [
   },
 ];
 
+import { extraTemplatePages } from "./waiver-template-pages-extra";
+
+export const allWaiverTemplatePages: WaiverTemplatePage[] = [...waiverTemplatePages, ...extraTemplatePages];
+
 export function getWaiverTemplatePage(slug: string): WaiverTemplatePage | undefined {
-  return waiverTemplatePages.find((p) => p.slug === slug);
+  return allWaiverTemplatePages.find((p) => p.slug === slug);
 }
