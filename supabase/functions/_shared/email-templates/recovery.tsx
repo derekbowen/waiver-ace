@@ -9,7 +9,6 @@ import {
   Head,
   Heading,
   Html,
-  Img,
   Preview,
   Text,
 } from 'npm:@react-email/components@0.0.22'
@@ -25,22 +24,20 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Reset your Rental Waivers password</Preview>
+    <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src="https://sibwbzhpyiwmhigskgtr.supabase.co/storage/v1/object/public/email-assets/logo.png" alt="Rental Waivers" width="40" height="40" style={{ margin: '0 0 16px' }} />
-        <Text style={brand}>Rental Waivers</Text>
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
-          We received a request to reset your password. Click the button below
-          to choose a new one.
+          We received a request to reset your password for {siteName}. Click
+          the button below to choose a new password.
         </Text>
         <Button style={button} href={confirmationUrl}>
           Reset Password
         </Button>
         <Text style={footer}>
-          If you didn't request this, you can safely ignore this email. Your
-          password won't be changed.
+          If you didn't request a password reset, you can safely ignore this
+          email. Your password will not be changed.
         </Text>
       </Container>
     </Body>
@@ -49,35 +46,26 @@ export const RecoveryEmail = ({
 
 export default RecoveryEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: "'DM Sans', Arial, sans-serif" }
-const container = { padding: '40px 30px' }
-const brand = {
-  fontFamily: "'Space Grotesk', system-ui, sans-serif",
-  fontSize: '18px',
-  fontWeight: 'bold' as const,
-  color: 'hsl(220, 65%, 18%)',
-  margin: '0 0 30px',
-}
+const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
+const container = { padding: '20px 25px' }
 const h1 = {
-  fontFamily: "'Space Grotesk', system-ui, sans-serif",
-  fontSize: '24px',
+  fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: 'hsl(220, 20%, 10%)',
+  color: '#000000',
   margin: '0 0 20px',
 }
 const text = {
-  fontSize: '15px',
-  color: 'hsl(220, 10%, 46%)',
-  lineHeight: '1.6',
-  margin: '0 0 24px',
+  fontSize: '14px',
+  color: '#55575d',
+  lineHeight: '1.5',
+  margin: '0 0 25px',
 }
 const button = {
-  backgroundColor: 'hsl(220, 65%, 18%)',
-  color: 'hsl(0, 0%, 98%)',
-  fontSize: '15px',
-  fontWeight: '600' as const,
+  backgroundColor: '#000000',
+  color: '#ffffff',
+  fontSize: '14px',
   borderRadius: '8px',
-  padding: '14px 24px',
+  padding: '12px 20px',
   textDecoration: 'none',
 }
-const footer = { fontSize: '13px', color: '#999999', margin: '32px 0 0' }
+const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
