@@ -9,8 +9,10 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -29,30 +31,38 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for {siteName}</Preview>
+    <Preview>Confirm your email to start using Rental Waivers</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Section style={header}>
+          <Img
+            src="https://llsgwfzoutdpgrgtcbif.supabase.co/storage/v1/object/public/email-assets/logo.png"
+            alt="Rental Waivers"
+            width="40"
+            height="40"
+            style={logo}
+          />
+          <Text style={brand}>Rental Waivers</Text>
+        </Section>
         <Heading style={h1}>Confirm your email</Heading>
         <Text style={text}>
-          Thanks for signing up for{' '}
+          Welcome to{' '}
           <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
+            <strong>Rental Waivers</strong>
           </Link>
-          !
+          . We just need to verify <strong>{recipient}</strong> belongs to
+          you before you can start collecting signed waivers.
         </Text>
-        <Text style={text}>
-          Please confirm your email address (
-          <Link href={`mailto:${recipient}`} style={link}>
-            {recipient}
-          </Link>
-          ) by clicking the button below:
-        </Text>
-        <Button style={button} href={confirmationUrl}>
-          Verify Email
-        </Button>
+        <Section style={{ textAlign: 'center' as const, margin: '0 0 28px' }}>
+          <Button style={button} href={confirmationUrl}>
+            Confirm email
+          </Button>
+        </Section>
         <Text style={footer}>
-          If you didn't create an account, you can safely ignore this email.
+          Didn't sign up? Safe to ignore this — no account is created until
+          you click the button above.
         </Text>
+        <Text style={signature}>— The Rental Waivers team</Text>
       </Container>
     </Body>
   </Html>
@@ -60,27 +70,57 @@ export const SignupEmail = ({
 
 export default SignupEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const main = {
+  backgroundColor: '#ffffff',
+  fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+}
+const container = { padding: '32px 28px', maxWidth: '560px' }
+const header = { marginBottom: '24px' }
+const logo = { display: 'inline-block', verticalAlign: 'middle', borderRadius: '8px' }
+const brand = {
+  display: 'inline-block',
+  verticalAlign: 'middle',
+  margin: '0 0 0 10px',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
+  fontSize: '15px',
+  fontWeight: 600 as const,
+  color: 'hsl(220, 65%, 18%)',
+  letterSpacing: '-0.01em',
+}
 const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
+  fontSize: '24px',
+  fontWeight: 700 as const,
+  color: 'hsl(220, 20%, 10%)',
+  letterSpacing: '-0.02em',
+  margin: '0 0 16px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
+  fontSize: '15px',
+  color: 'hsl(220, 20%, 25%)',
+  lineHeight: '1.6',
+  margin: '0 0 18px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
+const link = { color: 'hsl(220, 65%, 18%)', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: 'hsl(220, 65%, 18%)',
   color: '#ffffff',
-  fontSize: '14px',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
+  fontSize: '15px',
+  fontWeight: 600 as const,
   borderRadius: '8px',
-  padding: '12px 20px',
+  padding: '13px 28px',
   textDecoration: 'none',
+  display: 'inline-block',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const footer = {
+  fontSize: '13px',
+  color: 'hsl(220, 10%, 46%)',
+  lineHeight: '1.5',
+  margin: '28px 0 8px',
+}
+const signature = {
+  fontSize: '13px',
+  color: 'hsl(220, 10%, 46%)',
+  margin: '0',
+}

@@ -9,8 +9,9 @@ import {
   Head,
   Heading,
   Html,
-  Link,
+  Img,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -27,25 +28,33 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>You've been invited to join {siteName}</Preview>
+    <Preview>You've been invited to Rental Waivers</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Section style={header}>
+          <Img
+            src="https://llsgwfzoutdpgrgtcbif.supabase.co/storage/v1/object/public/email-assets/logo.png"
+            alt="Rental Waivers"
+            width="40"
+            height="40"
+            style={logo}
+          />
+          <Text style={brand}>Rental Waivers</Text>
+        </Section>
         <Heading style={h1}>You've been invited</Heading>
         <Text style={text}>
-          You've been invited to join{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          . Click the button below to accept the invitation and create your
-          account.
+          A teammate added you to their Rental Waivers workspace. Accept
+          the invite to start sending and managing liability waivers.
         </Text>
-        <Button style={button} href={confirmationUrl}>
-          Accept Invitation
-        </Button>
+        <Section style={{ textAlign: 'center' as const, margin: '0 0 28px' }}>
+          <Button style={button} href={confirmationUrl}>
+            Accept invite
+          </Button>
+        </Section>
         <Text style={footer}>
-          If you weren't expecting this invitation, you can safely ignore this
-          email.
+          Didn't expect an invite? You can safely ignore this email.
         </Text>
+        <Text style={signature}>— The Rental Waivers team</Text>
       </Container>
     </Body>
   </Html>
@@ -53,27 +62,56 @@ export const InviteEmail = ({
 
 export default InviteEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const main = {
+  backgroundColor: '#ffffff',
+  fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+}
+const container = { padding: '32px 28px', maxWidth: '560px' }
+const header = { marginBottom: '24px' }
+const logo = { display: 'inline-block', verticalAlign: 'middle', borderRadius: '8px' }
+const brand = {
+  display: 'inline-block',
+  verticalAlign: 'middle',
+  margin: '0 0 0 10px',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
+  fontSize: '15px',
+  fontWeight: 600 as const,
+  color: 'hsl(220, 65%, 18%)',
+  letterSpacing: '-0.01em',
+}
 const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
+  fontSize: '24px',
+  fontWeight: 700 as const,
+  color: 'hsl(220, 20%, 10%)',
+  letterSpacing: '-0.02em',
+  margin: '0 0 16px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
+  fontSize: '15px',
+  color: 'hsl(220, 20%, 25%)',
+  lineHeight: '1.6',
+  margin: '0 0 18px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: 'hsl(220, 65%, 18%)',
   color: '#ffffff',
-  fontSize: '14px',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
+  fontSize: '15px',
+  fontWeight: 600 as const,
   borderRadius: '8px',
-  padding: '12px 20px',
+  padding: '13px 28px',
   textDecoration: 'none',
+  display: 'inline-block',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const footer = {
+  fontSize: '13px',
+  color: 'hsl(220, 10%, 46%)',
+  lineHeight: '1.5',
+  margin: '28px 0 8px',
+}
+const signature = {
+  fontSize: '13px',
+  color: 'hsl(220, 10%, 46%)',
+  margin: '0',
+}
