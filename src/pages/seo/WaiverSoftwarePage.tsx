@@ -9,6 +9,7 @@ export default function WaiverSoftwarePage() {
     <SeoPageLayout
       metaTitle="Waiver Software: Digital Waivers for Any Business | RentalWaivers"
       metaDescription="Everything you need to know about waiver software — how it works, key features, pricing models, and legal validity. Replace paper waivers with secure digital signing."
+      canonicalPath="/waiver-software"
     >
       <SeoHero
         badge="Complete Guide"

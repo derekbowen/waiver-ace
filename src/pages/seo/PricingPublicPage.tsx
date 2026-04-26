@@ -16,6 +16,7 @@ export default function PricingPublicPage() {
     <SeoPageLayout
       metaTitle="RentalWaivers Pricing — Pay Per Waiver, No Subscription Required"
       metaDescription="RentalWaivers charges per waiver signed — not per month. Starting at 6¢ per signature. No monthly fees, no contracts, no off-season charges. See pricing."
+      canonicalPath="/pricing-info"
     >
       <SeoHero
         badge="Simple Pricing"

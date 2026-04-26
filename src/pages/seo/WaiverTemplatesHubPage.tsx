@@ -31,6 +31,7 @@ export default function WaiverTemplatesHubPage() {
     <SeoPageLayout
       metaTitle="Free Rental Waiver Templates — Download or Sign Digitally | RentalWaivers"
       metaDescription="Download free, legally-reviewed waiver templates for rental businesses. Kayak, boat, ATV, bike, jet ski, equipment, and more. Customize and go digital in minutes."
+      canonicalPath="/waiver-templates"
     >
       <SeoHero
         badge="Free Templates"

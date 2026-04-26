@@ -38,6 +38,7 @@ export default function CompareHubPage() {
     <SeoPageLayout
       metaTitle="Compare Waiver Software | RentalWaivers vs Competitors (2025)"
       metaDescription="Compare RentalWaivers to Smartwaiver, WaiverForever, WaiverFile, DocuSign, and more. See pricing, features, and why rental businesses switch to pay-per-waiver."
+      canonicalPath="/compare"
     >
       <SeoHero
         badge="Honest Comparisons"

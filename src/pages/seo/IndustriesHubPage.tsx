@@ -26,6 +26,7 @@ export default function IndustriesHubPage() {
     <SeoPageLayout
       metaTitle="Waiver Software by Industry | Rental, Recreation & More | RentalWaivers"
       metaDescription="Find waiver software built for your specific industry. Kayak, boat, ATV, bike, jet ski, scooter, equipment, and more. Pay per waiver — no monthly fees."
+      canonicalPath="/industries"
     >
       <SeoHero
         badge="Every Rental Type Covered"
