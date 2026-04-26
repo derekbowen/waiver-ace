@@ -11,6 +11,7 @@ import {
   Html,
   Img,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -28,20 +29,31 @@ export const RecoveryEmail = ({
     <Preview>Reset your Rental Waivers password</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src="https://sibwbzhpyiwmhigskgtr.supabase.co/storage/v1/object/public/email-assets/logo.png" alt="Rental Waivers" width="40" height="40" style={{ margin: '0 0 16px' }} />
-        <Text style={brand}>Rental Waivers</Text>
+        <Section style={header}>
+          <Img
+            src="https://llsgwfzoutdpgrgtcbif.supabase.co/storage/v1/object/public/email-assets/logo.png"
+            alt="Rental Waivers"
+            width="40"
+            height="40"
+            style={logo}
+          />
+          <Text style={brand}>Rental Waivers</Text>
+        </Section>
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
-          We received a request to reset your password. Click the button below
+          We got a request to reset your Rental Waivers password. Tap below
           to choose a new one.
         </Text>
-        <Button style={button} href={confirmationUrl}>
-          Reset Password
-        </Button>
+        <Section style={{ textAlign: 'center' as const, margin: '0 0 28px' }}>
+          <Button style={button} href={confirmationUrl}>
+            Reset password
+          </Button>
+        </Section>
         <Text style={footer}>
-          If you didn't request this, you can safely ignore this email. Your
-          password won't be changed.
+          Didn't request this? Your password stays the same and you can
+          ignore this email.
         </Text>
+        <Text style={signature}>— The Rental Waivers team</Text>
       </Container>
     </Body>
   </Html>
@@ -49,35 +61,56 @@ export const RecoveryEmail = ({
 
 export default RecoveryEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: "'DM Sans', Arial, sans-serif" }
-const container = { padding: '40px 30px' }
+const main = {
+  backgroundColor: '#ffffff',
+  fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+}
+const container = { padding: '32px 28px', maxWidth: '560px' }
+const header = { marginBottom: '24px' }
+const logo = { display: 'inline-block', verticalAlign: 'middle', borderRadius: '8px' }
 const brand = {
-  fontFamily: "'Space Grotesk', system-ui, sans-serif",
-  fontSize: '18px',
-  fontWeight: 'bold' as const,
+  display: 'inline-block',
+  verticalAlign: 'middle',
+  margin: '0 0 0 10px',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
+  fontSize: '15px',
+  fontWeight: 600 as const,
   color: 'hsl(220, 65%, 18%)',
-  margin: '0 0 30px',
+  letterSpacing: '-0.01em',
 }
 const h1 = {
-  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
   fontSize: '24px',
-  fontWeight: 'bold' as const,
+  fontWeight: 700 as const,
   color: 'hsl(220, 20%, 10%)',
-  margin: '0 0 20px',
+  letterSpacing: '-0.02em',
+  margin: '0 0 16px',
 }
 const text = {
   fontSize: '15px',
-  color: 'hsl(220, 10%, 46%)',
+  color: 'hsl(220, 20%, 25%)',
   lineHeight: '1.6',
-  margin: '0 0 24px',
+  margin: '0 0 18px',
 }
 const button = {
   backgroundColor: 'hsl(220, 65%, 18%)',
-  color: 'hsl(0, 0%, 98%)',
+  color: '#ffffff',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
   fontSize: '15px',
-  fontWeight: '600' as const,
+  fontWeight: 600 as const,
   borderRadius: '8px',
-  padding: '14px 24px',
+  padding: '13px 28px',
   textDecoration: 'none',
+  display: 'inline-block',
 }
-const footer = { fontSize: '13px', color: '#999999', margin: '32px 0 0' }
+const footer = {
+  fontSize: '13px',
+  color: 'hsl(220, 10%, 46%)',
+  lineHeight: '1.5',
+  margin: '28px 0 8px',
+}
+const signature = {
+  fontSize: '13px',
+  color: 'hsl(220, 10%, 46%)',
+  margin: '0',
+}

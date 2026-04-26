@@ -10,8 +10,8 @@ import {
   Heading,
   Html,
   Img,
-  Link,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -30,25 +30,34 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email change for Rental Waivers</Preview>
+    <Preview>Confirm your new Rental Waivers email</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src="https://sibwbzhpyiwmhigskgtr.supabase.co/storage/v1/object/public/email-assets/logo.png" alt="Rental Waivers" width="40" height="40" style={{ margin: '0 0 16px' }} />
-        <Text style={brand}>Rental Waivers</Text>
-        <Heading style={h1}>Confirm your email change</Heading>
+        <Section style={header}>
+          <Img
+            src="https://llsgwfzoutdpgrgtcbif.supabase.co/storage/v1/object/public/email-assets/logo.png"
+            alt="Rental Waivers"
+            width="40"
+            height="40"
+            style={logo}
+          />
+          <Text style={brand}>Rental Waivers</Text>
+        </Section>
+        <Heading style={h1}>Confirm your new email</Heading>
         <Text style={text}>
-          You requested to change your email from{' '}
-          <Link href={`mailto:${email}`} style={link}>{email}</Link>{' '}
-          to{' '}
-          <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
+          You asked to change the email on your Rental Waivers account
+          from <strong>{email}</strong> to <strong>{newEmail}</strong>.
         </Text>
-        <Button style={button} href={confirmationUrl}>
-          Confirm Email Change
-        </Button>
+        <Section style={{ textAlign: 'center' as const, margin: '0 0 28px' }}>
+          <Button style={button} href={confirmationUrl}>
+            Confirm change
+          </Button>
+        </Section>
         <Text style={footer}>
-          If you didn't request this change, please secure your account
-          immediately.
+          Didn't request this? Secure your account by resetting your
+          password right away.
         </Text>
+        <Text style={signature}>— The Rental Waivers team</Text>
       </Container>
     </Body>
   </Html>
@@ -56,36 +65,56 @@ export const EmailChangeEmail = ({
 
 export default EmailChangeEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: "'DM Sans', Arial, sans-serif" }
-const container = { padding: '40px 30px' }
+const main = {
+  backgroundColor: '#ffffff',
+  fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+}
+const container = { padding: '32px 28px', maxWidth: '560px' }
+const header = { marginBottom: '24px' }
+const logo = { display: 'inline-block', verticalAlign: 'middle', borderRadius: '8px' }
 const brand = {
-  fontFamily: "'Space Grotesk', system-ui, sans-serif",
-  fontSize: '18px',
-  fontWeight: 'bold' as const,
+  display: 'inline-block',
+  verticalAlign: 'middle',
+  margin: '0 0 0 10px',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
+  fontSize: '15px',
+  fontWeight: 600 as const,
   color: 'hsl(220, 65%, 18%)',
-  margin: '0 0 30px',
+  letterSpacing: '-0.01em',
 }
 const h1 = {
-  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
   fontSize: '24px',
-  fontWeight: 'bold' as const,
+  fontWeight: 700 as const,
   color: 'hsl(220, 20%, 10%)',
-  margin: '0 0 20px',
+  letterSpacing: '-0.02em',
+  margin: '0 0 16px',
 }
 const text = {
   fontSize: '15px',
-  color: 'hsl(220, 10%, 46%)',
+  color: 'hsl(220, 20%, 25%)',
   lineHeight: '1.6',
-  margin: '0 0 24px',
+  margin: '0 0 18px',
 }
-const link = { color: 'hsl(220, 65%, 18%)', textDecoration: 'underline' }
 const button = {
   backgroundColor: 'hsl(220, 65%, 18%)',
-  color: 'hsl(0, 0%, 98%)',
+  color: '#ffffff',
+  fontFamily: "'Space Grotesk', -apple-system, Arial, sans-serif",
   fontSize: '15px',
-  fontWeight: '600' as const,
+  fontWeight: 600 as const,
   borderRadius: '8px',
-  padding: '14px 24px',
+  padding: '13px 28px',
   textDecoration: 'none',
+  display: 'inline-block',
 }
-const footer = { fontSize: '13px', color: '#999999', margin: '32px 0 0' }
+const footer = {
+  fontSize: '13px',
+  color: 'hsl(220, 10%, 46%)',
+  lineHeight: '1.5',
+  margin: '28px 0 8px',
+}
+const signature = {
+  fontSize: '13px',
+  color: 'hsl(220, 10%, 46%)',
+  margin: '0',
+}
