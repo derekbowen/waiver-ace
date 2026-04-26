@@ -39,6 +39,7 @@ import ContractScannerPage from "./pages/seo/ContractScannerPage";
 import IndustryDetailPage from "./pages/seo/IndustryDetailPage";
 import WaiverTemplatePage from "./pages/seo/WaiverTemplatePage";
 import WaiverLawStatePage from "./pages/seo/WaiverLawStatePage";
+import IndustryStateMatrixPage from "./pages/seo/IndustryStateMatrixPage";
 
 // Authenticated dashboard pages — lazy-loaded (behind login, not crawled)
 const Dashboard = lazy(() => import("./pages/Dashboard"));
