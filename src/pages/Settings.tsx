@@ -359,6 +359,8 @@ export default function Settings() {
               </CardContent>
             </Card>
           )}
+
+          <DangerZone />
         </div>
       </div>
     </DashboardLayout>
