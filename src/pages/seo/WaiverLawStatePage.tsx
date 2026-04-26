@@ -15,7 +15,7 @@ export default function WaiverLawStatePage() {
   if (!page) return <Navigate to="/waiver-laws" replace />;
 
   return (
-    <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription}>
+    <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription} canonicalPath={`/waiver-laws/${page.slug ?? state}`}>
       <SeoHero badge="Legal Guide" h1={page.h1} subtitle={badgeMap[page.enforceability]} description={page.overview} />
 
       <SeoSection title="Enforceability Summary" muted>
