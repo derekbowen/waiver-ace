@@ -449,8 +449,9 @@ export default function Landing() {
             {[
               { them: "$29–$99/month subscription", us: "Pay per waiver — 6¢ each" },
               { them: "Group waivers cost extra", us: "Group waivers included free" },
-              { them: "API locked behind premium", us: "Full API on every account" },
+              { them: "API & embeds locked behind premium", us: "Full API + embed widgets on every account" },
               { them: "Per-seat pricing for teams", us: "Unlimited team members" },
+              { them: "Generic system emails", us: "Fully branded auth & notification emails" },
             ].map((row, i) => (
               <div key={i} className="flex flex-col sm:grid sm:grid-cols-2 gap-1 sm:gap-3 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground line-through decoration-destructive/40">
