@@ -68,3 +68,107 @@ export function breadcrumbSchema(
     })),
   };
 }
+
+export function howToSchema(opts: {
+  name: string;
+  description: string;
+  steps: { name: string; text: string }[];
+  totalTimeISO?: string; // e.g. "PT10M"
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: opts.name,
+    description: opts.description,
+    ...(opts.totalTimeISO ? { totalTime: opts.totalTimeISO } : {}),
+    step: opts.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+    })),
+  };
+}
+
+export function serviceSchema(opts: {
+  name: string;
+  description: string;
+  serviceType: string;
+  areaServed?: string;
+  url: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: opts.name,
+    description: opts.description,
+    serviceType: opts.serviceType,
+    provider: {
+      "@type": "Organization",
+      name: "Rental Waivers",
+      url: "https://www.rentalwaivers.com",
+    },
+    areaServed: opts.areaServed ?? "United States",
+    url: opts.url,
+    offers: {
+      "@type": "Offer",
+      price: "0.06",
+      priceCurrency: "USD",
+      description: "Pay-per-waiver pricing starting at 6¢ per signature. No monthly fee.",
+    },
+  };
+}
+
+export function articleSchema(opts: {
+  headline: string;
+  description: string;
+  author: string;
+  authorRole?: string;
+  datePublished: string;
+  dateModified: string;
+  url: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: opts.headline,
+    description: opts.description,
+    author: {
+      "@type": "Person",
+      name: opts.author,
+      ...(opts.authorRole ? { jobTitle: opts.authorRole } : {}),
+    },
+    datePublished: opts.datePublished,
+    dateModified: opts.dateModified,
+    publisher: {
+      "@type": "Organization",
+      name: "Rental Waivers",
+      url: "https://www.rentalwaivers.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.rentalwaivers.com/favicon.png",
+      },
+    },
+    mainEntityOfPage: opts.url,
+  };
+}
+
+export function legalServiceSchema(opts: {
+  state: string;
+  description: string;
+  url: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LegalService",
+    name: `${opts.state} Liability Waiver Guide & Software`,
+    description: opts.description,
+    areaServed: { "@type": "State", name: opts.state },
+    url: opts.url,
+    provider: {
+      "@type": "Organization",
+      name: "Rental Waivers",
+      url: "https://www.rentalwaivers.com",
+    },
+  };
+}
