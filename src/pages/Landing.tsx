@@ -239,6 +239,9 @@ export default function Landing() {
               "Legally-binding e-signatures (ESIGN + UETA)",
               "Group waivers — one link, unlimited signers",
               "QR code kiosk mode for walk-ins",
+              "Embeddable widgets for your website (iframe)",
+              "Guest dashboard — resume signing on any device",
+              "Branded auth & notification emails",
               "Full REST API & real-time webhooks",
               "AI contract scanner & risk analysis",
               "Listing analyzer with SEO scoring",
@@ -246,8 +249,11 @@ export default function Landing() {
               "Drawn signature with full audit trail",
               "IP address, timestamp & device logging",
               "SHA-256 tamper-proof PDFs",
-              "Unlimited team members",
+              "Unlimited team members & multi-tenant branding",
+              "Auto-photo capture & 11-language signing",
+              "Sharetribe & marketplace webhooks",
               "Analytics dashboard & auto-recharge",
+              "Rate-limited APIs with ownership audit logs",
             ].map((feature) => (
               <div key={feature} className="flex items-start gap-2.5">
                 <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
@@ -311,6 +317,50 @@ export default function Landing() {
                 </div>
               </div>
               <p className="text-center text-xs text-muted-foreground mt-3">3 of 6 guests signed</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          EMBED ANYWHERE
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-16 md:py-20 border-t">
+        <div className="container max-w-4xl">
+          <div className="grid gap-10 md:grid-cols-2 items-center">
+            <div className="order-2 md:order-1 rounded-xl border bg-card p-5 font-mono text-xs overflow-hidden">
+              <div className="text-muted-foreground mb-2">{`<!-- Drop into any page -->`}</div>
+              <div><span className="text-primary">&lt;iframe</span></div>
+              <div className="pl-4">src="https://rentalwaivers.com</div>
+              <div className="pl-8">/embed/generator"</div>
+              <div className="pl-4">width="100%"</div>
+              <div className="pl-4">height="600"</div>
+              <div><span className="text-primary">/&gt;</span></div>
+              <div className="mt-3 text-muted-foreground">{`// Auto-resizes via postMessage`}</div>
+            </div>
+            <div className="order-1 md:order-2">
+              <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground mb-4">
+                <Code className="h-3.5 w-3.5" /> Embed Anywhere
+              </div>
+              <h2 className="font-heading text-2xl md:text-3xl font-bold mb-3">
+                Drop waivers into any website
+              </h2>
+              <p className="text-muted-foreground mb-5">
+                Embed the waiver generator or signing flow directly on your site, booking page, or marketplace listing. One iframe — auto-resizing, mobile-ready, no redirects.
+              </p>
+              <ul className="space-y-2 text-sm">
+                {[
+                  "Generator embed for self-serve template creation",
+                  "Sign embed for in-page envelope signing",
+                  "postMessage resize events for seamless layout",
+                  "Works on Wix, WordPress, Squarespace, Webflow",
+                ].map((text) => (
+                  <li key={text} className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -443,8 +493,9 @@ export default function Landing() {
             {[
               { them: "$29–$99/month subscription", us: "Pay per waiver — 6¢ each" },
               { them: "Group waivers cost extra", us: "Group waivers included free" },
-              { them: "API locked behind premium", us: "Full API on every account" },
+              { them: "API & embeds locked behind premium", us: "Full API + embed widgets on every account" },
               { them: "Per-seat pricing for teams", us: "Unlimited team members" },
+              { them: "Generic system emails", us: "Fully branded auth & notification emails" },
             ].map((row, i) => (
               <div key={i} className="flex flex-col sm:grid sm:grid-cols-2 gap-1 sm:gap-3 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground line-through decoration-destructive/40">
