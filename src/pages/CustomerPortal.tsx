@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNoindex } from "@/hooks/useNoindex";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ const STATUS_CONFIG: Record<string, { icon: any; color: string; bg: string; labe
 };
 
 export default function CustomerPortal() {
+  useNoindex();
   const [searchParams] = useSearchParams();
   const emailParam = searchParams.get("email");
   const tokenParam = searchParams.get("token");

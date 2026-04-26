@@ -15,7 +15,7 @@ export default function IndustryDetailPage() {
   if (!page) return <Navigate to="/industries" replace />;
 
   return (
-    <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription}>
+    <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription} canonicalPath={`/industries/${page.slug}`}>
       <SeoHero badge="Industry Solution" h1={page.h1} subtitle="Pay per waiver — no monthly fee" description={page.intro} />
 
       <SeoSection title={`Why ${page.name} Need Specialized Waiver Software`} muted>

@@ -9,6 +9,7 @@ export default function RentalWaiverSoftwarePage() {
     <SeoPageLayout
       metaTitle="Rental Waiver Software — No Monthly Fee, Pay Per Signature | RentalWaivers"
       metaDescription="Waiver software built specifically for rental businesses. QR code signing, mobile waivers, group signing, and audit trails. Pay only when waivers are signed — no subscription."
+      canonicalPath="/rental-waiver-software"
     >
       <SeoHero
         badge="Built for Rental Businesses"

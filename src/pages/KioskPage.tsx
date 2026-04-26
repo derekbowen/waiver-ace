@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNoindex } from "@/hooks/useNoindex";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { toast } from "sonner";
  * Works without authentication — uses the template ID from the URL.
  */
 export default function KioskPage() {
+  useNoindex();
   const { templateId } = useParams();
   const navigate = useNavigate();
   const [templateName, setTemplateName] = useState("");

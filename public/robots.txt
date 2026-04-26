@@ -3,7 +3,7 @@
 User-agent: *
 Allow: /
 
-# Authenticated / private routes
+# Authenticated dashboard routes (also send noindex meta)
 Disallow: /dashboard
 Disallow: /templates
 Disallow: /envelopes
@@ -11,16 +11,27 @@ Disallow: /settings
 Disallow: /analytics
 Disallow: /pricing
 Disallow: /admin/
+Disallow: /api-keys
+Disallow: /webhooks
+Disallow: /audit-log
+Disallow: /documents
+Disallow: /credit-dispute
+Disallow: /listing-analyzer
+Disallow: /contract-scanner
+Disallow: /photosell
+
+# Token-bound / utility routes
 Disallow: /login
 Disallow: /sign/
+Disallow: /waiver/
 Disallow: /my-waivers
-Disallow: /photosell
 Disallow: /unsubscribe
+Disallow: /find-my-waiver
 
-# Block query-string crawl traps
+# Block query-string crawl traps (translation/UTM variants)
 Disallow: /*?*
 
-# Googlebot — allow full crawl budget
+# Googlebot — explicit allow for crawl budget
 User-agent: Googlebot
 Allow: /
 

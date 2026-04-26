@@ -1,10 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { useNoindex } from "@/hooks/useNoindex";
 
 const NotFound = () => {
   const location = useLocation();
+  useNoindex();
 
   useEffect(() => {
+    document.title = "404 — Page Not Found | Rental Waivers";
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
 

@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useNoindex } from "@/hooks/useNoindex";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { PhotoCapture } from "@/components/PhotoCapture";
 import { VideoEmbed } from "@/components/VideoEmbed";
 
 export default function SigningPage() {
+  useNoindex();
   const { token } = useParams();
   const [envelope, setEnvelope] = useState<any>(null);
   const [templateContent, setTemplateContent] = useState("");

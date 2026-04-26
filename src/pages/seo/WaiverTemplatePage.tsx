@@ -13,7 +13,7 @@ export default function WaiverTemplatePage() {
   if (!page) return <Navigate to="/waiver-templates" replace />;
 
   return (
-    <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription}>
+    <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription} canonicalPath={`/waiver-templates/${page.slug}`}>
       <SeoHero badge="Free Template" h1={page.h1} subtitle="Legally-reviewed, customizable, and ready to go digital" description={page.intro} />
 
       <SeoSection title="Risks This Waiver Should Address" muted>

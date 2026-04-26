@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNoindex } from "@/hooks/useNoindex";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ interface WaiverResult {
 }
 
 export default function FindMyWaiver() {
+  useNoindex();
   const [email, setEmail] = useState("");
   const [results, setResults] = useState<WaiverResult[] | null>(null);
   const [loading, setLoading] = useState(false);

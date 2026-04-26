@@ -22,7 +22,7 @@ export default function CompetitorAltPage() {
   if (!page) return <Navigate to="/compare" replace />;
 
   return (
-    <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription}>
+    <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription} canonicalPath={`/alternatives/${page.slug}`}>
       {/* Hero */}
       <SeoHero
         badge={`${page.competitorName} Alternative`}

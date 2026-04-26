@@ -22,6 +22,7 @@ export default function WaiverLawsHubPage() {
     <SeoPageLayout
       metaTitle="Liability Waiver Laws by State | What Rental Businesses Need to Know"
       metaDescription="Are liability waivers enforceable in your state? Learn state-by-state waiver laws for rental businesses — what to include, what to avoid, and how to stay protected."
+      canonicalPath="/waiver-laws"
     >
       <SeoHero
         badge="Legal Guide"
