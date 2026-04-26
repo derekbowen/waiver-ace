@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { SeoPageLayout } from "@/components/SeoPageLayout";
 import { Card, CardContent } from "@/components/ui/card";
-import { blogArticles } from "@/lib/blog-data";
+import { allBlogArticles as blogArticles } from "@/lib/blog-data";
 import { ArrowRight, Clock, Tag } from "lucide-react";
 import { breadcrumbSchema } from "@/lib/structured-data";
 
