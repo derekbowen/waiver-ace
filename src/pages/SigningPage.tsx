@@ -257,6 +257,22 @@ export default function SigningPage() {
 
       <div className="container max-w-2xl py-8 px-4">
         <div className="animate-fade-in">
+          {recognizedSigner &&
+            envelope?.signer_email &&
+            recognizedSigner.email === String(envelope.signer_email).toLowerCase() && (
+              <div className="mb-4 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm flex items-center justify-between gap-3">
+                <span>
+                  Welcome back, <strong>{recognizedSigner.name}</strong>. We've prefilled your details.
+                </span>
+                <a
+                  href={`/my-waivers?email=${encodeURIComponent(recognizedSigner.email)}`}
+                  className="text-xs underline whitespace-nowrap"
+                >
+                  See all my waivers
+                </a>
+              </div>
+            )}
+
           <h1 className="font-heading text-xl font-bold mb-1">Liability Waiver</h1>
           <p className="text-sm text-muted-foreground mb-6">
             Please read the waiver below carefully, scroll to the bottom, then complete your signature.
