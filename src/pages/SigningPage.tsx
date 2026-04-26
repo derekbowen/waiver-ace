@@ -173,6 +173,15 @@ export default function SigningPage() {
         body: { envelope_id: res.envelope_id },
       }).catch(() => {});
 
+      // Remember this signer for the next visit (any device, any business).
+      if (envelope?.signer_email) {
+        rememberSigner({
+          name: fullName.trim(),
+          email: String(envelope.signer_email),
+          initials: initials.trim(),
+        });
+      }
+
       setSigned(true);
       toast.success("Waiver signed successfully!");
     } catch (err: any) {
