@@ -423,7 +423,7 @@ export default function CustomerPortal() {
                     {canSign && (
                       <Button
                         size="sm"
-                        onClick={() => (window.location.href = `/sign/${waiver.signing_token}`)}
+                        onClick={() => handleResume(waiver.signing_token, waiver.signer_email)}
                       >
                         Continue signing
                       </Button>
