@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, ArrowRight, Zap, Shield, Clock, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getIndustryPage } from "@/lib/industry-pages";
+import { stateWaiverLawPages } from "@/lib/state-waiver-laws";
+import { matrixUrl } from "@/lib/industry-state-matrix";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
 import { JsonLd } from "@/components/JsonLd";
@@ -114,6 +116,23 @@ export default function IndustryDetailPage() {
       </SeoSection>
 
       <SeoFaq items={page.faqItems} />
+
+      <SeoSection title={`${page.name} Waivers by State`} muted>
+        <p className="text-sm text-muted-foreground mb-4">
+          Liability-waiver enforcement varies state by state. Pick your state for {page.name.toLowerCase()}-specific drafting guidance, statutes, and case law:
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {stateWaiverLawPages.map((s) => (
+            <Link
+              key={s.slug}
+              to={matrixUrl(page.slug, s.slug)}
+              className="text-xs px-2.5 py-1 rounded-full border hover:border-primary/40 hover:bg-primary/5 transition-colors text-muted-foreground hover:text-foreground"
+            >
+              {s.state}
+            </Link>
+          ))}
+        </div>
+      </SeoSection>
 
       <AiQuestionBox
         pageContext={`${page.name} waiver software — ${page.intro.slice(0, 100)}`}

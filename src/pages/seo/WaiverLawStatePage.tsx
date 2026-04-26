@@ -3,6 +3,8 @@ import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta } from "@/components
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, AlertTriangle, CheckCircle, Scale, ArrowRight } from "lucide-react";
 import { getStateLawPage } from "@/lib/state-waiver-laws";
+import { allIndustryPages } from "@/lib/industry-pages";
+import { matrixUrl } from "@/lib/industry-state-matrix";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
 import { JsonLd } from "@/components/JsonLd";
@@ -87,6 +89,23 @@ export default function WaiverLawStatePage() {
       </SeoSection>
 
       <SeoFaq items={page.faqItems} />
+
+      <SeoSection title={`${page.state} Waivers by Industry`} muted>
+        <p className="text-sm text-muted-foreground mb-4">
+          Pick your rental vertical for {page.state}-specific drafting guidance, required risk language, and pricing:
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {allIndustryPages.map((ind) => (
+            <Link
+              key={ind.slug}
+              to={matrixUrl(ind.slug, page.slug)}
+              className="text-xs px-2.5 py-1 rounded-full border hover:border-primary/40 hover:bg-primary/5 transition-colors text-muted-foreground hover:text-foreground"
+            >
+              {ind.name}
+            </Link>
+          ))}
+        </div>
+      </SeoSection>
 
       <AiQuestionBox
         pageContext={`${page.state} waiver laws — ${page.overview.slice(0, 100)}`}
