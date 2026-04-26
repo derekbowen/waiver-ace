@@ -239,6 +239,9 @@ export default function Landing() {
               "Legally-binding e-signatures (ESIGN + UETA)",
               "Group waivers — one link, unlimited signers",
               "QR code kiosk mode for walk-ins",
+              "Embeddable widgets for your website (iframe)",
+              "Guest dashboard — resume signing on any device",
+              "Branded auth & notification emails",
               "Full REST API & real-time webhooks",
               "AI contract scanner & risk analysis",
               "Listing analyzer with SEO scoring",
@@ -246,8 +249,11 @@ export default function Landing() {
               "Drawn signature with full audit trail",
               "IP address, timestamp & device logging",
               "SHA-256 tamper-proof PDFs",
-              "Unlimited team members",
+              "Unlimited team members & multi-tenant branding",
+              "Auto-photo capture & 11-language signing",
+              "Sharetribe & marketplace webhooks",
               "Analytics dashboard & auto-recharge",
+              "Rate-limited APIs with ownership audit logs",
             ].map((feature) => (
               <div key={feature} className="flex items-start gap-2.5">
                 <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
