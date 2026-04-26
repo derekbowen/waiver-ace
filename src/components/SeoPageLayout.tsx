@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
@@ -11,10 +11,15 @@ interface SeoPageLayoutProps {
   metaTitle: string;
   metaDescription: string;
   canonicalPath?: string;
+  noindex?: boolean;
   children: ReactNode;
 }
 
-export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, children }: SeoPageLayoutProps) {
+export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, noindex, children }: SeoPageLayoutProps) {
+  const location = useLocation();
+  // Always derive a canonical — default to current pathname if not provided
+  const effectiveCanonicalPath = canonicalPath ?? location.pathname;
+
   useEffect(() => {
     document.title = metaTitle;
     const metaDesc = document.querySelector('meta[name="description"]');
@@ -26,6 +31,15 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
       document.head.appendChild(meta);
     }
 
+    // Robots meta — noindex,nofollow when requested, else explicit index,follow
+    let robotsTag = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    if (!robotsTag) {
+      robotsTag = document.createElement("meta");
+      robotsTag.name = "robots";
+      document.head.appendChild(robotsTag);
+    }
+    robotsTag.setAttribute("content", noindex ? "noindex,nofollow" : "index,follow,max-image-preview:large");
+
     // Update OG tags dynamically
     const setMeta = (property: string, content: string) => {
       let el = document.querySelector(`meta[property="${property}"]`) || document.querySelector(`meta[name="${property}"]`);
@@ -35,21 +49,28 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
     setMeta("og:description", metaDescription);
     setMeta("twitter:title", metaTitle);
     setMeta("twitter:description", metaDescription);
-    if (canonicalPath) {
-      const fullUrl = `https://www.rentalwaivers.com${canonicalPath}`;
-      const canonical = document.querySelector('link[rel="canonical"]');
-      if (canonical) canonical.setAttribute("href", fullUrl);
-      setMeta("og:url", fullUrl);
 
-      // hreflang tags for all supported languages
-      const sep = canonicalPath.includes("?") ? "&" : "?";
+    const fullUrl = `https://www.rentalwaivers.com${effectiveCanonicalPath}`;
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", fullUrl);
+    setMeta("og:url", fullUrl);
+
+    // Remove old hreflangs first (avoid duplicates across nav)
+    document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
+
+    // Only emit hreflangs for indexable pages
+    if (!noindex) {
+      const sep = effectiveCanonicalPath.includes("?") ? "&" : "?";
       const langs = ["en", "es", "fr", "de", "pt", "zh", "ja", "ko", "it", "ar", "hi"];
       const hreflangs = [
         ...langs.map((lang) => ({ lang, href: lang === "en" ? fullUrl : `${fullUrl}${sep}lang=${lang}` })),
         { lang: "x-default", href: fullUrl },
       ];
-      // Remove old hreflangs
-      document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
       hreflangs.forEach(({ lang, href }) => {
         const link = document.createElement("link");
         link.rel = "alternate";
@@ -58,7 +79,7 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, child
         document.head.appendChild(link);
       });
     }
-  }, [metaTitle, metaDescription, canonicalPath]);
+  }, [metaTitle, metaDescription, effectiveCanonicalPath, noindex]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
