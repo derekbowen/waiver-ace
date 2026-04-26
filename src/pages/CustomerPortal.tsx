@@ -49,6 +49,36 @@ export default function CustomerPortal() {
   const [waivers, setWaivers] = useState<WaiverEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  // Click-cooldown for "Continue signing" — prevents rapid scripted opens
+  // beyond the DB rate limit (30 token loads / IP / minute).
+  const [resumeClicks, setResumeClicks] = useState(0);
+  const [resumeCooldownUntil, setResumeCooldownUntil] = useState<number>(0);
+
+  function handleResume(token: string, envelopeSignerEmail: string) {
+    // Ownership pre-check on the client (the RPC also enforces this server-side).
+    if (
+      authedEmail &&
+      envelopeSignerEmail &&
+      authedEmail.toLowerCase() !== envelopeSignerEmail.toLowerCase()
+    ) {
+      toast.error("This waiver was sent to a different email address.");
+      return;
+    }
+    const now = Date.now();
+    if (now < resumeCooldownUntil) {
+      const wait = Math.ceil((resumeCooldownUntil - now) / 1000);
+      toast.error(`Please wait ${wait}s before opening another waiver.`);
+      return;
+    }
+    const next = resumeClicks + 1;
+    setResumeClicks(next);
+    // After 5 quick opens, force a 30-second cooldown
+    if (next >= 5) {
+      setResumeCooldownUntil(now + 30_000);
+      setResumeClicks(0);
+    }
+    window.location.href = `/sign/${token}`;
+  }
 
   // Watch auth state — when a signer logs in via magic link, load their waivers.
   useEffect(() => {
