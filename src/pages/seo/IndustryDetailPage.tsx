@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, ArrowRight, Zap, Shield, Clock, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getIndustryPage } from "@/lib/industry-pages";
+import { stateWaiverLawPages } from "@/lib/state-waiver-laws";
+import { matrixUrl } from "@/lib/industry-state-matrix";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
 import { JsonLd } from "@/components/JsonLd";
