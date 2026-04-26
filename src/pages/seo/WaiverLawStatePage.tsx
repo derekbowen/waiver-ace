@@ -90,6 +90,23 @@ export default function WaiverLawStatePage() {
 
       <SeoFaq items={page.faqItems} />
 
+      <SeoSection title={`${page.state} Waivers by Industry`} muted>
+        <p className="text-sm text-muted-foreground mb-4">
+          Pick your rental vertical for {page.state}-specific drafting guidance, required risk language, and pricing:
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {allIndustryPages.map((ind) => (
+            <Link
+              key={ind.slug}
+              to={matrixUrl(ind.slug, page.slug)}
+              className="text-xs px-2.5 py-1 rounded-full border hover:border-primary/40 hover:bg-primary/5 transition-colors text-muted-foreground hover:text-foreground"
+            >
+              {ind.name}
+            </Link>
+          ))}
+        </div>
+      </SeoSection>
+
       <AiQuestionBox
         pageContext={`${page.state} waiver laws — ${page.overview.slice(0, 100)}`}
         suggestedQuestions={[`Are waivers enforceable in ${page.state}?`, `Can parents sign waivers for minors in ${page.state}?`, "Do I need a lawyer to create a waiver?"]}
