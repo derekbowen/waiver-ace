@@ -75,6 +75,19 @@ export default function SigningPage() {
         setSigned(true);
       }
 
+      // Prefill from cookie ONLY when the envelope's recipient matches.
+      const recognized = getRecognizedSigner();
+      if (
+        recognized &&
+        env.signer_email &&
+        recognized.email === String(env.signer_email).toLowerCase() &&
+        env.status !== "completed" &&
+        env.status !== "signed"
+      ) {
+        setFullName(recognized.name);
+        if (recognized.initials) setInitials(recognized.initials);
+      }
+
       setLoading(false);
     };
     fetchEnvelope();
