@@ -1,9 +1,12 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { ReactNode } from "react";
+import { useNoindex } from "@/hooks/useNoindex";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
+  // All authenticated routes must never be indexed
+  useNoindex();
 
   if (loading) {
     return (
@@ -22,6 +25,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
 export function AdminRoute({ children }: { children: ReactNode }) {
   const { user, loading, roles } = useAuth();
+  useNoindex();
 
   if (loading) {
     return (
