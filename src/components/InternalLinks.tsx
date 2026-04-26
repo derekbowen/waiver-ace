@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { seoLandingPages } from "@/lib/seo-landing-data";
 import { competitorAltPages } from "@/lib/competitor-alt-data";
 import { allBlogArticles } from "@/lib/blog-data";
-import { stateLawPages } from "@/lib/state-waiver-laws";
+import { stateWaiverLawPages as stateLawPages } from "@/lib/state-waiver-laws";
 
 interface InternalLinksProps {
   /** Current page slug to exclude from links */
