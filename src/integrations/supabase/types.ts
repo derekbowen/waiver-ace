@@ -1238,6 +1238,23 @@ export type Database = {
         }[]
       }
       get_envelope_by_token: { Args: { p_token: string }; Returns: Json }
+      get_signer_waivers_authenticated: {
+        Args: never
+        Returns: {
+          booking_id: string
+          created_at: string
+          envelope_id: string
+          listing_id: string
+          org_name: string
+          payload: Json
+          signed_at: string
+          signer_email: string
+          signer_name: string
+          signing_token: string
+          status: string
+          template_name: string
+        }[]
+      }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
