@@ -760,7 +760,7 @@ export const longTailBlogArticles: BlogArticle[] = [
 <p>Each participant in a group lesson must individually sign a waiver. Group sign-up sheets are not waivers. Each waiver must be linked to that day's lesson, instructor name, and participant identity.</p>`,
       },
       {
-        id: "ca-surf-template">,
+        id: "ca-surf-template",
         heading: "Free California Surf Lesson Waiver Template",
         content: `<p>Our California surf lesson waiver template includes the express-negligence release, the conspicuous formatting required by California courts, the ocean-risk enumeration, the swimming-ability affirmation, and California venue language.</p>
 <p><a href="/waiver-templates/surf-lesson-waiver">Download the surf lesson waiver →</a> · <a href="/waivers-by-state/california">California waiver law guide</a></p>`,
