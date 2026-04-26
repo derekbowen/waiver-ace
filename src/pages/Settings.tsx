@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useI18n } from "@/i18n";
 import { Badge } from "@/components/ui/badge";
+import { DangerZone } from "@/components/DangerZone";
 
 export default function Settings() {
   const { profile, user, wallet } = useAuth();
@@ -358,6 +359,8 @@ export default function Settings() {
               </CardContent>
             </Card>
           )}
+
+          <DangerZone />
         </div>
       </div>
     </DashboardLayout>
