@@ -230,7 +230,7 @@ export default function EmbedGenerator() {
                     <SelectContent className="max-h-72">
                       {stateWaiverLawPages.map((s) => (
                         <SelectItem key={s.slug} value={s.slug}>
-                          {s.name}
+                          {s.state}
                         </SelectItem>
                       ))}
                     </SelectContent>
