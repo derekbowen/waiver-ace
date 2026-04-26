@@ -12,11 +12,13 @@ import { toast } from "sonner";
 import { SignatureCanvas } from "@/components/SignatureCanvas";
 import { PhotoCapture } from "@/components/PhotoCapture";
 import { VideoEmbed } from "@/components/VideoEmbed";
+import { getRecognizedSigner, rememberSigner } from "@/lib/signer-recognition";
 
 export default function SigningPage() {
   useNoindex();
   const { token } = useParams();
   const [envelope, setEnvelope] = useState<any>(null);
+  const [recognizedSigner] = useState(() => getRecognizedSigner());
   const [templateContent, setTemplateContent] = useState("");
   const [requirePhoto, setRequirePhoto] = useState(false);
   const [requireVideo, setRequireVideo] = useState(false);
