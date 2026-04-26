@@ -331,6 +331,39 @@ export type Database = {
         }
         Relationships: []
       }
+      envelope_access_log: {
+        Row: {
+          caller_email: string | null
+          created_at: string
+          envelope_id: string | null
+          id: string
+          ip_address: string | null
+          outcome: string
+          signing_token: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          caller_email?: string | null
+          created_at?: string
+          envelope_id?: string | null
+          id?: string
+          ip_address?: string | null
+          outcome: string
+          signing_token?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          caller_email?: string | null
+          created_at?: string
+          envelope_id?: string | null
+          id?: string
+          ip_address?: string | null
+          outcome?: string
+          signing_token?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       envelope_events: {
         Row: {
           created_at: string
@@ -368,6 +401,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      envelope_rate_limits: {
+        Row: {
+          count: number
+          id: string
+          key: string
+          scope: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          id?: string
+          key: string
+          scope: string
+          window_start: string
+        }
+        Update: {
+          count?: number
+          id?: string
+          key?: string
+          scope?: string
+          window_start?: string
+        }
+        Relationships: []
       }
       envelopes: {
         Row: {
@@ -1194,6 +1251,11 @@ export type Database = {
         }
         Returns: number
       }
+      bump_rate_limit: {
+        Args: { p_key: string; p_scope: string }
+        Returns: number
+      }
+      cleanup_envelope_rate_limits: { Args: never; Returns: undefined }
       deduct_credit:
         | {
             Args: {
@@ -1237,7 +1299,16 @@ export type Database = {
           template_name: string
         }[]
       }
-      get_envelope_by_token: { Args: { p_token: string }; Returns: Json }
+      get_envelope_by_token:
+        | { Args: { p_token: string }; Returns: Json }
+        | {
+            Args: {
+              p_ip_address?: string
+              p_token: string
+              p_user_agent?: string
+            }
+            Returns: Json
+          }
       get_signer_waivers_authenticated: {
         Args: never
         Returns: {
