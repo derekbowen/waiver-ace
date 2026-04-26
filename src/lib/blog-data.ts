@@ -1199,8 +1199,12 @@ export const blogArticles: BlogArticle[] = [
 ];
 
 import { longTailBlogArticles } from "./blog-data-longtail";
+import { applyBlogExpansions } from "./blog-expansions";
 
-export const allBlogArticles: BlogArticle[] = [...blogArticles, ...longTailBlogArticles];
+export const allBlogArticles: BlogArticle[] = [
+  ...applyBlogExpansions(blogArticles),
+  ...longTailBlogArticles,
+];
 
 export function getBlogArticle(slug: string): BlogArticle | undefined {
   return allBlogArticles.find(a => a.slug === slug);

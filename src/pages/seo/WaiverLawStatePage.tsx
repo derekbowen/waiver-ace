@@ -5,6 +5,8 @@ import { Shield, AlertTriangle, CheckCircle, Scale, ArrowRight } from "lucide-re
 import { getStateLawPage } from "@/lib/state-waiver-laws";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, legalServiceSchema } from "@/lib/structured-data";
 
 const badgeMap = { strong: "Generally Enforceable", moderate: "Enforceable with Care", challenging: "Challenging — Legal Counsel Advised" };
 const badgeColor = { strong: "text-primary", moderate: "text-yellow-600", challenging: "text-destructive" };
@@ -14,8 +16,24 @@ export default function WaiverLawStatePage() {
   const page = getStateLawPage(state || "");
   if (!page) return <Navigate to="/waiver-laws" replace />;
 
+  const url = `https://www.rentalwaivers.com/waiver-laws/${page.slug ?? state}`;
+
   return (
     <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription} canonicalPath={`/waiver-laws/${page.slug ?? state}`}>
+      <JsonLd
+        data={[
+          breadcrumbSchema([
+            { name: "Home", url: "https://www.rentalwaivers.com/" },
+            { name: "Waiver Laws", url: "https://www.rentalwaivers.com/waiver-laws" },
+            { name: `${page.state} Waiver Laws`, url },
+          ]),
+          legalServiceSchema({
+            state: page.state,
+            description: page.overview,
+            url,
+          }),
+        ]}
+      />
       <SeoHero badge="Legal Guide" h1={page.h1} subtitle={badgeMap[page.enforceability]} description={page.overview} />
 
       <SeoSection title="Enforceability Summary" muted>

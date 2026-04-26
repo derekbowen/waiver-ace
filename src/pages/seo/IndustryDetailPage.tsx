@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { getIndustryPage } from "@/lib/industry-pages";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, howToSchema, serviceSchema } from "@/lib/structured-data";
 
 const icons = [Zap, Shield, Clock, DollarSign];
 
@@ -14,8 +16,31 @@ export default function IndustryDetailPage() {
   const page = getIndustryPage(slug || "");
   if (!page) return <Navigate to="/industries" replace />;
 
+  const url = `https://www.rentalwaivers.com/industries/${page.slug}`;
+
   return (
     <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription} canonicalPath={`/industries/${page.slug}`}>
+      <JsonLd
+        data={[
+          breadcrumbSchema([
+            { name: "Home", url: "https://www.rentalwaivers.com/" },
+            { name: "Industries", url: "https://www.rentalwaivers.com/industries" },
+            { name: page.name, url },
+          ]),
+          howToSchema({
+            name: `How to set up digital waivers for ${page.name.toLowerCase()}`,
+            description: page.intro.slice(0, 200),
+            totalTimeISO: "PT10M",
+            steps: page.workflow.map((s) => ({ name: s.title, text: s.description })),
+          }),
+          serviceSchema({
+            name: `${page.name} Waiver Software`,
+            description: page.metaDescription,
+            serviceType: `${page.name} Liability Waiver Software`,
+            url,
+          }),
+        ]}
+      />
       <SeoHero badge="Industry Solution" h1={page.h1} subtitle="Pay per waiver — no monthly fee" description={page.intro} />
 
       <SeoSection title={`Why ${page.name} Need Specialized Waiver Software`} muted>

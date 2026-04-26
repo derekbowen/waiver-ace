@@ -6,14 +6,38 @@ import { Button } from "@/components/ui/button";
 import { getWaiverTemplatePage } from "@/lib/waiver-template-pages";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, howToSchema } from "@/lib/structured-data";
 
 export default function WaiverTemplatePage() {
   const { slug } = useParams<{ slug: string }>();
   const page = getWaiverTemplatePage(slug || "");
   if (!page) return <Navigate to="/waiver-templates" replace />;
 
+  const url = `https://www.rentalwaivers.com/waiver-templates/${page.slug}`;
+
   return (
     <SeoPageLayout metaTitle={page.metaTitle} metaDescription={page.metaDescription} canonicalPath={`/waiver-templates/${page.slug}`}>
+      <JsonLd
+        data={[
+          breadcrumbSchema([
+            { name: "Home", url: "https://www.rentalwaivers.com/" },
+            { name: "Waiver Templates", url: "https://www.rentalwaivers.com/waiver-templates" },
+            { name: page.name, url },
+          ]),
+          howToSchema({
+            name: `How to use the ${page.name} template`,
+            description: `Customize and deploy a ${page.name.toLowerCase()} in minutes — paper or digital.`,
+            totalTimeISO: "PT15M",
+            steps: [
+              { name: "Download the template", text: `Start with our free ${page.name.toLowerCase()} as a baseline.` },
+              { name: "Customize for your business", text: "Replace [Business Name] placeholders, add venue-specific hazards, and integrate your insurance carrier's required language." },
+              { name: "Have an attorney review it", text: "A licensed in-state attorney should finalize any waiver before production use." },
+              { name: "Deploy digitally", text: "Upload the finalized template to RentalWaivers and start collecting e-signatures with full audit trails." },
+            ],
+          }),
+        ]}
+      />
       <SeoHero badge="Free Template" h1={page.h1} subtitle="Legally-reviewed, customizable, and ready to go digital" description={page.intro} />
 
       <SeoSection title="Risks This Waiver Should Address" muted>
