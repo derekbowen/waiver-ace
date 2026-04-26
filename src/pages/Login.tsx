@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNoindex } from "@/hooks/useNoindex";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -11,6 +12,7 @@ import logo from "@/assets/logo.png";
 import { toast } from "sonner";
 
 export default function Login() {
+  useNoindex();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNoindex } from "@/hooks/useNoindex";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { CheckCircle2, XCircle, Loader2, MailX } from "lucide-react";
 type Status = "loading" | "valid" | "already" | "invalid" | "confirming" | "done" | "error";
 
 const Unsubscribe = () => {
+  useNoindex();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<Status>("loading");
