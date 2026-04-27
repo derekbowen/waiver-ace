@@ -94,10 +94,14 @@ export default function WaiverLawStatePage() {
         </Card>
       </SeoSection>
 
-      <SeoSection title="Enforceability summary">
+      <SeoSection title={`${page.state} at a glance`}>
+        <p className="text-sm text-muted-foreground leading-relaxed">{uniqueOverview(page)}</p>
+      </SeoSection>
+
+      <SeoSection title="Enforceability summary" muted>
         <div className="flex gap-3 items-start">
           <Scale className={`h-5 w-5 shrink-0 mt-0.5 ${badgeColor[page.enforceability]}`} />
-          <p className="text-sm text-muted-foreground">{page.enforcementSummary}</p>
+          <p className="text-sm text-muted-foreground">{uniqueEnforcementSummary(page)}</p>
         </div>
       </SeoSection>
 
