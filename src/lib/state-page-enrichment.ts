@@ -211,7 +211,7 @@ export function uniqueOverview(p: StateWaiverLawPage): string {
   const cite = lead
     ? `The starting point is ${lead.name}: ${leadHolding.replace(/\.$/, "")}.`
     : "";
-  return `${tierFraming}. Pre-injury releases here are ${verb}, and the controlling authorities operators need to know are ${authorities}. ${cite} The rest of this guide breaks those down clause by clause and shows what they mean for a ${p.state} rental contract.`;
+  return `${tierFraming}. Pre-injury releases here are ${verb}, and the controlling authorities operators need to know are ${authorities}. ${cite} The rest of this guide breaks those down clause by clause and shows what they mean for ${aOrAn(p.state)} ${p.state} rental contract.`;
 }
 
 /** Unique enforcement summary anchored on the actual leading authority. */
