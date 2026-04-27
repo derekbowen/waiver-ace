@@ -101,7 +101,7 @@ export default function WaiverLawStatePage() {
       </SeoSection>
 
       <SeoSection title={`${page.state} at a glance`}>
-        <p className="text-sm text-muted-foreground leading-relaxed">{uniqueOverview(page)}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed">{overview}</p>
       </SeoSection>
 
       <SeoSection title="Enforceability summary" muted>
