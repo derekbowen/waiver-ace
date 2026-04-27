@@ -239,7 +239,7 @@ export function uniqueGrossNegligence(p: StateWaiverLawPage): string {
       : `${p.state} reads the gross-negligence carve-out broadly — what other states would treat as ordinary negligence often gets relabeled as "gross" here`;
   const lead = p.keyStatutes[0];
   const leadCite = lead ? ` Plaintiffs typically cite ${lead.name} when arguing the carve-out applies.` : "";
-  return `${tierFraming}: a release in ${p.state} cannot waive liability for gross negligence, recklessness, or intentional misconduct, period.${leadCite} The practical defense is documentation — written safety briefings, dated equipment-inspection logs, and trained-staff rosters are what keep a ${p.state} claim on the "ordinary negligence" side of the line where the waiver actually works.`;
+  return `${tierFraming}: a release in ${p.state} cannot waive liability for gross negligence, recklessness, or intentional misconduct, period.${leadCite} The practical defense is documentation — written safety briefings, dated equipment-inspection logs, and trained-staff rosters are what keep ${aOrAn(p.state)} ${p.state} claim on the "ordinary negligence" side of the line where the waiver actually works.`;
 }
 
 /** Unique rental-specific paragraph: keep the state's hand-written opener,
