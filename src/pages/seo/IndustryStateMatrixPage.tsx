@@ -86,7 +86,6 @@ export default function IndustryStateMatrixPage() {
             areaServed: state.state,
             url,
           }),
-          faqSchema(faqs),
         ]}
       />
 
