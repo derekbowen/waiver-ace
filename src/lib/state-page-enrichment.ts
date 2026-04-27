@@ -126,34 +126,43 @@ export function businessImplications(p: StateWaiverLawPage): string {
   return `If you run a rental operation in ${p.state}, ${tier}. ${p.minorRules.split(".")[0]}. ${p.grossNegligence.split(".")[0]}. ${p.rentalSpecific.split(".")[0]}. Build your operating procedures around those three realities and the waiver becomes a multiplier on the rest of your risk controls — not a substitute for them.`;
 }
 
-/** State-specific industry hot-spot callout, derived from rentalSpecific text. */
+/** State-specific industry hot-spot callout, derived from rentalSpecific text.
+ *  Strip the known shared boilerplate suffix first so we don't match every state. */
 export function industryHotspot(p: StateWaiverLawPage): { label: string; body: string } | null {
-  const r = p.rentalSpecific.toLowerCase();
-  if (r.includes("ski") || r.includes("snow")) {
+  const cleaned = p.rentalSpecific
+    .replace(/\s*Always include the specific activity[\s\S]*$/i, "")
+    .toLowerCase();
+  const r = cleaned;
+  if (/\b(ski|snowboard|snowmobile|snow sports?)\b/.test(r)) {
     return {
       label: "Hot-spot industry: snow sports & ski rentals",
       body: `${p.state} sees outsized litigation volume around ski, snowboard, and snowmobile rentals. If that's your vertical, your waiver needs the state-specific snow-sports clauses — generic recreational language is routinely defeated here.`,
     };
   }
-  if (r.includes("watercraft") || r.includes("jet ski") || r.includes("boat") || r.includes("pwc")) {
+  if (/\b(watercraft|jet ?ski|boat|pwc|paddleboard|sailing|marine|livery)\b/.test(r)) {
     return {
       label: "Hot-spot industry: watercraft & PWC rentals",
       body: `${p.state} has codified livery rules for boat and jet ski rentals. Your waiver must reference those rules directly — courts treat a watercraft waiver that ignores the livery statute as incomplete.`,
     };
   }
-  if (r.includes("atv") || r.includes("off-road") || r.includes("ohv")) {
+  if (/\b(atv|off-?road|ohv|motorsport|utv)\b/.test(r)) {
     return {
       label: "Hot-spot industry: ATV / off-road rentals",
       body: `${p.state}'s ATV and off-road rental segment is a frequent source of waiver litigation. Add specific roll-over, terrain, and helmet-use language to your standard template.`,
     };
   }
-  if (r.includes("horse") || r.includes("equine")) {
+  if (/\b(horse|equine|equestrian)\b/.test(r)) {
     return {
       label: "Hot-spot industry: equine activities",
       body: `${p.state}'s equine activity statute typically pre-empts a chunk of liability — but only if your waiver references it by name and includes the statutory warning text.`,
     };
   }
   return null;
+}
+
+/** "a" vs "an" for state names starting with vowel sounds (Alabama, Indiana, Oregon...). */
+function aOrAn(state: string): string {
+  return /^[aeiou]/i.test(state) ? "an" : "a";
 }
 
 // =============================================================================
