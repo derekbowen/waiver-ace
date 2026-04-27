@@ -243,6 +243,29 @@ export function uniqueRentalSpecific(p: StateWaiverLawPage): string {
   const tail = hot
     ? ` For ${hot.label.replace(/^Hot-spot industry:\s*/i, "").trim()} specifically, your ${p.state} waiver should name the equipment, the operating environment, and the specific failure modes — generic "recreational risk" language is the single most common reason ${p.state} releases get pierced.`
     : ` Whatever the vertical, your ${p.state} release should name the equipment by category (e.g. "personal watercraft," "all-terrain vehicle," "rental bicycle"), the operating environment, and the specific failure modes — generic "recreational risk" language is the most common reason ${p.state} releases get pierced.`;
-  return `${opener}${tail}`;
+}
+
+/** Unique <title> per state — anchored on the leading authority. */
+export function uniqueMetaTitle(p: StateWaiverLawPage): string {
+  const lead = p.keyStatutes[0]?.name;
+  const tier =
+    p.enforceability === "strong"
+      ? "Enforceable"
+      : p.enforceability === "moderate"
+      ? "Enforceable with Limits"
+      : "Often Unenforceable";
+  const base = `${p.state} Liability Waivers: ${tier}`;
+  if (lead && base.length + lead.length + 4 < 70) return `${base} (${lead.split(/[(,]/)[0].trim()})`;
+  return `${base} | Rental Operator Guide`;
+}
+
+/** Unique meta description per state — names the leading case + tier verb. */
+export function uniqueMetaDescription(p: StateWaiverLawPage): string {
+  const lead = p.keyStatutes[0]?.name;
+  const lead2 = p.keyStatutes[1]?.name;
+  const verb = tierVerb(p);
+  const cite = lead ? `${lead}${lead2 ? `, ${lead2}` : ""}` : "the leading state authorities";
+  const desc = `${p.state} pre-injury releases are ${verb}. What ${cite} require, the gross-negligence carve-out, minor-signing rules, and a 7-step ${p.state} waiver playbook.`;
+  return desc.length <= 158 ? desc : desc.slice(0, 155) + "...";
 }
 
