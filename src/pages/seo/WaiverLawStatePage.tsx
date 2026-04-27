@@ -13,6 +13,12 @@ import {
   statePlaybook,
   businessImplications,
   industryHotspot,
+  uniqueOverview,
+  uniqueEnforcementSummary,
+  uniqueGrossNegligence,
+  uniqueRentalSpecific,
+  uniqueMetaTitle,
+  uniqueMetaDescription,
 } from "@/lib/state-page-enrichment";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
@@ -48,10 +54,14 @@ export default function WaiverLawStatePage() {
   const implications = businessImplications(page);
   const hotspot = industryHotspot(page);
 
+  const overview = uniqueOverview(page);
+  const metaTitle = uniqueMetaTitle(page);
+  const metaDescription = uniqueMetaDescription(page);
+
   return (
     <SeoPageLayout
-      metaTitle={page.metaTitle}
-      metaDescription={page.metaDescription}
+      metaTitle={metaTitle}
+      metaDescription={metaDescription}
       canonicalPath={`/waiver-laws/${page.slug ?? state}`}
     >
       <JsonLd
@@ -61,7 +71,7 @@ export default function WaiverLawStatePage() {
             { name: "Waiver Laws", url: "https://www.rentalwaivers.com/waiver-laws" },
             { name: `${page.state} Waiver Laws`, url },
           ]),
-          legalServiceSchema({ state: page.state, description: page.overview, url }),
+          legalServiceSchema({ state: page.state, description: overview, url }),
         ]}
       />
 
@@ -90,10 +100,14 @@ export default function WaiverLawStatePage() {
         </Card>
       </SeoSection>
 
-      <SeoSection title="Enforceability summary">
+      <SeoSection title={`${page.state} at a glance`}>
+        <p className="text-sm text-muted-foreground leading-relaxed">{overview}</p>
+      </SeoSection>
+
+      <SeoSection title="Enforceability summary" muted>
         <div className="flex gap-3 items-start">
           <Scale className={`h-5 w-5 shrink-0 mt-0.5 ${badgeColor[page.enforceability]}`} />
-          <p className="text-sm text-muted-foreground">{page.enforcementSummary}</p>
+          <p className="text-sm text-muted-foreground">{uniqueEnforcementSummary(page)}</p>
         </div>
       </SeoSection>
 
@@ -141,12 +155,12 @@ export default function WaiverLawStatePage() {
       <SeoSection title="Gross negligence — the line you cannot cross" muted>
         <div className="flex gap-3 items-start">
           <Shield className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-          <p className="text-sm text-muted-foreground">{page.grossNegligence}</p>
+          <p className="text-sm text-muted-foreground">{uniqueGrossNegligence(page)}</p>
         </div>
       </SeoSection>
 
       <SeoSection title={`${page.state}-specific rental considerations`}>
-        <p className="text-sm text-muted-foreground">{page.rentalSpecific}</p>
+        <p className="text-sm text-muted-foreground">{uniqueRentalSpecific(page)}</p>
       </SeoSection>
 
       {/* Numbered playbook — every step interpolates the state */}
