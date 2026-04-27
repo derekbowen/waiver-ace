@@ -246,18 +246,22 @@ export function uniqueRentalSpecific(p: StateWaiverLawPage): string {
   return `${opener}${tail}`;
 }
 
-/** Unique <title> per state — anchored on the leading authority. */
+/** Unique <title> per state — anchored on the leading case/statute name (which is
+ *  unique per state). Falls back to a tier-aware base if no authorities exist. */
 export function uniqueMetaTitle(p: StateWaiverLawPage): string {
   const lead = p.keyStatutes[0]?.name;
+  // Strip the trailing parenthetical "(Cal. 2008)" / "(Vt. 1995)" so the title stays compact.
+  const leadShort = lead ? lead.replace(/\s*\([^)]+\)\s*$/, "").trim() : "";
+  if (leadShort) {
+    return `${p.state} Waiver Law After ${leadShort} | Rental Operator Guide`;
+  }
   const tier =
     p.enforceability === "strong"
       ? "Enforceable"
       : p.enforceability === "moderate"
       ? "Enforceable with Limits"
       : "Often Unenforceable";
-  const base = `${p.state} Liability Waivers: ${tier}`;
-  if (lead && base.length + lead.length + 4 < 70) return `${base} (${lead.split(/[(,]/)[0].trim()})`;
-  return `${base} | Rental Operator Guide`;
+  return `${p.state} Liability Waivers: ${tier} | Rental Operator Guide`;
 }
 
 /** Unique meta description per state — names the leading case + tier verb. */
