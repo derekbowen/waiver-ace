@@ -19,7 +19,6 @@ import {
   breadcrumbSchema,
   legalServiceSchema,
   serviceSchema,
-  faqSchema,
 } from "@/lib/structured-data";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
@@ -86,7 +85,6 @@ export default function IndustryStateMatrixPage() {
             areaServed: state.state,
             url,
           }),
-          faqSchema(faqs),
         ]}
       />
 
