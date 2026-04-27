@@ -243,6 +243,7 @@ export function uniqueRentalSpecific(p: StateWaiverLawPage): string {
   const tail = hot
     ? ` For ${hot.label.replace(/^Hot-spot industry:\s*/i, "").trim()} specifically, your ${p.state} waiver should name the equipment, the operating environment, and the specific failure modes — generic "recreational risk" language is the single most common reason ${p.state} releases get pierced.`
     : ` Whatever the vertical, your ${p.state} release should name the equipment by category (e.g. "personal watercraft," "all-terrain vehicle," "rental bicycle"), the operating environment, and the specific failure modes — generic "recreational risk" language is the most common reason ${p.state} releases get pierced.`;
+  return `${opener}${tail}`;
 }
 
 /** Unique <title> per state — anchored on the leading authority. */
