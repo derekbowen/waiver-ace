@@ -54,10 +54,14 @@ export default function WaiverLawStatePage() {
   const implications = businessImplications(page);
   const hotspot = industryHotspot(page);
 
+  const overview = uniqueOverview(page);
+  const metaTitle = uniqueMetaTitle(page);
+  const metaDescription = uniqueMetaDescription(page);
+
   return (
     <SeoPageLayout
-      metaTitle={page.metaTitle}
-      metaDescription={page.metaDescription}
+      metaTitle={metaTitle}
+      metaDescription={metaDescription}
       canonicalPath={`/waiver-laws/${page.slug ?? state}`}
     >
       <JsonLd
@@ -67,7 +71,7 @@ export default function WaiverLawStatePage() {
             { name: "Waiver Laws", url: "https://www.rentalwaivers.com/waiver-laws" },
             { name: `${page.state} Waiver Laws`, url },
           ]),
-          legalServiceSchema({ state: page.state, description: page.overview, url }),
+          legalServiceSchema({ state: page.state, description: overview, url }),
         ]}
       />
 
