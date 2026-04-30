@@ -127,6 +127,5 @@ Deno.test({
       "envelope must be tagged so the RPC bypasses email_mismatch",
     );
   }
-  }
   },
 });
