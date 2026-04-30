@@ -1299,24 +1299,10 @@ export type Database = {
           template_name: string
         }[]
       }
-      get_envelope_by_token:
-        | {
-            Args: {
-              p_ip_address?: string
-              p_token: string
-              p_user_agent?: string
-            }
-            Returns: Json
-          }
-        | { Args: { p_token: string }; Returns: Json }
-        | {
-            Args: {
-              p_ip_address?: string
-              p_token: string
-              p_user_agent?: string
-            }
-            Returns: Json
-          }
+      get_envelope_by_token: {
+        Args: { p_ip_address?: string; p_token: string; p_user_agent?: string }
+        Returns: Json
+      }
       get_signer_waivers_authenticated: {
         Args: never
         Returns: {
