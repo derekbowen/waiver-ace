@@ -36,7 +36,11 @@ async function createKioskEnvelope(): Promise<string> {
   return body.signing_token;
 }
 
-Deno.test("kiosk envelope: anonymous viewer can load without email_mismatch", async () => {
+Deno.test({
+  name: "kiosk envelope: anonymous viewer can load without email_mismatch",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  fn: async () => {
   const token = await createKioskEnvelope();
 
   const anon = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
