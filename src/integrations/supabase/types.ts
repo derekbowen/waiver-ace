@@ -1300,6 +1300,14 @@ export type Database = {
         }[]
       }
       get_envelope_by_token:
+        | {
+            Args: {
+              p_ip_address?: string
+              p_token: string
+              p_user_agent?: string
+            }
+            Returns: Json
+          }
         | { Args: { p_token: string }; Returns: Json }
         | {
             Args: {
