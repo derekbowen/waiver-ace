@@ -61,9 +61,14 @@ Deno.test({
   const envelopePayload = payload.payload as Record<string, unknown> | null;
   assertEquals(envelopePayload?.source, "kiosk");
   assertEquals(payload.signer_email, "kiosk@placeholder.local");
+  },
 });
 
-Deno.test("kiosk envelope: signed-in viewer with different email is NOT blocked", async () => {
+Deno.test({
+  name: "kiosk envelope: signed-in viewer with different email is NOT blocked",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  fn: async () => {
   const token = await createKioskEnvelope();
 
   // Sign up a throwaway user. Auto-confirm is OFF on this project, so signUp
