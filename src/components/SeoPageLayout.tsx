@@ -50,26 +50,35 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, noind
     setMeta("twitter:title", metaTitle);
     setMeta("twitter:description", metaDescription);
 
-    const fullUrl = `https://www.rentalwaivers.com${effectiveCanonicalPath}`;
+    const baseUrl = `https://www.rentalwaivers.com${effectiveCanonicalPath}`;
+    const sep = effectiveCanonicalPath.includes("?") ? "&" : "?";
+    const langs = ["en", "es", "fr", "de", "pt", "zh", "ja", "ko", "it", "ar", "hi"];
+
+    // Self-canonicalize per language so each ?lang= variant is indexable
+    // independently, instead of being collapsed by GSC as
+    // "Alternate page with proper canonical tag".
+    const params = new URLSearchParams(location.search);
+    const activeLang = params.get("lang");
+    const isValidLang = !!activeLang && langs.includes(activeLang) && activeLang !== "en";
+    const selfUrl = isValidLang ? `${baseUrl}${sep}lang=${activeLang}` : baseUrl;
+
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) {
       canonical = document.createElement("link");
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute("href", fullUrl);
-    setMeta("og:url", fullUrl);
+    canonical.setAttribute("href", selfUrl);
+    setMeta("og:url", selfUrl);
 
     // Remove old hreflangs first (avoid duplicates across nav)
     document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
 
     // Only emit hreflangs for indexable pages
     if (!noindex) {
-      const sep = effectiveCanonicalPath.includes("?") ? "&" : "?";
-      const langs = ["en", "es", "fr", "de", "pt", "zh", "ja", "ko", "it", "ar", "hi"];
       const hreflangs = [
-        ...langs.map((lang) => ({ lang, href: lang === "en" ? fullUrl : `${fullUrl}${sep}lang=${lang}` })),
-        { lang: "x-default", href: fullUrl },
+        ...langs.map((lang) => ({ lang, href: lang === "en" ? baseUrl : `${baseUrl}${sep}lang=${lang}` })),
+        { lang: "x-default", href: baseUrl },
       ];
       hreflangs.forEach(({ lang, href }) => {
         const link = document.createElement("link");
