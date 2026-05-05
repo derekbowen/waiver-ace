@@ -88,7 +88,7 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, noind
         document.head.appendChild(link);
       });
     }
-  }, [metaTitle, metaDescription, effectiveCanonicalPath, noindex]);
+  }, [metaTitle, metaDescription, effectiveCanonicalPath, noindex, location.search]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
