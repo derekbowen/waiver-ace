@@ -1199,11 +1199,13 @@ export const blogArticles: BlogArticle[] = [
 ];
 
 import { longTailBlogArticles } from "./blog-data-longtail";
+import { blog2026Articles } from "./blog-data-2026";
 import { applyBlogExpansions } from "./blog-expansions";
 
 export const allBlogArticles: BlogArticle[] = [
   ...applyBlogExpansions(blogArticles),
   ...longTailBlogArticles,
+  ...blog2026Articles,
 ];
 
 export function getBlogArticle(slug: string): BlogArticle | undefined {
