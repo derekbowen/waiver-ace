@@ -4,9 +4,27 @@ import { getBlogArticle, getRelatedArticles } from "@/lib/blog-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { AiQuestionBox } from "@/components/AiQuestionBox";
 import { InternalLinks } from "@/components/InternalLinks";
+import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Clock, User, Calendar, ArrowRight } from "lucide-react";
 import NotFound from "@/pages/NotFound";
+
+const SITE_URL = "https://www.rentalwaivers.com";
+const PUBLISHER = {
+  "@type": "Organization",
+  name: "Rental Waivers",
+  url: SITE_URL,
+  logo: {
+    "@type": "ImageObject",
+    url: `${SITE_URL}/icon-512.png`,
+    width: 512,
+    height: 512,
+  },
+};
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
 
 export default function BlogArticlePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -15,22 +33,50 @@ export default function BlogArticlePage() {
   if (!article) return <NotFound />;
 
   const related = getRelatedArticles(article.relatedSlugs);
+  const url = `${SITE_URL}/blog/${article.slug}`;
+  const plainBody = article.sections.map((s) => stripHtml(s.content)).join(" ");
+  const wordCount = plainBody.split(/\s+/).filter(Boolean).length;
+  const keywords = [
+    article.category,
+    "liability waiver",
+    "digital waiver",
+    "rental waiver",
+    "release of liability",
+  ].join(", ");
 
-  const articleJsonLd = {
+  const blogPostingJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
+    "@id": `${url}#article`,
     headline: article.title,
+    name: article.title,
     description: article.metaDescription,
-    author: { "@type": "Organization", name: article.author },
+    abstract: article.featuredSnippet,
+    articleBody: plainBody,
+    wordCount,
+    articleSection: article.category,
+    keywords,
+    inLanguage: "en-US",
+    image: [`${SITE_URL}/og-image.png`],
+    author: {
+      "@type": "Organization",
+      name: article.author,
+      url: SITE_URL,
+    },
     datePublished: article.publishedDate,
     dateModified: article.updatedDate,
-    publisher: {
-      "@type": "Organization",
-      name: "Rental Waivers",
-      url: "https://www.rentalwaivers.com",
-    },
-    mainEntityOfPage: `https://www.rentalwaivers.com/blog/${article.slug}`,
+    publisher: PUBLISHER,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    url,
   };
+
+  const breadcrumbs = breadcrumbSchema([
+    { name: "Home", url: `${SITE_URL}/` },
+    { name: "Blog", url: `${SITE_URL}/blog` },
+    { name: article.title, url },
+  ]);
+
+  const faq = article.faq?.length ? faqSchema(article.faq) : null;
 
   return (
     <SeoPageLayout
@@ -38,19 +84,7 @@ export default function BlogArticlePage() {
       metaDescription={article.metaDescription}
       canonicalPath={`/blog/${article.slug}`}
     >
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            breadcrumbSchema([
-              { name: "Home", url: "https://www.rentalwaivers.com/" },
-              { name: "Blog", url: "https://www.rentalwaivers.com/blog" },
-              { name: article.title, url: `https://www.rentalwaivers.com/blog/${article.slug}` },
-            ])
-          ),
-        }}
-      />
+      <JsonLd data={faq ? [blogPostingJsonLd, breadcrumbs, faq] : [blogPostingJsonLd, breadcrumbs]} />
 
       {/* Hero */}
       <header className="container max-w-3xl py-12 md:py-20">
