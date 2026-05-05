@@ -129,3 +129,76 @@ Deno.test({
   }
   },
 });
+
+// Dedicated end-to-end test: a logged-in viewer with a different email
+// loads the kiosk signing page and the RPC returns the full envelope payload
+// with NO email_mismatch error. Uses the service role to create a
+// pre-confirmed user so the signed-in path is exercised regardless of the
+// project's email-confirmation setting.
+Deno.test({
+  name: "kiosk envelope: logged-in viewer (different email) loads signing page without email_mismatch",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  ignore: !Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+  fn: async () => {
+    const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const token = await createKioskEnvelope();
+
+    // 1. Provision a confirmed throwaway user via the admin API.
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+    const testEmail = `kiosk-viewer-${crypto.randomUUID()}@example.com`;
+    const password = `Pw_${crypto.randomUUID()}`;
+    const { data: created, error: createErr } = await admin.auth.admin.createUser({
+      email: testEmail,
+      password,
+      email_confirm: true,
+    });
+    assert(!createErr, `admin createUser failed: ${createErr?.message}`);
+    assert(created.user, "expected created user");
+
+    try {
+      // 2. Sign that user in to obtain a real JWT.
+      const anon = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { data: signIn, error: signInErr } = await anon.auth.signInWithPassword({
+        email: testEmail,
+        password,
+      });
+      assert(!signInErr, `signIn failed: ${signInErr?.message}`);
+      assert(signIn.session, "expected session for confirmed user");
+      assertNotEquals(testEmail, "kiosk@placeholder.local");
+
+      // 3. Call the same RPC the signing page uses, with the user's JWT.
+      const authed = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: `Bearer ${signIn.session.access_token}` } },
+      });
+      const { data, error } = await authed.rpc("get_envelope_by_token", {
+        p_token: token,
+        p_ip_address: "127.0.0.1",
+        p_user_agent: "deno-test-logged-in-viewer",
+      });
+
+      // 4. Assert the signing page would load successfully:
+      //    - no transport error
+      //    - no email_mismatch (the regression we're guarding against)
+      //    - full envelope payload returned (template_content + signing_token)
+      assert(!error, `RPC error: ${error?.message}`);
+      assert(data, "expected envelope payload");
+      const payload = data as Record<string, unknown>;
+      assertNotEquals(
+        payload.error,
+        "email_mismatch",
+        "kiosk envelope must NOT return email_mismatch for a signed-in viewer with a different email",
+      );
+      assertEquals(payload.error, undefined, `unexpected RPC error: ${JSON.stringify(payload)}`);
+      assertEquals(payload.signing_token, token);
+      assert(payload.template_content, "signing page needs template_content to render");
+
+      await authed.auth.signOut();
+    } finally {
+      // Clean up the throwaway user.
+      await admin.auth.admin.deleteUser(created.user!.id);
+    }
+  },
+});
