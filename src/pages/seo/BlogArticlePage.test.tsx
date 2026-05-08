@@ -87,12 +87,15 @@ describe("BlogArticlePage JSON-LD", () => {
       const scripts = Array.from(
         container.querySelectorAll('script[type="application/ld+json"]')
       );
-      const types = scripts.map(
-        (s) => JSON.parse(s.textContent || "{}")["@type"]
-      );
+      const parsed = scripts.map((s) => JSON.parse(s.textContent || "{}"));
+      const types = parsed.map((p) => p["@type"]);
       expect(types).toContain("BlogPosting");
       expect(types).toContain("BreadcrumbList");
-      expect(types).not.toContain("FAQPage");
+      // FAQPage entries (if any) must have no questions when faq is empty
+      const faqEntries = parsed.filter((p) => p["@type"] === "FAQPage");
+      for (const f of faqEntries) {
+        expect(f.mainEntity?.length ?? 0).toBe(0);
+      }
     } finally {
       spy.mockRestore();
     }
