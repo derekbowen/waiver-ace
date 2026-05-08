@@ -76,10 +76,11 @@ describe("BlogArticlePage JSON-LD", () => {
 
   it("omits FAQPage JSON-LD when article has no FAQ", () => {
     const noFaqArticle = { ...sample!, slug: "__test_no_faq__", faq: [] };
-    const mod = require("@/lib/blog-data");
-    const original = mod.getBlogArticle;
-    mod.getBlogArticle = (s: string) =>
-      s === noFaqArticle.slug ? noFaqArticle : original(s);
+    const spy = vi
+      .spyOn(blogData, "getBlogArticle")
+      .mockImplementation((s: string) =>
+        s === noFaqArticle.slug ? noFaqArticle : undefined
+      );
 
     try {
       const { container } = renderArticle(noFaqArticle.slug);
@@ -93,7 +94,7 @@ describe("BlogArticlePage JSON-LD", () => {
       expect(types).toContain("BreadcrumbList");
       expect(types).not.toContain("FAQPage");
     } finally {
-      mod.getBlogArticle = original;
+      spy.mockRestore();
     }
   });
 });
