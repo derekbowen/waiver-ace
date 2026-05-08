@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { render } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import BlogArticlePage from "./BlogArticlePage";
+import * as blogData from "@/lib/blog-data";
 import { allBlogArticles } from "@/lib/blog-data";
 
 // Pick the first article that has FAQ entries.
