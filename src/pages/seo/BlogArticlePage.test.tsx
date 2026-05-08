@@ -16,13 +16,11 @@ vi.mock("@/components/InternalLinks", () => ({
 
 function renderArticle(slug: string) {
   return render(
-    <HelmetProvider>
-      <MemoryRouter initialEntries={[`/blog/${slug}`]}>
-        <Routes>
-          <Route path="/blog/:slug" element={<BlogArticlePage />} />
-        </Routes>
-      </MemoryRouter>
-    </HelmetProvider>
+    <MemoryRouter initialEntries={[`/blog/${slug}`]}>
+      <Routes>
+        <Route path="/blog/:slug" element={<BlogArticlePage />} />
+      </Routes>
+    </MemoryRouter>
   );
 }
 
