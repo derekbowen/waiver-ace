@@ -141,13 +141,13 @@ export default function Landing() {
       <section className="pt-24 pb-12 md:pt-32 md:pb-16">
         <div className="container max-w-3xl text-center">
           <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-5">
-            Stop Losing Guests to
+            Online Waivers for Rentals —
             <br />
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Unsigned Waivers</span>
+            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Sign in 60 Seconds</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
-            Send a link. They sign in 60 seconds on their phone. You get a legally-binding PDF. 6¢ each. No monthly fee.
+            Legally binding digital liability waivers for pool hosts, bounce houses, kayak tours, and vacation rentals. Send a link, your guest signs on their phone, you get a tamper-proof PDF. Just 6¢ per waiver — no monthly fees.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-3">
