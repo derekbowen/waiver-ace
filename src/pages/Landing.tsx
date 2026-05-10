@@ -188,7 +188,7 @@ export default function Landing() {
       <section id="how-it-works" className="py-16 md:py-20">
         <div className="container max-w-3xl text-center">
           <h2 className="font-heading text-2xl md:text-3xl font-bold mb-10">
-            Three steps. That's it.
+            How Rental Waivers Work
           </h2>
 
           <div className="grid gap-8 md:grid-cols-3 text-center">
