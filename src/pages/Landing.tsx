@@ -606,6 +606,14 @@ export default function Landing() {
         </div>
       </section>
 
+      <JsonLd
+        data={[
+          organizationSchema(),
+          softwareApplicationSchema(),
+          faqSchema(LANDING_FAQS),
+        ]}
+      />
+
       <div className="mt-auto">
         <Footer />
       </div>
