@@ -273,7 +273,7 @@ export default function Landing() {
       <section className="py-16 md:py-20">
         <div className="container max-w-3xl">
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
-            Everything included. No upsells.
+            Digital waiver features — everything included
           </h2>
           <p className="text-center text-muted-foreground mb-10">
             Other platforms lock features behind premium tiers. We include everything.
