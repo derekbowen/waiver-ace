@@ -320,7 +320,7 @@ export default function Landing() {
                 <Users className="h-3.5 w-3.5" /> Group Waivers
               </div>
               <h2 className="font-heading text-2xl md:text-3xl font-bold mb-3">
-                One link for the whole group
+                Group waiver links — one link for the whole party
               </h2>
               <p className="text-muted-foreground mb-5">
                 Family of 6 booked your pool? Send one link. Each person signs on their own phone. You see every signature in real time.
