@@ -561,6 +561,28 @@ export default function Landing() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
+          FAQ — Featured-snippet bait
+      ═══════════════════════════════════════════════════════════ */}
+      <section id="faq" className="border-t bg-muted/20 py-16 md:py-20">
+        <div className="container max-w-3xl">
+          <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
+            Online waiver FAQs
+          </h2>
+          <p className="text-center text-muted-foreground mb-10">
+            Everything hosts ask before switching to digital liability waivers.
+          </p>
+          <div className="space-y-6">
+            {LANDING_FAQS.map((item) => (
+              <div key={item.question}>
+                <h3 className="font-heading font-semibold text-base mb-1.5">{item.question}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
           FINAL CTA
       ═══════════════════════════════════════════════════════════ */}
       <section className="bg-primary py-16 md:py-20">
