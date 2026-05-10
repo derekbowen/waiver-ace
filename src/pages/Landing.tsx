@@ -19,8 +19,53 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { CREDIT_PACKAGES } from "@/lib/credit-packages";
+import { JsonLd } from "@/components/JsonLd";
+import { faqSchema, softwareApplicationSchema, organizationSchema } from "@/lib/structured-data";
 import logo from "@/assets/logo.png";
 import { useState } from "react";
+
+const LANDING_FAQS = [
+  {
+    question: "How do online waivers work?",
+    answer:
+      "You create a digital liability waiver template once, then send a signing link by email, text, or QR code. Your guest opens the link on their phone, reads the waiver, draws their signature, and submits — usually in under 60 seconds. You instantly receive a tamper-proof PDF with a full audit trail (IP, timestamp, device).",
+  },
+  {
+    question: "Are digital waivers legally binding?",
+    answer:
+      "Yes. Online waivers signed through Rental Waivers are legally binding under the U.S. ESIGN Act and UETA, and equivalent e-signature laws in most countries. Each signed waiver includes a SHA-256 hash, signer IP address, timestamp, device fingerprint, and consent logs that hold up in court.",
+  },
+  {
+    question: "Can multiple people sign one waiver link?",
+    answer:
+      "Yes — that's our group waiver feature. Send one link to a family, party, or tour group, and each person signs individually on their own phone. You see every signature in real time and get one consolidated record per booking.",
+  },
+  {
+    question: "Do I need to pay a monthly fee?",
+    answer:
+      "No. Rental Waivers is pay-per-waiver only. Credits start at 6¢ per signed waiver and never expire. There are no subscriptions, no per-seat fees, and no premium tiers — every feature is included on every account.",
+  },
+  {
+    question: "What kinds of rentals is this for?",
+    answer:
+      "Pool rentals, hot tub rentals, vacation rentals, bounce house and party equipment, kayak and paddleboard tours, ATV and equipment rentals, escape rooms, and any other recreation or rental business that needs a liability waiver before guests participate.",
+  },
+  {
+    question: "Can I use it as a kiosk for walk-in guests?",
+    answer:
+      "Yes. Generate a QR code or kiosk link and let walk-ins sign on a tablet or their own phone — no login required. Each kiosk session creates its own envelope with a complete audit trail.",
+  },
+  {
+    question: "Does it work with Airbnb, VRBO, and Swimply?",
+    answer:
+      "Yes. Send waiver links straight from your booking confirmation email or SMS, embed the signing flow on your listing page, or trigger waivers automatically through our REST API and webhooks (including native Sharetribe support).",
+  },
+  {
+    question: "How fast can I get started?",
+    answer:
+      "Most hosts send their first waiver in under 5 minutes. Pick a pre-built template, customize it, and share the link. Every new account starts with 250 free credits — no credit card required.",
+  },
+];
 
 export default function Landing() {
   const { user, loading } = useAuth();
