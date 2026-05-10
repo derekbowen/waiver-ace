@@ -224,10 +224,10 @@ export default function Landing() {
       <section className="border-t bg-muted/20 py-16 md:py-20">
         <div className="container max-w-4xl">
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
-            Built for rental & recreation businesses
+            Online waivers for pool rentals, bounce houses, kayak tours & more
           </h2>
           <p className="text-center text-muted-foreground mb-10">
-            Pre-built templates. Customize and start sending in minutes.
+            Pre-built digital waiver templates by industry. Customize and start sending in minutes.
           </p>
 
           <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
