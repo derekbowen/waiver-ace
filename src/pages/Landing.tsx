@@ -19,8 +19,53 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { CREDIT_PACKAGES } from "@/lib/credit-packages";
+import { JsonLd } from "@/components/JsonLd";
+import { faqSchema, softwareApplicationSchema, organizationSchema } from "@/lib/structured-data";
 import logo from "@/assets/logo.png";
 import { useState } from "react";
+
+const LANDING_FAQS = [
+  {
+    question: "How do online waivers work?",
+    answer:
+      "You create a digital liability waiver template once, then send a signing link by email, text, or QR code. Your guest opens the link on their phone, reads the waiver, draws their signature, and submits — usually in under 60 seconds. You instantly receive a tamper-proof PDF with a full audit trail (IP, timestamp, device).",
+  },
+  {
+    question: "Are digital waivers legally binding?",
+    answer:
+      "Yes. Online waivers signed through Rental Waivers are legally binding under the U.S. ESIGN Act and UETA, and equivalent e-signature laws in most countries. Each signed waiver includes a SHA-256 hash, signer IP address, timestamp, device fingerprint, and consent logs that hold up in court.",
+  },
+  {
+    question: "Can multiple people sign one waiver link?",
+    answer:
+      "Yes — that's our group waiver feature. Send one link to a family, party, or tour group, and each person signs individually on their own phone. You see every signature in real time and get one consolidated record per booking.",
+  },
+  {
+    question: "Do I need to pay a monthly fee?",
+    answer:
+      "No. Rental Waivers is pay-per-waiver only. Credits start at 6¢ per signed waiver and never expire. There are no subscriptions, no per-seat fees, and no premium tiers — every feature is included on every account.",
+  },
+  {
+    question: "What kinds of rentals is this for?",
+    answer:
+      "Pool rentals, hot tub rentals, vacation rentals, bounce house and party equipment, kayak and paddleboard tours, ATV and equipment rentals, escape rooms, and any other recreation or rental business that needs a liability waiver before guests participate.",
+  },
+  {
+    question: "Can I use it as a kiosk for walk-in guests?",
+    answer:
+      "Yes. Generate a QR code or kiosk link and let walk-ins sign on a tablet or their own phone — no login required. Each kiosk session creates its own envelope with a complete audit trail.",
+  },
+  {
+    question: "Does it work with Airbnb, VRBO, and Swimply?",
+    answer:
+      "Yes. Send waiver links straight from your booking confirmation email or SMS, embed the signing flow on your listing page, or trigger waivers automatically through our REST API and webhooks (including native Sharetribe support).",
+  },
+  {
+    question: "How fast can I get started?",
+    answer:
+      "Most hosts send their first waiver in under 5 minutes. Pick a pre-built template, customize it, and share the link. Every new account starts with 250 free credits — no credit card required.",
+  },
+];
 
 export default function Landing() {
   const { user, loading } = useAuth();
@@ -96,13 +141,13 @@ export default function Landing() {
       <section className="pt-24 pb-12 md:pt-32 md:pb-16">
         <div className="container max-w-3xl text-center">
           <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-5">
-            Stop Losing Guests to
+            Online Waivers for Rentals —
             <br />
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Unsigned Waivers</span>
+            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Sign in 60 Seconds</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
-            Send a link. They sign in 60 seconds on their phone. You get a legally-binding PDF. 6¢ each. No monthly fee.
+            Legally binding digital liability waivers for pool hosts, bounce houses, kayak tours, and vacation rentals. Send a link, your guest signs on their phone, you get a tamper-proof PDF. Just 6¢ per waiver — no monthly fees.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-3">
@@ -143,7 +188,7 @@ export default function Landing() {
       <section id="how-it-works" className="py-16 md:py-20">
         <div className="container max-w-3xl text-center">
           <h2 className="font-heading text-2xl md:text-3xl font-bold mb-10">
-            Three steps. That's it.
+            How Rental Waivers Work
           </h2>
 
           <div className="grid gap-8 md:grid-cols-3 text-center">
@@ -179,10 +224,10 @@ export default function Landing() {
       <section className="border-t bg-muted/20 py-16 md:py-20">
         <div className="container max-w-4xl">
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
-            Built for rental & recreation businesses
+            Online waivers for pool rentals, bounce houses, kayak tours & more
           </h2>
           <p className="text-center text-muted-foreground mb-10">
-            Pre-built templates. Customize and start sending in minutes.
+            Pre-built digital waiver templates by industry. Customize and start sending in minutes.
           </p>
 
           <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
@@ -228,7 +273,7 @@ export default function Landing() {
       <section className="py-16 md:py-20">
         <div className="container max-w-3xl">
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
-            Everything included. No upsells.
+            Digital waiver features — everything included
           </h2>
           <p className="text-center text-muted-foreground mb-10">
             Other platforms lock features behind premium tiers. We include everything.
@@ -275,7 +320,7 @@ export default function Landing() {
                 <Users className="h-3.5 w-3.5" /> Group Waivers
               </div>
               <h2 className="font-heading text-2xl md:text-3xl font-bold mb-3">
-                One link for the whole group
+                Group waiver links — one link for the whole party
               </h2>
               <p className="text-muted-foreground mb-5">
                 Family of 6 booked your pool? Send one link. Each person signs on their own phone. You see every signature in real time.
@@ -516,6 +561,28 @@ export default function Landing() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
+          FAQ — Featured-snippet bait
+      ═══════════════════════════════════════════════════════════ */}
+      <section id="faq" className="border-t bg-muted/20 py-16 md:py-20">
+        <div className="container max-w-3xl">
+          <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
+            Online waiver FAQs
+          </h2>
+          <p className="text-center text-muted-foreground mb-10">
+            Everything hosts ask before switching to digital liability waivers.
+          </p>
+          <div className="space-y-6">
+            {LANDING_FAQS.map((item) => (
+              <div key={item.question}>
+                <h3 className="font-heading font-semibold text-base mb-1.5">{item.question}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
           FINAL CTA
       ═══════════════════════════════════════════════════════════ */}
       <section className="bg-primary py-16 md:py-20">
@@ -538,6 +605,14 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      <JsonLd
+        data={[
+          organizationSchema(),
+          softwareApplicationSchema(),
+          faqSchema(LANDING_FAQS),
+        ]}
+      />
 
       <div className="mt-auto">
         <Footer />
