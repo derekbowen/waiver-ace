@@ -3,19 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
-  Shield, Users, Send, FileText, ArrowRight, CheckCircle, Clock,
-  Smartphone, Droplets, Home, Wrench, PartyPopper, Zap,
-  DollarSign, ChevronDown, Menu, Star, QrCode, Code,
-  FileSearch, FolderOpen, AlertTriangle, Sparkles,
-  BarChart3, Camera, ScanSearch, Upload
+  ArrowRight, ArrowUpRight, CheckCircle, Menu,
+  Droplets, Home, Wrench, PartyPopper,
+  ScanSearch, BarChart3, FolderOpen, Plus, Minus,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { CREDIT_PACKAGES } from "@/lib/credit-packages";
@@ -48,15 +39,10 @@ const LANDING_FAQS = [
   {
     question: "What kinds of rentals is this for?",
     answer:
-      "Pool rentals, hot tub rentals, vacation rentals, bounce house and party equipment, kayak and paddleboard tours, ATV and equipment rentals, escape rooms, and any other recreation or rental business that needs a liability waiver before guests participate.",
+      "Pool rentals, bounce houses, kayak and paddleboard tours, ATV and equipment rentals, vacation rentals (Airbnb, VRBO), party rentals, escape rooms, and any business that needs a signed liability waiver before service.",
   },
   {
-    question: "Can I use it as a kiosk for walk-in guests?",
-    answer:
-      "Yes. Generate a QR code or kiosk link and let walk-ins sign on a tablet or their own phone — no login required. Each kiosk session creates its own envelope with a complete audit trail.",
-  },
-  {
-    question: "Does it work with Airbnb, VRBO, and Swimply?",
+    question: "Can I use this with Airbnb, VRBO, or my booking platform?",
     answer:
       "Yes. Send waiver links straight from your booking confirmation email or SMS, embed the signing flow on your listing page, or trigger waivers automatically through our REST API and webhooks (including native Sharetribe support).",
   },
@@ -67,6 +53,37 @@ const LANDING_FAQS = [
   },
 ];
 
+function FaqItem({ q, a, idx }: { q: string; a: string; idx: number }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-t border-hairline">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-start justify-between gap-6 py-7 text-left group"
+        aria-expanded={open}
+      >
+        <div className="flex items-start gap-6 md:gap-10">
+          <span className="font-heading text-xs text-muted-foreground tabular-nums pt-1.5 shrink-0">
+            {String(idx + 1).padStart(2, "0")}
+          </span>
+          <h3 className="font-heading text-lg md:text-xl font-medium tracking-tight text-ink group-hover:text-ochre transition-colors">
+            {q}
+          </h3>
+        </div>
+        <span className="shrink-0 mt-1.5 text-muted-foreground">
+          {open ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+        </span>
+      </button>
+      {open && (
+        <div className="pb-8 pl-0 md:pl-16 pr-10 -mt-2">
+          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl">{a}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Landing() {
   const { user, loading } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -76,58 +93,49 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* ── Nav ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-md">
+    <div className="min-h-screen bg-background flex flex-col text-ink antialiased">
+      {/* ─────────────── NAV ─────────────── */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-hairline/60 bg-background/75 backdrop-blur-xl">
         <div className="container flex h-14 items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Rental Waivers" className="h-7 w-7" />
-            <span className="font-heading text-base font-bold tracking-tight">Rental Waivers</span>
+          <Link to="/" className="flex items-center gap-2.5">
+            <img src={logo} alt="Rental Waivers" className="h-6 w-6" />
+            <span className="font-heading text-[15px] font-semibold tracking-tight">Rental Waivers</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1 text-sm">
-                  Product <ChevronDown className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-52">
-                <DropdownMenuItem asChild><Link to="/waiver-software" className="cursor-pointer"><Shield className="h-4 w-4 mr-2" /> Waiver Software</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/waiver-templates" className="cursor-pointer"><FileText className="h-4 w-4 mr-2" /> Templates</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/industries" className="cursor-pointer"><Wrench className="h-4 w-4 mr-2" /> Industries</Link></DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link to="/docs" className="cursor-pointer"><Code className="h-4 w-4 mr-2" /> API Docs</Link></DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <a href="#pricing"><Button variant="ghost" size="sm" className="text-sm">Pricing</Button></a>
-            <Link to="/blog"><Button variant="ghost" size="sm" className="text-sm">Blog</Button></Link>
-            <Link to="/compare"><Button variant="ghost" size="sm" className="text-sm">Compare</Button></Link>
-            <LanguageSwitcher />
-            <Link to="/login"><Button variant="ghost" size="sm" className="text-sm">Sign in</Button></Link>
-            <Link to="/login"><Button size="sm">Get Started Free</Button></Link>
+          <nav className="hidden md:flex items-center gap-7 text-[13px] text-muted-foreground">
+            <Link to="/waiver-software" className="hover:text-ink transition-colors">Product</Link>
+            <Link to="/industries" className="hover:text-ink transition-colors">Industries</Link>
+            <Link to="/waiver-templates" className="hover:text-ink transition-colors">Templates</Link>
+            <a href="#pricing" className="hover:text-ink transition-colors">Pricing</a>
+            <Link to="/blog" className="hover:text-ink transition-colors">Journal</Link>
+            <Link to="/docs" className="hover:text-ink transition-colors">Developers</Link>
           </nav>
 
+          <div className="hidden md:flex items-center gap-2">
+            <LanguageSwitcher />
+            <Link to="/login" className="text-[13px] text-muted-foreground hover:text-ink transition-colors px-2">Sign in</Link>
+            <Link to="/login">
+              <Button size="sm" className="rounded-full px-4 h-8 text-[13px] font-medium">Get started</Button>
+            </Link>
+          </div>
+
           <div className="flex md:hidden items-center gap-2">
-            <Link to="/login"><Button size="sm">Get Started</Button></Link>
+            <Link to="/login">
+              <Button size="sm" className="rounded-full px-4 h-8 text-[13px]">Get started</Button>
+            </Link>
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild><Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button></SheetTrigger>
-              <SheetContent side="right" className="w-72 pt-12">
-                <nav className="flex flex-col gap-1">
-                  <Link to="/waiver-software" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Waiver Software</Link>
-                  <Link to="/waiver-templates" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Templates</Link>
-                  <Link to="/industries" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Industries</Link>
-                  <Link to="/blog" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Blog</Link>
-                  <Link to="/compare" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Compare</Link>
-                  <Link to="/docs" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">API Docs</Link>
-                  <div className="my-2 border-t" />
-                  <a href="#pricing" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Pricing</a>
-                  <Link to="/my-waivers" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">My Waivers</Link>
-                  <Link to="/waiver-laws" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent">Waiver Laws</Link>
-                  <div className="my-2 border-t" />
-                  <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-2 text-sm rounded-md hover:bg-accent font-medium">Sign In</Link>
-                  <div className="my-2 border-t" />
-                  <div className="px-3"><LanguageSwitcher variant="outline" /></div>
+              <SheetContent side="right" className="w-72 pt-12 bg-background">
+                <nav className="flex flex-col gap-1 font-heading">
+                  <Link to="/waiver-software" onClick={() => setMobileOpen(false)} className="px-3 py-2.5 text-base">Product</Link>
+                  <Link to="/industries" onClick={() => setMobileOpen(false)} className="px-3 py-2.5 text-base">Industries</Link>
+                  <Link to="/waiver-templates" onClick={() => setMobileOpen(false)} className="px-3 py-2.5 text-base">Templates</Link>
+                  <a href="#pricing" onClick={() => setMobileOpen(false)} className="px-3 py-2.5 text-base">Pricing</a>
+                  <Link to="/blog" onClick={() => setMobileOpen(false)} className="px-3 py-2.5 text-base">Journal</Link>
+                  <Link to="/docs" onClick={() => setMobileOpen(false)} className="px-3 py-2.5 text-base">Developers</Link>
+                  <div className="my-3 border-t border-hairline" />
+                  <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-2.5 text-base">Sign in</Link>
+                  <div className="px-3 mt-3"><LanguageSwitcher variant="outline" /></div>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -135,333 +143,402 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* ═══════════════════════════════════════════════════════════
-          HERO — One clear message above the fold
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="pt-24 pb-12 md:pt-32 md:pb-16">
-        <div className="container max-w-3xl text-center">
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-5">
-            Online Waivers for Rentals —
+      {/* ─────────────── HERO ─────────────── */}
+      <section className="pt-32 md:pt-40 pb-16 md:pb-24 grain">
+        <div className="container">
+          {/* Eyebrow */}
+          <div className="flex items-center justify-between mb-12 md:mb-20">
+            <span className="eyebrow">Vol. 01 — Issue 26</span>
+            <span className="eyebrow hidden sm:inline">Liability waivers, refined.</span>
+            <span className="eyebrow tabular-nums">№ 0001</span>
+          </div>
+
+          {/* Display headline */}
+          <h1 className="display-light text-[44px] sm:text-7xl md:text-[112px] lg:text-[140px] text-ink">
+            Online waivers,
             <br />
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Sign in 60 Seconds</span>
+            <span className="italic font-light text-ochre">effortless.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
-            Legally binding digital liability waivers for pool hosts, bounce houses, kayak tours, and vacation rentals. Send a link, your guest signs on their phone, you get a tamper-proof PDF. Just 6¢ per waiver — no monthly fees.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-3">
-            <Link to="/login">
-              <Button size="lg" className="gap-2 text-base px-8 py-6 shadow-lg bg-[hsl(220,90%,45%)] hover:bg-[hsl(220,90%,38%)] text-white border-0 w-full sm:w-auto">
-                Send Your First Waiver Free <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-          <p className="text-xs text-muted-foreground">No credit card. No monthly fee. Cancel anytime.</p>
-        </div>
-      </section>
-
-      {/* ── Stats strip ── */}
-      <section className="border-y bg-muted/30 py-6">
-        <div className="container">
-          <div className="grid grid-cols-3 gap-4 text-center max-w-lg mx-auto">
-            <div>
-              <p className="font-heading text-2xl md:text-3xl font-bold text-primary">60s</p>
-              <p className="text-xs text-muted-foreground">signing time</p>
+          {/* Subhead row */}
+          <div className="mt-12 md:mt-16 grid md:grid-cols-12 gap-8 md:gap-12 items-end">
+            <div className="md:col-span-7">
+              <div className="h-px hairline mb-6" />
+              <p className="text-lg md:text-xl text-ink/80 leading-snug max-w-xl font-light">
+                Legally binding digital liability waivers for pool hosts, bounce houses, kayak tours and vacation rentals. Send a link, your guest signs in sixty seconds, you keep a tamper-proof record.
+              </p>
             </div>
-            <div>
-              <p className="font-heading text-2xl md:text-3xl font-bold text-primary">6¢</p>
-              <p className="text-xs text-muted-foreground">per waiver</p>
-            </div>
-            <div>
-              <p className="font-heading text-2xl md:text-3xl font-bold text-primary">$0</p>
-              <p className="text-xs text-muted-foreground">monthly fees</p>
+            <div className="md:col-span-5 md:text-right">
+              <div className="flex flex-col sm:flex-row md:flex-col md:items-end gap-3 md:gap-4">
+                <Link to="/login">
+                  <Button size="lg" className="rounded-full h-12 px-7 text-[15px] font-medium gap-2 bg-ink hover:bg-ink/90">
+                    Send your first waiver <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link to="#how" className="text-[13px] text-muted-foreground hover:text-ink underline underline-offset-4 decoration-hairline">
+                  See how it works
+                </Link>
+              </div>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-6">Used by pool hosts, bounce house rentals, kayak tours, and escape rooms across the US.</p>
-        </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          HOW IT WORKS — 3 steps, ultra simple
-      ═══════════════════════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-16 md:py-20">
-        <div className="container max-w-3xl text-center">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold mb-10">
-            How Rental Waivers Work
-          </h2>
-
-          <div className="grid gap-8 md:grid-cols-3 text-center">
+          {/* Hero spec strip */}
+          <div className="mt-20 md:mt-28 grid grid-cols-3 border-y border-hairline">
             {[
-              { num: "1", icon: FileText, title: "Create a template", desc: "Use a pre-built waiver or write your own. Takes 2 minutes." },
-              { num: "2", icon: Send, title: "Send the link", desc: "Email, text, or QR code. Works with any booking platform." },
-              { num: "3", icon: CheckCircle, title: "Guest signs", desc: "They sign on their phone. You get a PDF with audit trail." },
-            ].map((s) => (
-              <div key={s.num}>
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <s.icon className="h-6 w-6 text-primary" />
-                </div>
-                <div className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold mb-2">{s.num}</div>
-                <h3 className="font-heading font-semibold mb-1">{s.title}</h3>
-                <p className="text-sm text-muted-foreground">{s.desc}</p>
+              { k: "Sign time", v: "60s", note: "average" },
+              { k: "Per waiver", v: "6¢", note: "no monthly fee" },
+              { k: "Free credits", v: "250", note: "on signup" },
+            ].map((s, i) => (
+              <div key={s.k} className={`py-8 md:py-10 ${i > 0 ? "border-l border-hairline" : ""} px-3 md:px-6`}>
+                <p className="eyebrow mb-3 md:mb-4">{s.k}</p>
+                <p className="display-light text-4xl md:text-6xl text-ink tabular-nums">{s.v}</p>
+                <p className="mt-2 text-xs md:text-sm text-muted-foreground">{s.note}</p>
               </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-10">
-            <Link to="/login">
-              <Button className="gap-2" size="lg">
-                Try It Free <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+      {/* ─────────────── PRODUCT VISUAL ─────────────── */}
+      <section className="pb-20 md:pb-32">
+        <div className="container">
+          <div className="relative rounded-2xl bg-paper border border-hairline overflow-hidden">
+            <div className="grid md:grid-cols-12 gap-0">
+              {/* Left: typographic plate */}
+              <div className="md:col-span-5 p-10 md:p-14 flex flex-col justify-between border-b md:border-b-0 md:border-r border-hairline">
+                <div>
+                  <p className="eyebrow mb-6">Plate I — The signing surface</p>
+                  <h2 className="display text-4xl md:text-5xl text-ink mb-6">
+                    A document, a signature, a record.
+                  </h2>
+                  <p className="text-base text-muted-foreground leading-relaxed max-w-md font-light">
+                    No accounts for guests. No app to install. They open a link on the device already in their hand, draw their name, and the PDF lands in your inbox — sealed with a SHA-256 hash, IP, timestamp.
+                  </p>
+                </div>
+                <div className="hidden md:flex items-end justify-between mt-12 pt-8 border-t border-hairline">
+                  <div>
+                    <p className="eyebrow mb-1">Format</p>
+                    <p className="text-sm text-ink">PDF · Audit trail</p>
+                  </div>
+                  <div>
+                    <p className="eyebrow mb-1">Compliance</p>
+                    <p className="text-sm text-ink">ESIGN · UETA</p>
+                  </div>
+                  <div>
+                    <p className="eyebrow mb-1">Devices</p>
+                    <p className="text-sm text-ink">Any browser</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: device mock */}
+              <div className="md:col-span-7 p-8 md:p-14 flex items-center justify-center bg-gradient-to-br from-paper via-background to-paper">
+                <div className="w-full max-w-sm">
+                  <div className="rounded-[2rem] bg-card shadow-[0_30px_80px_-20px_hsl(25_22%_8%/0.18)] border border-hairline overflow-hidden">
+                    <div className="px-5 py-3 flex items-center justify-between border-b border-hairline">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-hairline" />
+                        <span className="w-2 h-2 rounded-full bg-hairline" />
+                        <span className="w-2 h-2 rounded-full bg-hairline" />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground tracking-widest uppercase">rentalwaivers.com/sign</p>
+                    </div>
+                    <div className="p-6">
+                      <p className="eyebrow mb-3">Liability Waiver</p>
+                      <h3 className="font-heading text-xl font-medium text-ink mb-3 tracking-tight">Sun Valley Pool — Booking #4821</h3>
+                      <div className="space-y-1.5 mb-5">
+                        <div className="h-1.5 bg-muted rounded-full w-full" />
+                        <div className="h-1.5 bg-muted rounded-full w-11/12" />
+                        <div className="h-1.5 bg-muted rounded-full w-10/12" />
+                        <div className="h-1.5 bg-muted rounded-full w-full" />
+                        <div className="h-1.5 bg-muted rounded-full w-9/12" />
+                      </div>
+                      <div className="rounded-lg border border-hairline bg-bone p-4 mb-4">
+                        <p className="eyebrow mb-3 text-[10px]">Signature</p>
+                        <svg viewBox="0 0 200 50" className="w-full h-12 text-ink">
+                          <path d="M5 35 Q 20 5, 40 30 T 80 25 Q 100 5, 120 30 T 160 28 Q 180 10, 195 30" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-[11px] text-muted-foreground">Verified · 192.0.2.14 · 14:02 PST</p>
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-ink">
+                          <CheckCircle className="h-3 w-3" /> Sealed
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Marketplace credits */}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-[13px] text-muted-foreground">
+            <span className="eyebrow mr-2">In use with</span>
+            <span className="font-heading text-ink/70">Airbnb</span>
+            <span className="hairline w-px h-3" />
+            <span className="font-heading text-ink/70">VRBO</span>
+            <span className="hairline w-px h-3" />
+            <span className="font-heading text-ink/70">Swimply</span>
+            <span className="hairline w-px h-3" />
+            <a href="https://bookmypool.com" target="_blank" rel="noopener noreferrer" className="font-heading text-ink hover:text-ochre transition-colors">BookMyPool</a>
+            <span className="hairline w-px h-3" />
+            <span className="font-heading text-ink/70">PoolRentalNearMe</span>
+            <span className="hairline w-px h-3" />
+            <span className="font-heading text-ink/70">Sharetribe</span>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          WHO IT'S FOR — Simple category cards
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="border-t bg-muted/20 py-16 md:py-20">
-        <div className="container max-w-4xl">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
-            Online waivers for pool rentals, bounce houses, kayak tours & more
-          </h2>
-          <p className="text-center text-muted-foreground mb-10">
-            Pre-built digital waiver templates by industry. Customize and start sending in minutes.
-          </p>
+      {/* ─────────────── HOW IT WORKS ─────────────── */}
+      <section id="how" className="py-24 md:py-32 border-t border-hairline">
+        <div className="container">
+          <div className="grid md:grid-cols-12 gap-10 mb-16 md:mb-24">
+            <div className="md:col-span-4">
+              <p className="eyebrow mb-6">§ 01 · Method</p>
+              <h2 className="display text-4xl md:text-6xl text-ink">
+                Three movements.
+                <br />
+                <span className="italic text-ochre font-light">Nothing more.</span>
+              </h2>
+            </div>
+            <div className="md:col-span-7 md:col-start-6">
+              <p className="text-lg text-muted-foreground leading-relaxed font-light max-w-lg">
+                Most software asks you to learn it. Ours asks you to use it once and forget it exists. Templates, links, signatures — that is the entire choreography.
+              </p>
+            </div>
+          </div>
 
-          <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+          <div className="grid md:grid-cols-3 border-y border-hairline">
             {[
-              { icon: Droplets, title: "Pools & Hot Tubs", link: "/waivers/pool-rental-waivers" },
-              { icon: Home, title: "Vacation Rentals", link: "/waivers/vacation-rental-waivers" },
-              { icon: Wrench, title: "Equipment", link: "/waivers/equipment-rental-waivers" },
-              { icon: PartyPopper, title: "Events & Parties", link: "/waivers/party-equipment-rental-waivers" },
+              { n: "01", t: "Compose", d: "Pick a pre-built template or draft your own. Two minutes, no legal degree required." },
+              { n: "02", t: "Distribute", d: "Email, SMS, QR code, embed, or API call — every channel works without configuration." },
+              { n: "03", t: "Witness", d: "Guest signs, you receive a tamper-proof PDF with the full forensic chain attached." },
+            ].map((s, i) => (
+              <div key={s.n} className={`py-12 md:py-16 px-6 md:px-10 ${i > 0 ? "md:border-l border-hairline" : ""} ${i > 0 ? "border-t md:border-t-0 border-hairline" : ""}`}>
+                <p className="font-heading text-[11px] tracking-[0.16em] text-muted-foreground tabular-nums mb-8">{s.n}</p>
+                <h3 className="font-heading text-2xl md:text-3xl font-medium tracking-tight text-ink mb-4">{s.t}</h3>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-sm">{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────── INDUSTRIES ─────────────── */}
+      <section className="py-24 md:py-32 border-t border-hairline bg-paper">
+        <div className="container">
+          <div className="flex items-end justify-between mb-12 md:mb-16">
+            <div>
+              <p className="eyebrow mb-6">§ 02 · Catalogue</p>
+              <h2 className="display text-3xl md:text-5xl text-ink max-w-2xl">
+                Built for the businesses that move people, water, and machinery.
+              </h2>
+            </div>
+            <Link to="/industries" className="hidden md:inline-flex items-center gap-1.5 text-sm text-ink hover:text-ochre transition-colors group">
+              Full index <ArrowUpRight className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-hairline border border-hairline">
+            {[
+              { icon: Droplets, title: "Pools & Hot Tubs", n: "001", link: "/waivers/pool-rental-waivers" },
+              { icon: Home, title: "Vacation Rentals", n: "002", link: "/waivers/vacation-rental-waivers" },
+              { icon: Wrench, title: "Equipment Rentals", n: "003", link: "/waivers/equipment-rental-waivers" },
+              { icon: PartyPopper, title: "Events & Parties", n: "004", link: "/waivers/party-equipment-rental-waivers" },
             ].map((cat) => (
-              <Link to={cat.link} key={cat.title} className="rounded-xl border bg-card p-5 text-center hover:border-primary/30 transition-colors group">
-                <cat.icon className="h-7 w-7 mx-auto mb-2 text-primary" />
-                <h3 className="font-heading font-semibold text-sm group-hover:text-primary transition-colors">{cat.title}</h3>
+              <Link
+                to={cat.link}
+                key={cat.title}
+                className="group relative bg-background p-6 md:p-8 aspect-[4/5] flex flex-col justify-between hover:bg-bone transition-colors"
+              >
+                <div className="flex items-start justify-between">
+                  <p className="font-heading text-[11px] tracking-[0.16em] text-muted-foreground tabular-nums">{cat.n}</p>
+                  <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-ochre group-hover:rotate-12 transition-all" />
+                </div>
+                <div>
+                  <cat.icon className="h-7 w-7 text-ink mb-5 stroke-[1.25]" />
+                  <h3 className="font-heading text-lg md:text-xl font-medium tracking-tight text-ink leading-tight">
+                    {cat.title}
+                  </h3>
+                </div>
               </Link>
             ))}
           </div>
 
-          <div className="mt-8 text-center">
-            <p className="text-xs text-muted-foreground mb-3">Works with your favorite platforms</p>
-            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-              <span>Airbnb</span>
-              <span className="text-border">·</span>
-              <span>VRBO</span>
-              <span className="text-border">·</span>
-              <span>Swimply</span>
-              <span className="text-border">·</span>
-              <a href="https://bookmypool.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium">BookMyPool.com</a>
-              <span className="text-border">·</span>
-              <span>PoolRentalNearMe</span>
-            </div>
-          </div>
-
-          <p className="text-center mt-6">
-            <Link to="/industries" className="text-sm text-primary hover:text-primary/80 font-medium inline-flex items-center gap-1">
-              View all industries <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </p>
+          <Link to="/industries" className="md:hidden mt-8 inline-flex items-center gap-1.5 text-sm text-ink hover:text-ochre transition-colors">
+            Full index <ArrowUpRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          WHAT YOU GET — Scannable feature list
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-20">
-        <div className="container max-w-3xl">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
-            Digital waiver features — everything included
-          </h2>
-          <p className="text-center text-muted-foreground mb-10">
-            Other platforms lock features behind premium tiers. We include everything.
-          </p>
+      {/* ─────────────── EVERYTHING INCLUDED ─────────────── */}
+      <section className="py-24 md:py-32 border-t border-hairline">
+        <div className="container">
+          <div className="grid md:grid-cols-12 gap-10 mb-16">
+            <div className="md:col-span-5">
+              <p className="eyebrow mb-6">§ 03 · Inventory</p>
+              <h2 className="display text-4xl md:text-6xl text-ink">
+                One price.
+                <br />
+                <span className="italic font-light text-ochre">Every feature.</span>
+              </h2>
+            </div>
+            <div className="md:col-span-6 md:col-start-7">
+              <p className="text-lg text-muted-foreground leading-relaxed font-light">
+                Other platforms unlock features tier by tier. We ship them all on day one — to the solo host and to the marketplace alike.
+              </p>
+            </div>
+          </div>
 
-          <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
+          <div className="grid md:grid-cols-3 gap-x-10 gap-y-1 border-t border-hairline pt-8">
             {[
-              "Legally-binding e-signatures (ESIGN + UETA)",
+              "Legally-binding e-signatures — ESIGN + UETA",
               "Group waivers — one link, unlimited signers",
               "QR code kiosk mode for walk-ins",
-              "Embeddable widgets for your website (iframe)",
-              "Guest dashboard — resume signing on any device",
+              "Embeddable iframe widgets",
+              "Guest dashboard, resume on any device",
               "Branded auth & notification emails",
               "Full REST API & real-time webhooks",
               "AI contract scanner & risk analysis",
               "Listing analyzer with SEO scoring",
-              "Secure document storage & management",
+              "Secure document storage",
               "Drawn signature with full audit trail",
-              "IP address, timestamp & device logging",
+              "IP, timestamp & device logging",
               "SHA-256 tamper-proof PDFs",
-              "Unlimited team members & multi-tenant branding",
-              "Auto-photo capture & 11-language signing",
+              "Unlimited team members",
+              "Auto-photo capture, 11-language signing",
               "Sharetribe & marketplace webhooks",
-              "Analytics dashboard & auto-recharge",
-              "Rate-limited APIs with ownership audit logs",
-            ].map((feature) => (
-              <div key={feature} className="flex items-start gap-2.5">
-                <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">{feature}</span>
+              "Analytics dashboard, auto-recharge",
+              "Rate-limited APIs, ownership audit logs",
+            ].map((feature, i) => (
+              <div key={feature} className="flex items-baseline gap-3 py-3 border-b border-hairline/60">
+                <span className="font-heading text-[10px] text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-[15px] text-ink font-light leading-snug">{feature}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          GROUP WAIVERS — Key differentiator
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="border-t bg-muted/20 py-16 md:py-20">
-        <div className="container max-w-4xl">
-          <div className="grid gap-10 md:grid-cols-2 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground mb-4">
-                <Users className="h-3.5 w-3.5" /> Group Waivers
-              </div>
-              <h2 className="font-heading text-2xl md:text-3xl font-bold mb-3">
-                Group waiver links — one link for the whole party
+      {/* ─────────────── GROUP WAIVERS ─────────────── */}
+      <section className="py-24 md:py-32 border-t border-hairline bg-paper">
+        <div className="container">
+          <div className="grid md:grid-cols-12 gap-12 items-center">
+            <div className="md:col-span-6">
+              <p className="eyebrow mb-6">§ 04 · The party of six</p>
+              <h2 className="display text-4xl md:text-6xl text-ink mb-8">
+                One link. Six phones.
+                <br />
+                <span className="italic font-light text-ochre">One record.</span>
               </h2>
-              <p className="text-muted-foreground mb-5">
-                Family of 6 booked your pool? Send one link. Each person signs on their own phone. You see every signature in real time.
+              <p className="text-lg text-muted-foreground leading-relaxed font-light max-w-md mb-8">
+                A family arrives. A bachelorette books a kayak tour. A school group walks into the trampoline park. You send a single link; everyone signs on their own device; you watch it happen in real time.
               </p>
-              <ul className="space-y-2 text-sm">
-                {[
-                  "No emails needed upfront",
-                  "Each person signs individually",
-                  "Live signature tracking",
-                  "Share via text or QR code",
-                ].map((text) => (
-                  <li key={text} className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-                    <span>{text}</span>
+              <ul className="space-y-3 text-[15px] text-ink">
+                {["No upfront emails required", "Each signer authenticated individually", "Live tracking dashboard", "Share via SMS or QR code"].map((t) => (
+                  <li key={t} className="flex items-center gap-3 border-b border-hairline pb-3">
+                    <span className="font-heading text-[10px] text-muted-foreground tabular-nums">·</span>
+                    <span className="font-light">{t}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Mini demo */}
-            <div className="rounded-xl border bg-card p-5">
-              <div className="space-y-3">
-                {[
-                  { name: "Mike Johnson", time: "2 min ago" },
-                  { name: "Sarah Johnson", time: "5 min ago" },
-                  { name: "Tommy Johnson", time: "8 min ago" },
-                ].map((s) => (
-                  <div key={s.name} className="flex items-center gap-3 rounded-lg bg-accent/50 p-3">
-                    <CheckCircle className="h-5 w-5 text-primary shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium">{s.name}</p>
-                      <p className="text-xs text-muted-foreground">Signed {s.time}</p>
+            <div className="md:col-span-5 md:col-start-8">
+              <div className="rounded-xl bg-card border border-hairline p-6 shadow-[0_24px_60px_-30px_hsl(25_22%_8%/0.2)]">
+                <div className="flex items-center justify-between mb-5 pb-4 border-b border-hairline">
+                  <p className="eyebrow">Group · Booking 4821</p>
+                  <p className="text-xs text-muted-foreground tabular-nums">3 / 6</p>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { name: "Mike Johnson", time: "2 min ago", done: true },
+                    { name: "Sarah Johnson", time: "5 min ago", done: true },
+                    { name: "Tommy Johnson", time: "8 min ago", done: true },
+                    { name: "Awaiting signer", time: "—", done: false },
+                    { name: "Awaiting signer", time: "—", done: false },
+                    { name: "Awaiting signer", time: "—", done: false },
+                  ].map((s, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className={`h-1.5 w-1.5 rounded-full ${s.done ? "bg-ochre" : "bg-hairline"}`} />
+                        <p className={`text-sm ${s.done ? "text-ink font-medium" : "text-muted-foreground font-light"}`}>{s.name}</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground tabular-nums">{s.time}</p>
                     </div>
-                  </div>
-                ))}
-                <div className="flex items-center gap-3 rounded-lg border border-dashed p-3">
-                  <Clock className="h-5 w-5 text-muted-foreground shrink-0" />
-                  <p className="text-sm text-muted-foreground">Waiting for 3 more...</p>
+                  ))}
                 </div>
               </div>
-              <p className="text-center text-xs text-muted-foreground mt-3">3 of 6 guests signed</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          EMBED ANYWHERE
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-20 border-t">
-        <div className="container max-w-4xl">
-          <div className="grid gap-10 md:grid-cols-2 items-center">
-            <div className="order-2 md:order-1 rounded-xl border bg-card p-5 font-mono text-xs overflow-hidden">
-              <div className="text-muted-foreground mb-2">{`<!-- Drop into any page -->`}</div>
-              <div><span className="text-primary">&lt;iframe</span></div>
-              <div className="pl-4">src="https://rentalwaivers.com</div>
-              <div className="pl-8">/embed/generator"</div>
-              <div className="pl-4">width="100%"</div>
-              <div className="pl-4">height="600"</div>
-              <div><span className="text-primary">/&gt;</span></div>
-              <div className="mt-3 text-muted-foreground">{`// Auto-resizes via postMessage`}</div>
-            </div>
-            <div className="order-1 md:order-2">
-              <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground mb-4">
-                <Code className="h-3.5 w-3.5" /> Embed Anywhere
+      {/* ─────────────── DEVELOPERS / EMBED ─────────────── */}
+      <section className="py-24 md:py-32 border-t border-hairline">
+        <div className="container">
+          <div className="grid md:grid-cols-12 gap-12 items-center">
+            <div className="md:col-span-5 order-2 md:order-1">
+              <div className="rounded-xl bg-ink text-bone p-7 font-mono text-[13px] leading-relaxed">
+                <p className="text-bone/40 mb-3">{`// Drop into any page`}</p>
+                <p><span className="text-ochre">&lt;iframe</span></p>
+                <p className="pl-4">src=<span className="text-bone/70">"rentalwaivers.com</span></p>
+                <p className="pl-8 text-bone/70">/embed/generator"</p>
+                <p className="pl-4">width=<span className="text-bone/70">"100%"</span></p>
+                <p className="pl-4">height=<span className="text-bone/70">"600"</span></p>
+                <p><span className="text-ochre">/&gt;</span></p>
+                <p className="text-bone/40 mt-3">{`// Auto-resizes via postMessage`}</p>
               </div>
-              <h2 className="font-heading text-2xl md:text-3xl font-bold mb-3">
-                Drop waivers into any website
+            </div>
+            <div className="md:col-span-6 md:col-start-7 order-1 md:order-2">
+              <p className="eyebrow mb-6">§ 05 · For developers</p>
+              <h2 className="display text-4xl md:text-5xl text-ink mb-6">
+                A line of code,
+                <br />
+                <span className="italic font-light text-ochre">a signed contract.</span>
               </h2>
-              <p className="text-muted-foreground mb-5">
-                Embed the waiver generator or signing flow directly on your site, booking page, or marketplace listing. One iframe — auto-resizing, mobile-ready, no redirects.
+              <p className="text-lg text-muted-foreground leading-relaxed font-light max-w-md mb-6">
+                REST API, signed webhooks, embeddable iframes, and a native Sharetribe integration. Everything documented, nothing rate-limited beyond reason.
               </p>
-              <ul className="space-y-2 text-sm">
-                {[
-                  "Generator embed for self-serve template creation",
-                  "Sign embed for in-page envelope signing",
-                  "postMessage resize events for seamless layout",
-                  "Works on Wix, WordPress, Squarespace, Webflow",
-                ].map((text) => (
-                  <li key={text} className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-                    <span>{text}</span>
-                  </li>
-                ))}
-              </ul>
+              <Link to="/docs" className="inline-flex items-center gap-1.5 text-sm text-ink hover:text-ochre transition-colors group border-b border-hairline pb-1">
+                Read the documentation <ArrowUpRight className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          AI POWER TOOLS
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-20">
-        <div className="container max-w-4xl">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary mb-4">
-              <Sparkles className="h-3.5 w-3.5" /> AI-Powered Tools
-            </div>
-            <h2 className="font-heading text-2xl md:text-3xl font-bold mb-2">
-              More than just waivers
+      {/* ─────────────── AI TOOLS ─────────────── */}
+      <section className="py-24 md:py-32 border-t border-hairline bg-paper">
+        <div className="container">
+          <div className="mb-16 max-w-2xl">
+            <p className="eyebrow mb-6">§ 06 · Adjacencies</p>
+            <h2 className="display text-4xl md:text-6xl text-ink">
+              Beyond the signature.
             </h2>
-            <p className="text-muted-foreground">
-              Built-in tools to protect your business and grow your revenue.
+            <p className="text-lg text-muted-foreground leading-relaxed font-light mt-6">
+              Three quiet instruments your account inherits the moment you arrive.
             </p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid md:grid-cols-3 gap-px bg-hairline border border-hairline">
             {[
-              {
-                icon: ScanSearch,
-                title: "Contract Scanner",
-                desc: "Upload any rental contract and get an instant AI risk analysis. Spot missing clauses, liability gaps, and legal red flags in seconds.",
-                credit: "10 credits",
-                link: "/contract-scanner",
-              },
-              {
-                icon: BarChart3,
-                title: "Listing Analyzer",
-                desc: "Paste your Airbnb, VRBO, or Swimply URL. Get a 0–100 health score with prioritized fixes for SEO, pricing, and conversion.",
-                credit: "40 credits",
-                link: "/listing-analyzer",
-              },
-              {
-                icon: FolderOpen,
-                title: "Document Storage",
-                desc: "Store contracts, insurance docs, and rental agreements in one secure vault. 100 MB free per account with 90-day retention.",
-                credit: "2 credits/upload",
-                link: "/documents",
-              },
+              { icon: ScanSearch, n: "I", title: "Contract Scanner", desc: "Upload any rental contract. AI returns missing clauses, liability gaps and legal red flags within seconds.", credit: "10 credits", link: "/contract-scanner" },
+              { icon: BarChart3, n: "II", title: "Listing Analyzer", desc: "Paste an Airbnb, VRBO or Swimply URL. Get a 0–100 health score with prioritized fixes for SEO, pricing and conversion.", credit: "40 credits", link: "/listing-analyzer" },
+              { icon: FolderOpen, n: "III", title: "Document Vault", desc: "Store contracts, insurance and rental agreements in one secure repository. 100 MB included on every account.", credit: "2 credits / upload", link: "/documents" },
             ].map((tool) => (
-              <div key={tool.title} className="rounded-xl border bg-card p-6 flex flex-col">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-3">
-                  <tool.icon className="h-5 w-5 text-primary" />
+              <div key={tool.title} className="bg-background p-8 md:p-10 flex flex-col">
+                <div className="flex items-center justify-between mb-8">
+                  <p className="font-heading text-[11px] tracking-[0.2em] text-muted-foreground">{tool.n}</p>
+                  <tool.icon className="h-5 w-5 text-ink stroke-[1.25]" />
                 </div>
-                <h3 className="font-heading font-semibold mb-1.5">{tool.title}</h3>
-                <p className="text-sm text-muted-foreground flex-1 mb-3">{tool.desc}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">{tool.credit}</span>
-                  <Link to={tool.link} className="text-xs text-primary hover:text-primary/80 font-medium inline-flex items-center gap-1">
-                    Learn more <ArrowRight className="h-3 w-3" />
+                <h3 className="font-heading text-2xl font-medium tracking-tight text-ink mb-3">{tool.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed font-light flex-1 mb-6">{tool.desc}</p>
+                <div className="flex items-center justify-between pt-4 border-t border-hairline">
+                  <span className="text-xs text-muted-foreground">{tool.credit}</span>
+                  <Link to={tool.link} className="text-xs text-ink hover:text-ochre inline-flex items-center gap-1 group">
+                    Open <ArrowUpRight className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
                   </Link>
                 </div>
               </div>
@@ -470,138 +547,161 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          TESTIMONIAL
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="py-14">
-        <div className="container max-w-2xl text-center">
-          <div className="flex justify-center gap-1 mb-4">
-            {[1,2,3,4,5].map(i => <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />)}
-          </div>
-          <blockquote className="text-lg md:text-xl font-medium leading-relaxed mb-3">
-            "We switched from a $49/month waiver platform and saved over $400 our first season. The group waiver link is a game-changer for pool parties."
+      {/* ─────────────── TESTIMONIAL ─────────────── */}
+      <section className="py-24 md:py-32 border-t border-hairline">
+        <div className="container max-w-4xl">
+          <p className="eyebrow text-center mb-10">§ 07 · From the field</p>
+          <blockquote className="display-light text-3xl md:text-5xl text-ink text-center leading-tight">
+            &ldquo;We switched from a forty-nine dollar a month platform and saved over four hundred our first season. The group link alone <span className="italic text-ochre">changed pool parties</span> for us.&rdquo;
           </blockquote>
-          <p className="text-sm text-muted-foreground">— Pool rental host, Riverside CA</p>
+          <div className="mt-12 flex items-center justify-center gap-4 text-sm text-muted-foreground">
+            <span className="hairline w-12 h-px" />
+            <span>Pool rental host · Riverside, California</span>
+            <span className="hairline w-12 h-px" />
+          </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          PRICING — Clean credit packs
-      ═══════════════════════════════════════════════════════════ */}
-      <section id="pricing" className="border-t bg-muted/20 py-16 md:py-20">
-        <div className="container max-w-4xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary mb-4">
-            <DollarSign className="h-3.5 w-3.5" /> No subscription required
+      {/* ─────────────── PRICING ─────────────── */}
+      <section id="pricing" className="py-24 md:py-32 border-t border-hairline bg-paper">
+        <div className="container">
+          <div className="grid md:grid-cols-12 gap-10 mb-16 md:mb-20">
+            <div className="md:col-span-5">
+              <p className="eyebrow mb-6">§ 08 · The arithmetic</p>
+              <h2 className="display text-4xl md:text-6xl text-ink">
+                Six cents.
+                <br />
+                <span className="italic font-light text-ochre">No subscription.</span>
+              </h2>
+            </div>
+            <div className="md:col-span-6 md:col-start-7">
+              <p className="text-lg text-muted-foreground leading-relaxed font-light">
+                Buy a packet of credits. Spend them on signed waivers. They never expire and unlock no premium tier — there isn't one.
+              </p>
+            </div>
           </div>
-          <h2 className="font-heading text-2xl md:text-3xl font-bold mb-2">
-            Pay per waiver. That's it.
-          </h2>
-          <p className="text-muted-foreground mb-10">
-            Buy credits when you need them. No contracts, no expiration.
-          </p>
 
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-hairline border border-hairline">
             {CREDIT_PACKAGES.map((pkg) => (
-              <div key={pkg.id} className={`rounded-xl border p-5 text-center transition-shadow hover:shadow-md ${pkg.popular ? "border-primary border-2 relative" : "bg-card"}`}>
-                {pkg.popular && <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-bold px-2.5 py-0.5 rounded-full">BEST VALUE</div>}
-                <p className="font-heading text-xl font-bold">{pkg.credits.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground mb-2">credits</p>
-                <p className="font-heading text-2xl font-bold mb-0.5">${pkg.price}</p>
-                <p className="text-xs text-muted-foreground mb-3">{pkg.perWaiver}/waiver</p>
-                <Link to="/login">
-                  <Button variant={pkg.popular ? "default" : "outline"} size="sm" className="w-full text-xs">
-                    Buy
-                  </Button>
-                </Link>
+              <div key={pkg.id} className={`bg-background p-6 md:p-8 flex flex-col justify-between min-h-[240px] relative ${pkg.popular ? "ring-1 ring-inset ring-ink z-10" : ""}`}>
+                {pkg.popular && (
+                  <span className="absolute top-4 right-4 text-[10px] tracking-[0.16em] uppercase text-ochre font-medium">Recommended</span>
+                )}
+                <div>
+                  <p className="font-heading text-[10px] tracking-[0.2em] text-muted-foreground mb-3">CREDITS</p>
+                  <p className="display-light text-4xl md:text-5xl text-ink tabular-nums">{pkg.credits.toLocaleString()}</p>
+                </div>
+                <div className="mt-6 pt-6 border-t border-hairline">
+                  <p className="font-heading text-2xl font-medium text-ink tabular-nums">${pkg.price}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{pkg.perWaiver} per waiver</p>
+                  <Link to="/login" className="mt-4 inline-flex items-center gap-1 text-xs text-ink hover:text-ochre group">
+                    Select <ArrowUpRight className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5 text-primary" /> All features included</span>
-            <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5 text-primary" /> Credits never expire</span>
-            <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5 text-primary" /> Auto-recharge available</span>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-ochre" /> Every feature included</span>
+            <span className="hairline w-px h-3" />
+            <span className="flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-ochre" /> Credits never expire</span>
+            <span className="hairline w-px h-3" />
+            <span className="flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-ochre" /> Auto-recharge available</span>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          WHY SWITCH — Quick comparison
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-20">
-        <div className="container max-w-2xl text-center">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold mb-8">
-            Why hosts are switching
+      {/* ─────────────── COMPARISON ─────────────── */}
+      <section className="py-24 md:py-32 border-t border-hairline">
+        <div className="container max-w-4xl">
+          <p className="eyebrow mb-6">§ 09 · A small accounting</p>
+          <h2 className="display text-4xl md:text-6xl text-ink mb-16">
+            Why hosts move.
           </h2>
 
-          <div className="text-left space-y-3 mb-8">
+          <div className="border-y border-hairline">
             {[
-              { them: "$29–$99/month subscription", us: "Pay per waiver — 6¢ each" },
-              { them: "Group waivers cost extra", us: "Group waivers included free" },
-              { them: "API & embeds locked behind premium", us: "Full API + embed widgets on every account" },
+              { them: "$29–$99 monthly subscription", us: "Pay per waiver, six cents each" },
+              { them: "Group waivers cost extra", us: "Group waivers included" },
+              { them: "API and embeds locked behind premium", us: "Full API and embed widgets, all accounts" },
               { them: "Per-seat pricing for teams", us: "Unlimited team members" },
-              { them: "Generic system emails", us: "Fully branded auth & notification emails" },
+              { them: "Generic system emails", us: "Fully branded auth and notification emails" },
             ].map((row, i) => (
-              <div key={i} className="flex flex-col sm:grid sm:grid-cols-2 gap-1 sm:gap-3 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground line-through decoration-destructive/40">
+              <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-8 py-6 border-t border-hairline first:border-t-0 items-center">
+                <p className="font-heading text-[10px] tracking-[0.16em] text-muted-foreground tabular-nums md:col-span-1">
+                  {String(i + 1).padStart(2, "0")}
+                </p>
+                <p className="md:col-span-5 text-sm text-muted-foreground line-through decoration-hairline font-light">
                   {row.them}
-                </div>
-                <div className="flex items-center gap-2 font-medium">
-                  <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+                </p>
+                <p className="md:col-span-6 text-base text-ink font-light flex items-center gap-3">
+                  <span className="hairline w-6 h-px" />
                   {row.us}
-                </div>
+                </p>
               </div>
             ))}
           </div>
 
-          <Link to="/compare" className="text-sm text-primary hover:text-primary/80 font-medium inline-flex items-center gap-1">
-            See full comparison <ArrowRight className="h-3.5 w-3.5" />
+          <Link to="/compare" className="mt-10 inline-flex items-center gap-1.5 text-sm text-ink hover:text-ochre group border-b border-hairline pb-1">
+            Full comparison <ArrowUpRight className="h-4 w-4 group-hover:rotate-12 transition-transform" />
           </Link>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          FAQ — Featured-snippet bait
-      ═══════════════════════════════════════════════════════════ */}
-      <section id="faq" className="border-t bg-muted/20 py-16 md:py-20">
-        <div className="container max-w-3xl">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-3">
-            Online waiver FAQs
-          </h2>
-          <p className="text-center text-muted-foreground mb-10">
-            Everything hosts ask before switching to digital liability waivers.
-          </p>
-          <div className="space-y-6">
-            {LANDING_FAQS.map((item) => (
-              <div key={item.question}>
-                <h3 className="font-heading font-semibold text-base mb-1.5">{item.question}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.answer}</p>
-              </div>
+      {/* ─────────────── FAQ ─────────────── */}
+      <section id="faq" className="py-24 md:py-32 border-t border-hairline bg-paper">
+        <div className="container max-w-4xl">
+          <div className="grid md:grid-cols-12 gap-10 mb-12">
+            <div className="md:col-span-5">
+              <p className="eyebrow mb-6">§ 10 · Common questions</p>
+              <h2 className="display text-4xl md:text-5xl text-ink">
+                Everything else.
+              </h2>
+            </div>
+            <div className="md:col-span-6 md:col-start-7">
+              <p className="text-lg text-muted-foreground leading-relaxed font-light">
+                What hosts ask before switching from paper, PDFs, or another platform.
+              </p>
+            </div>
+          </div>
+          <div className="border-b border-hairline">
+            {LANDING_FAQS.map((item, i) => (
+              <FaqItem key={item.question} q={item.question} a={item.answer} idx={i} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          FINAL CTA
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="bg-primary py-16 md:py-20">
-        <div className="container text-center max-w-2xl">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary-foreground mb-3">
-            Start sending waivers today
+      {/* ─────────────── FINAL CTA ─────────────── */}
+      <section className="bg-ink text-bone py-28 md:py-40 grain">
+        <div className="container">
+          <div className="flex items-center justify-between mb-16 text-bone/50">
+            <span className="eyebrow text-bone/50">Coda</span>
+            <span className="eyebrow text-bone/50 tabular-nums">№ 0001</span>
+          </div>
+          <h2 className="display-light text-5xl md:text-8xl lg:text-9xl text-bone max-w-5xl">
+            Begin with two
+            <br />
+            hundred and fifty
+            <br />
+            <span className="italic font-light text-ochre">free credits.</span>
           </h2>
-          <p className="text-primary-foreground/70 mb-6">
-            Every new account gets <strong className="text-primary-foreground">250 free credits</strong>. No credit card required.
-          </p>
-          <Link to="/login">
-            <Button size="lg" variant="secondary" className="gap-2 text-base px-10 py-6 shadow-lg">
-              Get 250 Free Credits <ArrowRight className="h-5 w-5" />
-            </Button>
-          </Link>
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-6 text-xs text-primary-foreground/50">
-            <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> No credit card</span>
-            <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> No monthly fees</span>
-            <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> All features included</span>
+          <div className="mt-20 grid md:grid-cols-12 gap-8 items-end">
+            <div className="md:col-span-7">
+              <div className="hairline h-px mb-6 opacity-30" />
+              <p className="text-lg text-bone/70 font-light max-w-md">
+                No credit card. No subscription. No premium tier hiding the feature you need. Just send a waiver.
+              </p>
+            </div>
+            <div className="md:col-span-5 md:text-right">
+              <Link to="/login">
+                <Button size="lg" className="rounded-full h-14 px-8 text-[15px] font-medium gap-2 bg-bone text-ink hover:bg-bone/90">
+                  Open an account <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <p className="mt-4 text-xs text-bone/40">Setup in five minutes · Cancel anytime · Always-on support</p>
+            </div>
           </div>
         </div>
       </section>
