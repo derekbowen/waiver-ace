@@ -143,4 +143,61 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
+  /* Editorial display type — Apple-grade tracking */
+  .display {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+  .display-light {
+    font-family: var(--font-heading);
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+  .eyebrow {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+  .hairline {
+    background-color: hsl(var(--hairline));
+  }
+  .border-hairline {
+    border-color: hsl(var(--hairline));
+  }
+  .text-ink {
+    color: hsl(var(--ink));
+  }
+  .text-ochre {
+    color: hsl(var(--ochre));
+  }
+  .text-terracotta {
+    color: hsl(var(--terracotta));
+  }
+  .bg-bone {
+    background-color: hsl(36 28% 97%);
+  }
+  .bg-paper {
+    background-color: hsl(36 32% 94%);
+  }
+  .bg-ink {
+    background-color: hsl(var(--ink));
+  }
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
 }
