@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,50 +6,58 @@
 
 @layer base {
   :root {
-    --background: 0 0% 99%;
-    --foreground: 220 20% 10%;
+    /* Warm bone neutrals — editorial light palette */
+    --background: 36 28% 97%;
+    --foreground: 25 18% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 25 18% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
+    --popover-foreground: 25 18% 11%;
 
-    --primary: 220 65% 18%;
-    --primary-foreground: 0 0% 98%;
+    /* Deep ink primary — subdued, near-black with cool undertone */
+    --primary: 220 35% 14%;
+    --primary-foreground: 36 28% 97%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 20% 10%;
+    --secondary: 30 15% 94%;
+    --secondary-foreground: 25 18% 11%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 30 14% 95%;
+    --muted-foreground: 25 8% 42%;
 
-    --accent: 220 14% 93%;
-    --accent-foreground: 220 20% 10%;
+    --accent: 30 18% 92%;
+    --accent-foreground: 25 18% 11%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 65% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 152 60% 40%;
+    --success: 152 45% 32%;
     --success-foreground: 0 0% 98%;
 
-    --warning: 38 92% 50%;
+    --warning: 32 85% 48%;
     --warning-foreground: 0 0% 10%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 220 65% 18%;
+    --border: 30 14% 88%;
+    --input: 30 14% 88%;
+    --ring: 25 18% 11%;
 
-    --radius: 0.5rem;
+    /* Editorial accents */
+    --hairline: 25 12% 82%;
+    --ink: 25 22% 8%;
+    --ochre: 28 55% 48%;
+    --terracotta: 14 48% 46%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 220 65% 18%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 220 14% 95%;
-    --sidebar-accent-foreground: 220 20% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 220 65% 18%;
+    --radius: 0.625rem;
+
+    --sidebar-background: 36 28% 97%;
+    --sidebar-foreground: 25 12% 30%;
+    --sidebar-primary: 220 35% 14%;
+    --sidebar-primary-foreground: 36 28% 97%;
+    --sidebar-accent: 30 15% 93%;
+    --sidebar-accent-foreground: 25 18% 11%;
+    --sidebar-border: 30 14% 88%;
+    --sidebar-ring: 25 18% 11%;
 
     --font-heading: 'Space Grotesk', system-ui, sans-serif;
     --font-body: 'DM Sans', system-ui, sans-serif;
