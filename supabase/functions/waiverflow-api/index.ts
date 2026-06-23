@@ -206,13 +206,21 @@ serve(async (req: Request) => {
       }
 
       if (body.action === "kiosk_create" && body.template_id) {
-        // Rate limit kiosk creates by IP
+        // Persistent rate limit: by IP AND by template_id. The per-template
+        // limit closes the IP-rotation bypass that could drain org credits.
         const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-        if (isKioskRateLimited(clientIp)) {
+        const ipLimited = await checkKioskRateLimit(
+          supabase, "kiosk_create_ip", clientIp, KIOSK_PER_IP_LIMIT
+        );
+        const tplLimited = await checkKioskRateLimit(
+          supabase, "kiosk_create_template", String(body.template_id), KIOSK_PER_TEMPLATE_LIMIT
+        );
+        if (ipLimited || tplLimited) {
           return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
             status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
+
         const { data: template } = await supabase
           .from("templates")
           .select("id, org_id, is_active, require_photo, require_video")
