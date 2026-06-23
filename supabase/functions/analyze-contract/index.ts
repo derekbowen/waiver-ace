@@ -225,6 +225,31 @@ serve(async (req) => {
     };
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Resolve caller's org
+    const { data: profile } = await adminClient
+      .from("profiles").select("org_id").eq("user_id", user.id).single();
+
+    if (!profile?.org_id) {
+      return new Response(JSON.stringify({ error: "No organization" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Verify the scan belongs to this org before any mutation
+    const { data: scanRow, error: scanLookupErr } = await adminClient
+      .from("contract_scans").select("org_id").eq("id", scanId).single();
+    if (scanLookupErr || !scanRow) {
+      return new Response(JSON.stringify({ error: "Scan not found" }), {
+        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (scanRow.org_id !== profile.org_id) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     await adminClient.from("contract_scans").update({ status: "processing" }).eq("id", scanId);
 
     // Calculate total credits: 10 per page base + addon costs
@@ -240,18 +265,6 @@ serve(async (req) => {
     if (enabledAddons.deepResearch) creditsUsed += 500;
     if (enabledAddons.exitStrategy) creditsUsed += 1000;
 
-    // Get org
-    const { data: profile } = await adminClient
-      .from("profiles").select("org_id").eq("user_id", user.id).single();
-
-    if (!profile?.org_id) {
-      await adminClient.from("contract_scans").update({
-        status: "failed", error_message: "No organization found",
-      }).eq("id", scanId);
-      return new Response(JSON.stringify({ error: "No organization" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     // Deduct credits
     const { data: deductResult } = await adminClient.rpc("deduct_credit", {

@@ -34,15 +34,7 @@ serve(async (req) => {
     const { job_id, enhancements } = await req.json();
     if (!job_id) throw new Error("job_id required");
 
-    // Get job
-    const { data: job, error: jobError } = await supabase
-      .from("photo_jobs")
-      .select("*")
-      .eq("id", job_id)
-      .single();
-    if (jobError || !job) throw new Error("Job not found");
-
-    // Deduct credit
+    // Resolve caller's org first
     const { data: profile } = await supabase
       .from("profiles")
       .select("org_id")
@@ -50,6 +42,20 @@ serve(async (req) => {
       .single();
 
     if (!profile?.org_id) throw new Error("No organization found");
+
+    // Get job and verify it belongs to caller's org
+    const { data: job, error: jobError } = await supabase
+      .from("photo_jobs")
+      .select("*")
+      .eq("id", job_id)
+      .single();
+    if (jobError || !job) throw new Error("Job not found");
+    if (job.org_id !== profile.org_id) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
 
     const { data: deductResult } = await supabase.rpc("deduct_credit", {
       p_org_id: profile.org_id,

@@ -140,15 +140,9 @@ export default function SigningPage() {
         photoStorageKey = path;
       }
 
-      // Capture signer IP address for audit trail
-      let signerIp: string | null = null;
-      try {
-        const ipRes = await fetch("https://api.ipify.org?format=json");
-        const ipData = await ipRes.json();
-        signerIp = ipData.ip || null;
-      } catch {
-        // IP capture is best-effort; don't block signing
-      }
+      // NOTE: IP address for the legal audit trail is captured server-side
+      // inside the sign_envelope RPC (from PostgREST request headers) so it
+      // cannot be spoofed by the client. We no longer fetch it via ipify.
 
       const { data: result, error } = await supabase.rpc("sign_envelope", {
         p_token: token!,
@@ -165,8 +159,8 @@ export default function SigningPage() {
         },
         p_user_agent: navigator.userAgent,
         p_photo_storage_key: photoStorageKey,
-        p_ip_address: signerIp,
       });
+
 
       if (error) throw error;
 
@@ -181,8 +175,9 @@ export default function SigningPage() {
       });
 
       supabase.functions.invoke("send-completion-email", {
-        body: { envelope_id: res.envelope_id },
+        body: { envelope_id: res.envelope_id, signing_token: token },
       }).catch(() => {});
+
 
       // Remember this signer for the next visit (any device, any business).
       if (envelope?.signer_email) {
