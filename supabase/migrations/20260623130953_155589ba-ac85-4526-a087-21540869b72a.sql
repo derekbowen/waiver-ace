@@ -1,0 +1,2 @@
+ALTER TABLE public.envelopes ALTER COLUMN group_token SET DEFAULT gen_random_uuid()::text;
+UPDATE public.envelopes SET group_token = gen_random_uuid()::text WHERE is_group_waiver = true AND group_token IS NULL;
