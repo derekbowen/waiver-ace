@@ -9,32 +9,36 @@ const corsHeaders = {
 
 const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-// Simple in-memory rate limiter for kiosk actions (per Deno isolate)
-const kioskRateLimit = new Map<string, { count: number; resetAt: number }>();
-const KIOSK_RATE_LIMIT = 10; // max requests per window
-const KIOSK_RATE_WINDOW_MS = 60_000; // 1 minute
+// Persistent rate limiter for kiosk_create, backed by the envelope_rate_limits
+// table (1-minute fixed window via the bump_rate_limit RPC). This survives
+// Deno isolate restarts and works across parallel workers — unlike the
+// previous in-memory Map.
+const KIOSK_PER_IP_LIMIT = 10;       // max kiosk_create calls per IP per minute
+const KIOSK_PER_TEMPLATE_LIMIT = 30; // max kiosk_create calls per template per minute
 
-function isKioskRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = kioskRateLimit.get(ip);
-  if (!entry || now > entry.resetAt) {
-    kioskRateLimit.set(ip, { count: 1, resetAt: now + KIOSK_RATE_WINDOW_MS });
-    return false;
-  }
-  entry.count++;
-  if (entry.count > KIOSK_RATE_LIMIT) {
+async function checkKioskRateLimit(
+  supabase: any,
+  scope: string,
+  key: string,
+  limit: number
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc("bump_rate_limit", {
+      p_scope: scope,
+      p_key: key,
+    });
+    if (error) {
+      console.error("bump_rate_limit error:", error);
+      // Fail-closed if we cannot record the attempt
+      return true;
+    }
+    return typeof data === "number" && data > limit;
+  } catch (e) {
+    console.error("bump_rate_limit threw:", e);
     return true;
   }
-  return false;
 }
 
-// Periodically clean up stale entries to prevent memory leaks
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, entry] of kioskRateLimit) {
-    if (now > entry.resetAt) kioskRateLimit.delete(ip);
-  }
-}, 120_000);
 
 function generateSigningEmailHtml({ signerName, signingUrl, templateName, organizationName }: {
   signerName?: string;
