@@ -106,9 +106,10 @@ export default function EnvelopeDetail() {
 
   const copySigningLink = () => {
     if (!envelope) return;
+    const publicOrigin = "https://rentalwaivers.com";
     const url = envelope.is_group_waiver
-      ? `${window.location.origin}/waiver/${envelope.group_token}`
-      : `${window.location.origin}/sign/${envelope.signing_token}`;
+      ? `${publicOrigin}/waiver/${envelope.group_token}`
+      : `${publicOrigin}/sign/${envelope.signing_token}`;
     navigator.clipboard.writeText(url);
     toast.success("Signing link copied");
   };

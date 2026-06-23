@@ -35,41 +35,41 @@ export default function GroupSigningPage() {
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const fetchSignatures = useCallback(async (envelopeId: string) => {
-    const { data } = await supabase
-      .from("group_signatures")
-      .select("id, signer_name, signed_at")
-      .eq("envelope_id", envelopeId)
-      .order("signed_at", { ascending: true });
-    setSignatures(data || []);
-  }, []);
+  const loadGroupWaiver = useCallback(async () => {
+    if (!groupToken) return null;
+
+    const { data, error } = await supabase.rpc("get_group_waiver_by_token", {
+      p_group_token: groupToken,
+      p_user_agent: navigator.userAgent,
+    });
+
+    if (error || !data) return null;
+    return data as any;
+  }, [groupToken]);
+
+  const fetchSignatures = useCallback(async () => {
+    const env = await loadGroupWaiver();
+    setSignatures(Array.isArray(env?.signatures) ? env.signatures : []);
+  }, [loadGroupWaiver]);
 
   useEffect(() => {
     const load = async () => {
-      const { data: env } = await supabase
-        .from("envelopes")
-        .select("*, template_versions(*)")
-        .eq("group_token", groupToken)
-        .eq("is_group_waiver", true)
-        .single();
+      const env = await loadGroupWaiver();
 
       if (!env) { setLoading(false); return; }
 
-      setEnvelope(env);
-
-      // Fetch require_photo from the template
-      if ((env.template_versions as any)?.template_id) {
-        const { data: tmpl } = await supabase
-          .from("templates")
-          .select("require_photo, require_video")
-          .eq("id", (env.template_versions as any).template_id)
-          .single();
-        setRequirePhoto(tmpl?.require_photo === true);
-        setRequireVideo(tmpl?.require_video === true);
-        setVideoUrl((tmpl as any)?.video_url || null);
+      if (env.error) {
+        setEnvelope(env);
+        setLoading(false);
+        return;
       }
 
-      const content = (env.template_versions as any)?.content?.body || "";
+      setEnvelope(env);
+      setRequirePhoto(env.require_photo === true);
+      setRequireVideo(env.require_video === true);
+      setVideoUrl(env.video_url || null);
+
+      const content = env.template_content?.body || "";
       const payload = env.payload as Record<string, any> || {};
       let rendered = content;
       Object.entries(payload).forEach(([key, value]) => {
@@ -79,23 +79,12 @@ export default function GroupSigningPage() {
       rendered = rendered.replace(/\{\{date\}\}/g, new Date().toLocaleDateString());
       setTemplateContent(rendered);
 
-      await fetchSignatures(env.id);
-
-      if (env.status === "canceled") {
-        // handled in render
-      } else if (env.status === "sent") {
-        await supabase.from("envelopes").update({ status: "viewed" }).eq("id", env.id);
-        await supabase.from("envelope_events").insert({
-          envelope_id: env.id,
-          event_type: "envelope.viewed",
-          user_agent: navigator.userAgent,
-        });
-      }
+      setSignatures(Array.isArray(env.signatures) ? env.signatures : []);
 
       setLoading(false);
     };
     load();
-  }, [groupToken, fetchSignatures]);
+  }, [loadGroupWaiver]);
 
   useEffect(() => {
     if (!envelope?.id) return;
@@ -104,7 +93,7 @@ export default function GroupSigningPage() {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "group_signatures", filter: `envelope_id=eq.${envelope.id}` },
-        () => fetchSignatures(envelope.id)
+          () => fetchSignatures()
       )
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -143,30 +132,24 @@ export default function GroupSigningPage() {
         photoStorageKey = path;
       }
 
-      const { error } = await supabase.from("group_signatures").insert({
-        envelope_id: envelope.id,
-        signer_name: fullName.trim(),
-        signer_email: signerEmail.trim() || null,
-        initials: initials.trim(),
-        signature_data: {
+      const { data: result, error } = await supabase.rpc("sign_group_waiver", {
+        p_group_token: groupToken!,
+        p_signer_name: fullName.trim(),
+        p_signer_email: signerEmail.trim() || null,
+        p_initials: initials.trim(),
+        p_signature_data: {
           signature_image: signatureDataUrl,
           agreed_to_electronic_signing: true,
           signed_at_utc: now,
           user_agent: navigator.userAgent,
         },
-        signed_at: now,
-        user_agent: navigator.userAgent,
-        photo_storage_key: photoStorageKey,
+        p_user_agent: navigator.userAgent,
+        p_photo_storage_key: photoStorageKey,
       });
 
       if (error) throw error;
-
-      await supabase.from("envelope_events").insert({
-        envelope_id: envelope.id,
-        event_type: "group.member_signed",
-        user_agent: navigator.userAgent,
-        metadata: { signer_name: fullName.trim(), signer_email: signerEmail.trim() || null },
-      });
+      const res = result as any;
+      if (!res?.success) throw new Error(res?.error || "Failed to sign waiver");
 
       supabase.functions.invoke("send-completion-email", {
         body: {
@@ -201,6 +184,19 @@ export default function GroupSigningPage() {
         <div className="text-center">
           <h1 className="font-heading text-2xl font-bold mb-2">Link Not Found</h1>
           <p className="text-muted-foreground">This signing link is invalid or has expired.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (envelope.error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="text-center max-w-md">
+          <h1 className="font-heading text-2xl font-bold mb-2">Can't open this waiver</h1>
+          <p className="text-muted-foreground">
+            {envelope.message || "This group waiver link is invalid or has expired."}
+          </p>
         </div>
       </div>
     );
