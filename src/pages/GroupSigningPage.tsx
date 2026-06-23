@@ -189,6 +189,19 @@ export default function GroupSigningPage() {
     );
   }
 
+  if (envelope.error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="text-center max-w-md">
+          <h1 className="font-heading text-2xl font-bold mb-2">Can't open this waiver</h1>
+          <p className="text-muted-foreground">
+            {envelope.message || "This group waiver link is invalid or has expired."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (envelope.status === "canceled") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">

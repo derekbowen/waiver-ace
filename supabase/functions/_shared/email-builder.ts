@@ -4,6 +4,8 @@
  * DM Sans body, navy primary (#162a4a), clean white layout.
  */
 
+import { sendLovableEmail } from 'npm:@lovable.dev/email-js'
+
 const PRIMARY = '#162a4a';        // hsl(220, 65%, 18%)
 const PRIMARY_FG = '#fafafa';     // hsl(0, 0%, 98%)
 const FOREGROUND = '#1a1c22';     // hsl(220, 20%, 10%)
@@ -155,38 +157,43 @@ function renderSection(section: EmailSection): string {
   }
 }
 
-// Helper to send email via Resend
+// Helper to send email via Lovable Emails
 export async function sendEmail(params: {
   to: string | string[];
   subject: string;
   html: string;
   from?: string;
 }): Promise<{ success: boolean; id?: string; error?: string }> {
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured');
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY is not configured');
 
-  const to = Array.isArray(params.to) ? params.to : [params.to];
+  const recipients = Array.isArray(params.to) ? params.to : [params.to];
+  const messageIds: string[] = [];
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: params.from || 'Rental Waivers <onboarding@resend.dev>',
-      to,
-      subject: params.subject,
-      html: params.html,
-    }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    console.error('Resend API error:', data);
-    return { success: false, error: data?.message || 'Failed to send email' };
+  for (const recipient of recipients) {
+    try {
+      const result = await sendLovableEmail(
+        {
+          to: recipient,
+          from: params.from || 'Rental Waivers <noreply@rentalwaivers.com>',
+          sender_domain: 'notify.rentalwaivers.com',
+          subject: params.subject,
+          html: params.html,
+          purpose: 'transactional',
+          label: 'legacy-transactional',
+          idempotency_key: crypto.randomUUID(),
+        },
+        { apiKey: LOVABLE_API_KEY, sendUrl: Deno.env.get('LOVABLE_SEND_URL') }
+      );
+      if (result?.id) messageIds.push(result.id);
+    } catch (error) {
+      console.error('Lovable email send error:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to send email',
+      };
+    }
   }
 
-  return { success: true, id: data.id };
+  return { success: true, id: messageIds.join(',') };
 }
