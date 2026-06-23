@@ -171,10 +171,12 @@ export default function GroupSigningPage() {
       supabase.functions.invoke("send-completion-email", {
         body: {
           envelope_id: envelope.id,
+          group_token: groupToken,
           group_signer_name: fullName.trim(),
           group_signer_email: signerEmail.trim() || null,
         },
       }).catch(() => {});
+
 
       setSigned(true);
       toast.success("Waiver signed successfully!");
