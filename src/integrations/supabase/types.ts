@@ -1303,6 +1303,10 @@ export type Database = {
         Args: { p_ip_address?: string; p_token: string; p_user_agent?: string }
         Returns: Json
       }
+      get_group_waiver_by_token: {
+        Args: { p_group_token: string; p_user_agent?: string }
+        Returns: Json
+      }
       get_signer_waivers_authenticated: {
         Args: never
         Returns: {
@@ -1376,6 +1380,18 @@ export type Database = {
             }
             Returns: Json
           }
+      sign_group_waiver: {
+        Args: {
+          p_group_token: string
+          p_initials?: string
+          p_photo_storage_key?: string
+          p_signature_data?: Json
+          p_signer_email?: string
+          p_signer_name: string
+          p_user_agent?: string
+        }
+        Returns: Json
+      }
       view_envelope: {
         Args: { p_token: string; p_user_agent?: string }
         Returns: undefined
