@@ -71,7 +71,7 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { envelope_id, group_signer_name, group_signer_email } = await req.json();
+    const { envelope_id, signing_token, group_token, group_signer_name, group_signer_email } = await req.json();
 
     if (!envelope_id) {
       return new Response(JSON.stringify({ error: "envelope_id required" }), {
@@ -79,6 +79,15 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Authorize: caller must present either a service-role bearer token, OR a
+    // signing_token / group_token that matches the envelope. This prevents
+    // anonymous attackers from triggering email + PDF generation on arbitrary
+    // envelope UUIDs.
+    const authHeader = req.headers.get("Authorization") || "";
+    const bearer = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
+    const isServiceRole =
+      bearer.length > 0 && bearer === Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     const { data: envelope, error: envErr } = await supabase
       .from("envelopes")
@@ -92,6 +101,27 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    if (!isServiceRole) {
+      const tokenMatch =
+        (signing_token && envelope.signing_token === signing_token) ||
+        (group_token && envelope.is_group_waiver && envelope.group_token === group_token);
+      if (!tokenMatch) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      // Only allow after the envelope has actually been signed (individual)
+      // or for group waivers, which accept per-member signatures.
+      if (!envelope.is_group_waiver && !["completed", "signed"].includes(envelope.status)) {
+        return new Response(JSON.stringify({ error: "Envelope not completed" }), {
+          status: 409,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
 
     const { data: org } = await supabase
       .from("organizations")
