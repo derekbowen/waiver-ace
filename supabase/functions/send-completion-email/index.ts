@@ -229,7 +229,7 @@ serve(async (req) => {
     }
 
     const emails: Promise<any>[] = [];
-    const origin = req.headers.get("origin") || "https://rentalwaivers.com";
+    const origin = "https://rentalwaivers.com";
 
     // Build PDF link sections
     const pdfSections = pdfDownloadUrl ? [

@@ -119,7 +119,7 @@ serve(async (req) => {
       .eq('id', profile.org_id)
       .single();
 
-    const origin = Deno.env.get('SITE_URL') || 'https://rentalwaivers.com';
+    const origin = 'https://rentalwaivers.com';
     const signingUrl = `${origin}/sign/${envelope.signing_token}`;
     const displayName = escapeHtml(envelope.signer_name || 'there');
     const orgName = escapeHtml(org?.name || 'Rental Waivers');
