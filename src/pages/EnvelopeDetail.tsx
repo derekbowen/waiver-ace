@@ -32,21 +32,51 @@ export default function EnvelopeDetail() {
     return data.signedUrl;
   }, []);
 
+  const ensureGroupToken = useCallback(async (env: any): Promise<string | null> => {
+    if (!env?.is_group_waiver) return null;
+    if (env.group_token) return env.group_token;
+    if (!["draft", "sent", "viewed"].includes(env.status)) return null;
+
+    const newToken = crypto.randomUUID();
+    const { data, error } = await supabase
+      .from("envelopes")
+      .update({ group_token: newToken })
+      .eq("id", env.id)
+      .eq("is_group_waiver", true)
+      .is("group_token", null)
+      .select("group_token")
+      .maybeSingle();
+
+    if (error) {
+      console.error("Group token repair failed:", error);
+      return null;
+    }
+
+    const token = data?.group_token || newToken;
+    setEnvelope((current: any) => current?.id === env.id ? { ...current, group_token: token } : current);
+    return token;
+  }, []);
+
   const fetchDetail = useCallback(async () => {
     const [envRes, eventsRes] = await Promise.all([
       supabase.from("envelopes").select("*").eq("id", id).single(),
       supabase.from("envelope_events").select("*").eq("envelope_id", id).order("created_at", { ascending: true }),
     ]);
-    setEnvelope(envRes.data);
+    let env = envRes.data;
+    if (env?.is_group_waiver && !env.group_token) {
+      const repairedToken = await ensureGroupToken(env);
+      if (repairedToken) env = { ...env, group_token: repairedToken };
+    }
+    setEnvelope(env);
     setEvents(eventsRes.data || []);
 
     // Load signer photo
-    if (envRes.data?.photo_storage_key) {
-      getSignedUrl(envRes.data.photo_storage_key).then(setPhotoUrl);
+    if (env?.photo_storage_key) {
+      getSignedUrl(env.photo_storage_key).then(setPhotoUrl);
     }
 
     // Fetch group signatures if applicable
-    if (envRes.data?.is_group_waiver) {
+    if (env?.is_group_waiver) {
       const { data: sigs } = await supabase
         .from("group_signatures")
         .select("*")
@@ -66,7 +96,7 @@ export default function EnvelopeDetail() {
     }
 
     setLoading(false);
-  }, [id, getSignedUrl]);
+  }, [id, getSignedUrl, ensureGroupToken]);
 
   useEffect(() => {
     fetchDetail();
@@ -104,11 +134,16 @@ export default function EnvelopeDetail() {
     a.click();
   };
 
-  const copySigningLink = () => {
+  const copySigningLink = async () => {
     if (!envelope) return;
     const publicOrigin = "https://rentalwaivers.com";
+    const groupToken = envelope.is_group_waiver ? await ensureGroupToken(envelope) : null;
+    if (envelope.is_group_waiver && !groupToken) {
+      toast.error("Unable to create this group signing link. Please refresh and try again.");
+      return;
+    }
     const url = envelope.is_group_waiver
-      ? `${publicOrigin}/waiver/${envelope.group_token}`
+      ? `${publicOrigin}/waiver/${groupToken}`
       : `${publicOrigin}/sign/${envelope.signing_token}`;
     navigator.clipboard.writeText(url);
     toast.success("Signing link copied");
