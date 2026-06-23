@@ -181,8 +181,9 @@ export default function SigningPage() {
       });
 
       supabase.functions.invoke("send-completion-email", {
-        body: { envelope_id: res.envelope_id },
+        body: { envelope_id: res.envelope_id, signing_token: token },
       }).catch(() => {});
+
 
       // Remember this signer for the next visit (any device, any business).
       if (envelope?.signer_email) {
