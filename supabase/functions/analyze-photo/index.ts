@@ -36,13 +36,27 @@ serve(async (req) => {
     const { job_id } = await req.json();
     if (!job_id) throw new Error("job_id required");
 
-    // Get job
+    // Resolve caller's org
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("org_id")
+      .eq("user_id", userId)
+      .single();
+    if (!profile?.org_id) throw new Error("No organization found");
+
+    // Get job and verify ownership
     const { data: job, error: jobError } = await supabase
       .from("photo_jobs")
       .select("*")
       .eq("id", job_id)
       .single();
     if (jobError || !job) throw new Error("Job not found");
+    if (job.org_id !== profile.org_id) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
 
     // Update status
     await supabase.from("photo_jobs").update({ status: "analyzing" }).eq("id", job_id);
