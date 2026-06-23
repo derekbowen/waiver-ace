@@ -120,6 +120,23 @@ serve(async (req) => {
       });
     }
 
+    // If analysis_id supplied, verify it belongs to caller's org
+    if (analysis_id) {
+      const { data: analysisRow, error: analysisErr } = await serviceClient
+        .from("listing_analyses").select("org_id").eq("id", analysis_id).single();
+      if (analysisErr || !analysisRow) {
+        return new Response(JSON.stringify({ error: "Analysis not found" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (analysisRow.org_id !== profile.org_id) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+
     // Deduct 40 credits
     const { data: deductResult } = await serviceClient.rpc("deduct_credit", {
       p_org_id: profile.org_id,
