@@ -71,7 +71,9 @@ serve(async (req) => {
       .eq("org_id", profile.org_id)
       .is("stripe_customer_id", null);
 
-    const origin = req.headers.get("origin") || "http://localhost:3000";
+    // Hardcoded production origin — never trust the caller-supplied Origin header
+    // for post-payment redirect URLs (open-redirect / phishing prevention).
+    const origin = Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
 
     const sessionParams: any = {
       customer: customerId,
