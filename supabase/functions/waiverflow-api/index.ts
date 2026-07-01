@@ -438,7 +438,8 @@ serve(async (req: Request) => {
         metadata: { source: "api" },
       });
 
-      const baseUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "https://waiverflow.app";
+      // Hardcoded production origin — never trust caller Origin header for signer email links.
+      const baseUrl = Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
       const signingUrl = `${baseUrl}/sign/${envelope.signing_token}`;
 
       // Send email if requested

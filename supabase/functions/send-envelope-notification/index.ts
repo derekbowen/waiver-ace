@@ -29,8 +29,8 @@ serve(async (req) => {
     );
 
     const token = authHeader.replace("Bearer ", "");
-    // Check for service-role key first
     const isServiceRole = token === Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    let callerUserId: string | null = null;
     if (!isServiceRole) {
       const { data: { user }, error: userError } = await supabaseAuth.auth.getUser(token);
       if (userError || !user) {
@@ -39,6 +39,7 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+      callerUserId = user.id;
     }
 
     const { envelope_id, event_type } = await req.json();
@@ -56,6 +57,21 @@ serve(async (req) => {
       .single();
 
     if (envErr || !envelope) throw new Error("Envelope not found");
+
+    // Enforce org ownership for non-service-role callers
+    if (!isServiceRole) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("org_id")
+        .eq("user_id", callerUserId!)
+        .single();
+      if (!profile?.org_id || profile.org_id !== envelope.org_id) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     const { data: org } = await supabase
       .from("organizations")
