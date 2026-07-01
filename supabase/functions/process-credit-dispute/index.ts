@@ -48,80 +48,46 @@ Deno.serve(async (req) => {
 
     const admin = createClient(supabaseUrl, serviceKey);
 
-    // Get user's org
-    const { data: orgId, error: orgError } = await admin.rpc("get_user_org_id", { _user_id: user.id });
-    if (orgError || !orgId) {
-      console.error("get_user_org_id error:", orgError);
-      return new Response(JSON.stringify({ error: "No organization found" }), {
+    // Atomic: locks wallet row, checks 2-dispute cap, inserts dispute + grants credits
+    // in a single SECURITY DEFINER function so concurrent requests cannot bypass the cap.
+    const { data: result, error: rpcError } = await admin.rpc("process_credit_dispute_atomic", {
+      p_user_id: user.id,
+      p_reason: reason.trim(),
+      p_details: details ? String(details) : null,
+      p_credits_requested: amount,
+    });
+
+    if (rpcError || !result) {
+      console.error("process_credit_dispute_atomic error:", rpcError);
+      return new Response(JSON.stringify({ error: "Failed to process dispute. Please try again." }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!(result as any).success) {
+      const err = (result as any).error;
+      if (err === "limit_reached") {
+        return new Response(
+          JSON.stringify({
+            error: "You've already used your 2 automatic reimbursements. Please contact support for further assistance.",
+            limit_reached: true,
+          }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(JSON.stringify({ error: err || "Failed to process dispute" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Check how many approved disputes this org already has
-    const { count, error: countError } = await admin
-      .from("credit_disputes")
-      .select("*", { count: "exact", head: true })
-      .eq("org_id", orgId)
-      .eq("status", "approved");
-
-    if (countError) {
-      console.error("count disputes error:", countError);
-      return new Response(JSON.stringify({ error: "Failed to check dispute history" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    if ((count ?? 0) >= 2) {
-      return new Response(
-        JSON.stringify({
-          error: "You've already used your 2 automatic reimbursements. Please contact support for further assistance.",
-          limit_reached: true,
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Grant credits FIRST and verify it worked
-    const { data: newBalance, error: creditError } = await admin.rpc("add_credits_internal", {
-      p_org_id: orgId,
-      p_amount: amount,
-      p_reference_id: `dispute-auto-${Date.now()}`,
-      p_type: "refund",
-      p_notes: `Auto-reimbursement: ${reason.trim().substring(0, 100)}`,
-    });
-
-    if (creditError || newBalance === null || newBalance === undefined) {
-      console.error("add_credits_internal error:", creditError, "newBalance:", newBalance);
-      return new Response(JSON.stringify({ error: "Failed to add credits to your account. Please try again." }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Record the dispute ONLY after credits were successfully added
-    const { error: insertError } = await admin.from("credit_disputes").insert({
-      org_id: orgId,
-      user_id: user.id,
-      reason: reason.trim().substring(0, 200),
-      details: details ? String(details).trim().substring(0, 1000) : null,
-      credits_requested: amount,
-      credits_granted: amount,
-      status: "approved",
-    });
-
-    if (insertError) {
-      console.error("insert dispute record error:", insertError);
-      // Credits were already added — still return success but log the error
-    }
-
     return new Response(
       JSON.stringify({
         success: true,
-        credits_granted: amount,
-        new_balance: newBalance,
-        remaining_disputes: 2 - ((count ?? 0) + 1),
+        credits_granted: (result as any).credits_granted,
+        new_balance: (result as any).new_balance,
+        remaining_disputes: (result as any).remaining_disputes,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
