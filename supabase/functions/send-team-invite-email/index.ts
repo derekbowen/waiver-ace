@@ -67,7 +67,7 @@ serve(async (req) => {
       .from("team_invites")
       .select("id, email, role, org_id")
       .eq("org_id", profile.org_id)
-      .eq("status", "pending");
+      .is("accepted_at", null);
     if (invite_id) {
       inviteQuery = inviteQuery.eq("id", invite_id);
     } else if (bodyEmail) {
