@@ -1341,6 +1341,15 @@ export type Database = {
         }
         Returns: number
       }
+      process_credit_dispute_atomic: {
+        Args: {
+          p_credits_requested: number
+          p_details: string
+          p_reason: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
