@@ -298,6 +298,32 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Validate any caller-controlled URLs in templateData (prevents phishing via
+  // platform-branded emails linking to arbitrary domains).
+  const supabaseHost = new URL(supabaseUrl).host
+  const allowedHosts = new Set<string>([
+    'rentalwaivers.com', 'www.rentalwaivers.com', supabaseHost,
+  ])
+  const urlKeys = ['downloadUrl', 'download_url', 'actionUrl', 'action_url', 'url']
+  for (const k of urlKeys) {
+    const v = templateData[k]
+    if (typeof v !== 'string' || v.length === 0) continue
+    try {
+      const parsed = new URL(v)
+      if (parsed.protocol !== 'https:' || !allowedHosts.has(parsed.host)) {
+        return new Response(
+          JSON.stringify({ error: `templateData.${k} must be an https URL on an allowed domain` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    } catch {
+      return new Response(
+        JSON.stringify({ error: `templateData.${k} is not a valid URL` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+  }
+
   // 4. Render React Email template to HTML and plain text
   const html = await renderAsync(
     React.createElement(template.component, templateData)
