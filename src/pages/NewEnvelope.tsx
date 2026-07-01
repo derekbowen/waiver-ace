@@ -29,6 +29,7 @@ export default function NewEnvelope() {
   const [hostId, setHostId] = useState("");
   const [customerId, setCustomerId] = useState("");
   const [expiresInDays, setExpiresInDays] = useState("7");
+  const [rentalDate, setRentalDate] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function NewEnvelope() {
           group_token: isGroupWaiver ? crypto.randomUUID() : null,
           credits_charged: cost.total,
           expires_at: expiresInDays && expiresInDays !== "none" ? new Date(Date.now() + Number(expiresInDays) * 86400000).toISOString() : null,
-          payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId },
+          payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId, rental_date: rentalDate || null },
         })
         .select()
         .single();
@@ -300,10 +301,28 @@ export default function NewEnvelope() {
           </Card>
 
           <Card>
+            <CardHeader><CardTitle className="text-base">Rental / Event Date</CardTitle></CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Label>Effective date on the waiver</Label>
+                <Input
+                  type="date"
+                  value={rentalDate}
+                  onChange={(e) => setRentalDate(e.target.value)}
+                  className="w-[220px]"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Optional. If set, this date is used for <code>{"{{date}}"}</code> and <code>{"{{rental_date}}"}</code> in the waiver instead of today's date.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
             <CardHeader><CardTitle className="text-base">Expiration</CardTitle></CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Label>Expires in (days)</Label>
+                <Label>Link expires in (days)</Label>
                 <Select value={expiresInDays} onValueChange={setExpiresInDays}>
                   <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
                   <SelectContent>

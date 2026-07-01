@@ -76,7 +76,11 @@ export default function GroupSigningPage() {
         rendered = rendered.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), String(value || ""));
       });
       rendered = rendered.replace(/\{\{customer_name\}\}/g, "");
-      rendered = rendered.replace(/\{\{date\}\}/g, new Date().toLocaleDateString());
+      const effectiveDate = payload.rental_date
+        ? new Date(payload.rental_date + "T00:00:00").toLocaleDateString()
+        : new Date().toLocaleDateString();
+      rendered = rendered.replace(/\{\{date\}\}/g, effectiveDate);
+      rendered = rendered.replace(/\{\{rental_date\}\}/g, effectiveDate);
       setTemplateContent(rendered);
 
       setSignatures(Array.isArray(env.signatures) ? env.signatures : []);
