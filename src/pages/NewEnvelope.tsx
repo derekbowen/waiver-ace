@@ -29,6 +29,7 @@ export default function NewEnvelope() {
   const [hostId, setHostId] = useState("");
   const [customerId, setCustomerId] = useState("");
   const [expiresInDays, setExpiresInDays] = useState("7");
+  const [rentalDate, setRentalDate] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
