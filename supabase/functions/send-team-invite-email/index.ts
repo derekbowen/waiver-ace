@@ -13,28 +13,95 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
     );
 
-    const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
-    const { data: authData } = await supabase.auth.getUser(token);
-    if (!authData.user) throw new Error("Not authenticated");
+    const { data: authData } = await userClient.auth.getUser(token);
+    if (!authData.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
-    const { email, role, org_name } = await req.json();
-    if (!email) throw new Error("email is required");
+    const { invite_id, email: bodyEmail } = await req.json();
+
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Verify caller has admin role in their org
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("org_id")
+      .eq("user_id", authData.user.id)
+      .single();
+    if (!profile?.org_id) {
+      return new Response(JSON.stringify({ error: "No organization" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { data: isAdmin } = await admin.rpc("has_role", {
+      _user_id: authData.user.id,
+      _role: "admin",
+    });
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Look up a real pending invite from team_invites; source email/role from DB, never trust caller
+    let inviteQuery = admin
+      .from("team_invites")
+      .select("id, email, role, org_id")
+      .eq("org_id", profile.org_id)
+      .eq("status", "pending");
+    if (invite_id) {
+      inviteQuery = inviteQuery.eq("id", invite_id);
+    } else if (bodyEmail) {
+      inviteQuery = inviteQuery.eq("email", String(bodyEmail).trim().toLowerCase());
+    } else {
+      return new Response(JSON.stringify({ error: "invite_id or email is required" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { data: invite } = await inviteQuery.maybeSingle();
+    if (!invite) {
+      return new Response(JSON.stringify({ error: "No matching pending invite" }), {
+        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Look up org name server-side
+    const { data: org } = await admin
+      .from("organizations")
+      .select("name")
+      .eq("id", invite.org_id)
+      .single();
+    const orgName = org?.name || "Rental Waivers";
 
     const baseUrl = Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
     const signupUrl = `${baseUrl}/login`;
 
     const html = buildEmail({
-      previewText: `You've been invited to join ${org_name || "a team"} on Rental Waivers`,
-      orgName: org_name || "Rental Waivers",
+      previewText: `You've been invited to join ${orgName} on Rental Waivers`,
+      orgName,
       greeting: `Hi there,`,
       sections: [
-        { type: "text", content: `You've been invited to join <strong>${org_name || "a team"}</strong> on Rental Waivers as a <strong>${role || "team member"}</strong>.` },
+        { type: "text", content: `You've been invited to join <strong>${orgName}</strong> on Rental Waivers as a <strong>${invite.role || "team member"}</strong>.` },
         { type: "text", content: "Rental Waivers helps rental hosts collect liability waivers from guests — automatically and legally. Accept the invite below to get started." },
         { type: "button", content: "Accept Invite & Sign Up", href: signupUrl },
         { type: "small", content: "If you already have an account, just sign in with this email address and you'll be added to the team automatically." },
@@ -43,8 +110,8 @@ serve(async (req) => {
     });
 
     const result = await sendEmail({
-      to: email,
-      subject: `You're invited to join ${org_name || "a team"} on Rental Waivers`,
+      to: invite.email,
+      subject: `You're invited to join ${orgName} on Rental Waivers`,
       html,
     });
 
@@ -54,8 +121,9 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 400,
+    console.error("send-team-invite-email error:", err);
+    return new Response(JSON.stringify({ error: "Failed to send invite" }), {
+      status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
