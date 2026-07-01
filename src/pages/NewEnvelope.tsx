@@ -101,7 +101,7 @@ export default function NewEnvelope() {
           group_token: isGroupWaiver ? crypto.randomUUID() : null,
           credits_charged: cost.total,
           expires_at: expiresInDays && expiresInDays !== "none" ? new Date(Date.now() + Number(expiresInDays) * 86400000).toISOString() : null,
-          payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId },
+          payload: { booking_id: bookingId, listing_id: listingId, host_id: hostId, customer_id: customerId, rental_date: rentalDate || null },
         })
         .select()
         .single();
