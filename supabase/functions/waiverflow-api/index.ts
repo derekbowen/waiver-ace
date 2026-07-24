@@ -202,7 +202,9 @@ async function dispatchWebhooks(
             "X-Webhook-Event": eventType,
           },
           body,
+          redirect: "manual",
         });
+
 
         await supabase.from("webhook_deliveries").insert({
           webhook_endpoint_id: ep.id,
