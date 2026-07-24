@@ -95,6 +95,59 @@ function generateSigningEmailHtml({ signerName, signingUrl, templateName, organi
   `;
 }
 
+function ipIsBlocked(ip: string): boolean {
+  // IPv6 loopback / unspecified / link-local / unique-local
+  if (ip === "::1" || ip === "::" || ip.toLowerCase().startsWith("fe80:") ||
+      ip.toLowerCase().startsWith("fc") || ip.toLowerCase().startsWith("fd")) return true;
+  // IPv4-mapped IPv6 -> extract
+  const mapped = ip.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i);
+  const v4 = mapped ? mapped[1] : ip;
+  const parts = v4.split(".").map(Number);
+  if (parts.length !== 4 || parts.some((n) => Number.isNaN(n) || n < 0 || n > 255)) {
+    // Not IPv4 - if it was IPv6 and passed checks above, allow
+    return ip.includes(":") ? false : true;
+  }
+  const [a, b] = parts;
+  if (a === 10) return true;
+  if (a === 127) return true;
+  if (a === 0) return true;
+  if (a === 169 && b === 254) return true; // link-local + cloud metadata
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
+  if (a >= 224) return true; // multicast/reserved
+  return false;
+}
+
+async function isSafeWebhookUrl(rawUrl: string): Promise<boolean> {
+  let url: URL;
+  try { url = new URL(rawUrl); } catch { return false; }
+  if (url.protocol !== "https:") return false;
+  const host = url.hostname.replace(/^\[|\]$/g, "");
+  if (!host || host.toLowerCase() === "localhost" || host.endsWith(".localhost") ||
+      host.endsWith(".internal") || host.endsWith(".local")) return false;
+  // If host is a literal IP, check directly
+  const isLiteralIp = /^[\d.]+$/.test(host) || host.includes(":");
+  try {
+    if (isLiteralIp) {
+      if (ipIsBlocked(host)) return false;
+    } else {
+      const [a, aaaa] = await Promise.allSettled([
+        (Deno as any).resolveDns(host, "A"),
+        (Deno as any).resolveDns(host, "AAAA"),
+      ]);
+      const ips: string[] = [];
+      if (a.status === "fulfilled") ips.push(...(a.value as string[]));
+      if (aaaa.status === "fulfilled") ips.push(...(aaaa.value as string[]));
+      if (ips.length === 0) return false;
+      if (ips.some(ipIsBlocked)) return false;
+    }
+  } catch {
+    return false;
+  }
+  return true;
+}
+
 async function dispatchWebhooks(
   supabase: any,
   orgId: string,
@@ -114,6 +167,19 @@ async function dispatchWebhooks(
 
     for (const ep of endpoints) {
       if (!(ep.events as string[])?.includes(eventType)) continue;
+
+      if (!(await isSafeWebhookUrl(ep.url))) {
+        await supabase.from("webhook_deliveries").insert({
+          webhook_endpoint_id: ep.id,
+          event_type: eventType,
+          payload,
+          response_status: 0,
+          response_body: "Blocked: webhook URL failed SSRF safety validation (must be https to a public host)",
+        });
+        continue;
+      }
+
+
 
       // HMAC-SHA256 signature using the stored secret hash as the signing key
       const encoder = new TextEncoder();
