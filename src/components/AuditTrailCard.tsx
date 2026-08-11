@@ -74,6 +74,26 @@ export function AuditTrailCard({ envelope }: AuditTrailCardProps) {
           </div>
         )}
 
+        {Array.isArray(sigData.minors) && sigData.minors.length > 0 && (
+          <div className="flex items-start gap-3">
+            <Users className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+            <div>
+              <p className="text-muted-foreground">Minors covered (signed by guardian)</p>
+              <ul className="text-xs mt-1 space-y-0.5">
+                {sigData.minors.map((m: any, i: number) => (
+                  <li key={i}>
+                    {m?.name}
+                    {m?.age ? ` · age ${m.age}` : ""}
+                  </li>
+                ))}
+              </ul>
+              {sigData.guardian_attested && (
+                <p className="text-xs text-success mt-1">✓ Parent/legal guardian attestation given</p>
+              )}
+            </div>
+          </div>
+        )}
+
         {sigData.agreed_to_electronic_signing && (
           <div className="rounded-lg bg-success/10 border border-success/20 p-3">
             <p className="text-xs font-medium text-success">
