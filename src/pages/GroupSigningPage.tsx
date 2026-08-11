@@ -32,8 +32,16 @@ export default function GroupSigningPage() {
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
+  const [guardianAttested, setGuardianAttested] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const addMinor = () => setMinors((m) => [...m, { name: "", age: "" }]);
+  const removeMinor = (i: number) => setMinors((m) => m.filter((_, idx) => idx !== i));
+  const updateMinor = (i: number, field: "name" | "age", value: string) =>
+    setMinors((m) => m.map((row, idx) => (idx === i ? { ...row, [field]: value } : row)));
+
 
   const loadGroupWaiver = useCallback(async () => {
     if (!groupToken) return null;
@@ -120,6 +128,20 @@ export default function GroupSigningPage() {
       toast.error("Please take a photo before signing");
       return;
     }
+    const cleanMinors = minors
+      .map((m) => ({ name: m.name.trim(), age: m.age.trim() }))
+      .filter((m) => m.name.length > 0);
+    if (minors.some((m) => !m.name.trim())) {
+      toast.error("Please enter a name for each minor, or remove the empty row");
+      return;
+    }
+    if (cleanMinors.length > 0 && !guardianAttested) {
+      toast.error("Please confirm you are the parent or legal guardian of the minors listed");
+      return;
+    }
+
+    const guardianConsentText =
+      "I certify that I am the parent or legal guardian of the minors listed (or am authorized by their parent/legal guardian), and I sign this waiver on their behalf, agreeing that all of its terms apply equally to them.";
 
     setSubmitting(true);
     try {
@@ -146,7 +168,12 @@ export default function GroupSigningPage() {
           agreed_to_electronic_signing: true,
           signed_at_utc: now,
           user_agent: navigator.userAgent,
+          minors: cleanMinors,
+          minor_names: cleanMinors.map((m) => (m.age ? `${m.name} (age ${m.age})` : m.name)).join(", "),
+          guardian_attested: cleanMinors.length > 0 ? true : undefined,
+          guardian_consent_text: cleanMinors.length > 0 ? guardianConsentText : undefined,
         },
+
         p_user_agent: navigator.userAgent,
         p_photo_storage_key: photoStorageKey,
       });
@@ -244,7 +271,7 @@ export default function GroupSigningPage() {
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setScrolledToEnd(false); setVideoWatched(false); }}>
+          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setMinors([]); setGuardianAttested(false); setScrolledToEnd(false); setVideoWatched(false); }}>
             Next Person — Sign Another
           </Button>
         </div>
@@ -296,7 +323,14 @@ export default function GroupSigningPage() {
                 onScroll={handleScroll}
                 className="max-h-[400px] overflow-y-auto p-6 text-sm leading-relaxed whitespace-pre-wrap"
               >
-                {templateContent}
+                {templateContent.replace(
+                  /\{\{minor_names\}\}/g,
+                  minors
+                    .filter((m) => m.name.trim())
+                    .map((m) => (m.age.trim() ? `${m.name.trim()} (age ${m.age.trim()})` : m.name.trim()))
+                    .join(", ")
+                )}
+
               </div>
               {!scrolledToEnd && (
                 <div className="border-t px-6 py-3 text-center text-xs text-muted-foreground bg-accent/50">
@@ -328,6 +362,60 @@ export default function GroupSigningPage() {
                   <Label>Email (optional)</Label>
                   <Input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="john@example.com" />
                   <p className="text-xs text-muted-foreground">For your records — we'll send you a copy if provided</p>
+                </div>
+
+                <div className="space-y-3 rounded-lg border p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <Label className="text-sm">Minors / dependents (optional)</Label>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Add any children under 18 you are signing for as their parent or legal guardian.
+                      </p>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={addMinor}>
+                      Add minor
+                    </Button>
+                  </div>
+
+                  {minors.length > 0 && (
+                    <div className="space-y-2">
+                      {minors.map((m, i) => (
+                        <div key={i} className="flex gap-2 items-center">
+                          <Input
+                            value={m.name}
+                            onChange={(e) => updateMinor(i, "name", e.target.value)}
+                            placeholder="Child's full name"
+                            className="flex-1"
+                          />
+                          <Input
+                            value={m.age}
+                            onChange={(e) => updateMinor(i, "age", e.target.value)}
+                            placeholder="Age"
+                            inputMode="numeric"
+                            maxLength={2}
+                            className="w-20"
+                          />
+                          <Button type="button" variant="ghost" size="sm" onClick={() => removeMinor(i)}>
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+
+                      <div className="flex items-start gap-3 pt-1">
+                        <Checkbox
+                          id="guardian"
+                          checked={guardianAttested}
+                          onCheckedChange={(c) => setGuardianAttested(c === true)}
+                        />
+                        <Label htmlFor="guardian" className="text-xs cursor-pointer leading-relaxed">
+                          I certify that I am the parent or legal guardian of the minors listed above (or am authorized
+                          by their parent/legal guardian), and I sign this waiver on their behalf, agreeing that all of
+                          its terms apply equally to them.
+                        </Label>
+                      </div>
+                    </div>
+                  )}
+
                 </div>
 
                 <div className="space-y-2">
