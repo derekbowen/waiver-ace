@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 const defaultVariables = [
   "customer_name", "booking_id", "listing_id", "date", "time",
-  "host_name", "address_redacted", "rules", "state",
+  "host_name", "address_redacted", "rules", "state", "minor_names",
 ];
 
 // Questions the wizard asks per category — these fill in template variables
@@ -728,6 +728,8 @@ type WizardStep = "category" | "details" | "extras" | "preview";
 export default function TemplateEditor() {
   const { profile } = useAuth();
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditing = Boolean(id);
 
   // Wizard state
   const [step, setStep] = useState<WizardStep>("category");
@@ -747,6 +749,55 @@ export default function TemplateEditor() {
   const [customContent, setCustomContent] = useState("");
 
   const [saving, setSaving] = useState(false);
+  const [loadingTemplate, setLoadingTemplate] = useState(isEditing);
+  const [currentVersionId, setCurrentVersionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id || !profile?.org_id) return;
+
+    const loadTemplate = async () => {
+      setLoadingTemplate(true);
+      try {
+        const { data: template, error: templateError } = await supabase
+          .from("templates")
+          .select("id, name, require_photo, require_video, video_url, default_expiration_days")
+          .eq("id", id)
+          .eq("org_id", profile.org_id)
+          .single();
+        if (templateError) throw templateError;
+
+        const { data: version, error: versionError } = await supabase
+          .from("template_versions")
+          .select("id, content")
+          .eq("template_id", id)
+          .eq("is_current", true)
+          .maybeSingle();
+        if (versionError) throw versionError;
+
+        const storedContent = version?.content as { body?: string } | string | null;
+        setCustomName(template.name || "");
+        setCustomContent(
+          typeof storedContent === "string" ? storedContent : storedContent?.body || "",
+        );
+        setRequirePhoto(template.require_photo === true);
+        setRequireVideo(template.require_video === true);
+        setVideoUrl(template.video_url || "");
+        setDefaultExpirationDays(
+          template.default_expiration_days ? String(template.default_expiration_days) : "",
+        );
+        setCurrentVersionId(version?.id || null);
+        setSelectedPreset(TEMPLATE_PRESETS[0]);
+        setStep("extras");
+      } catch (err: any) {
+        toast.error(err.message || "Unable to load template");
+        navigate("/templates");
+      } finally {
+        setLoadingTemplate(false);
+      }
+    };
+
+    loadTemplate();
+  }, [id, navigate, profile?.org_id]);
 
   const setAnswer = (variable: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [variable]: value }));
@@ -809,37 +860,61 @@ export default function TemplateEditor() {
     setSaving(true);
     try {
       const content = buildContent();
-      const { data: template, error: tErr } = await supabase
-        .from("templates")
-        .insert({
+      const templateValues = {
           org_id: profile.org_id,
           name: templateName.trim(),
           description: getTemplateDescription() || null,
-          created_by: (await supabase.auth.getUser()).data.user?.id,
           require_photo: requirePhoto,
           require_video: requireVideo,
           video_url: requireVideo && videoUrl.trim() ? videoUrl.trim() : null,
           default_expiration_days: defaultExpirationDays ? parseInt(defaultExpirationDays) : null,
-        } as any)
-        .select()
-        .single();
+      };
 
-      if (tErr) throw tErr;
+      let template: { id: string };
+      if (isEditing && id) {
+        const { data, error } = await supabase
+          .from("templates")
+          .update(templateValues as any)
+          .eq("id", id)
+          .eq("org_id", profile.org_id)
+          .select("id")
+          .single();
+        if (error) throw error;
+        template = data;
+      } else {
+        const { data, error } = await supabase
+          .from("templates")
+          .insert({
+            ...templateValues,
+            created_by: (await supabase.auth.getUser()).data.user?.id,
+          } as any)
+          .select("id")
+          .single();
+        if (error) throw error;
+        template = data;
+      }
 
       const detectedVars = defaultVariables.filter((v) => content.includes(`{{${v}}}`));
-      const { error: vErr } = await supabase
-        .from("template_versions")
-        .insert({
-          template_id: template.id,
-          version: 1,
-          content: { body: content },
-          variables: detectedVars,
-          is_current: true,
-        });
+      const versionValues = {
+        content: { body: content },
+        variables: detectedVars,
+      };
+      const { error: vErr } = currentVersionId
+        ? await supabase
+            .from("template_versions")
+            .update(versionValues)
+            .eq("id", currentVersionId)
+            .eq("template_id", template.id)
+        : await supabase.from("template_versions").insert({
+            template_id: template.id,
+            version: 1,
+            ...versionValues,
+            is_current: true,
+          });
 
       if (vErr) throw vErr;
 
-      toast.success("Template created!");
+      toast.success(isEditing ? "Template updated!" : "Template created!");
       navigate("/templates");
     } catch (err: any) {
       toast.error(err.message);
@@ -855,6 +930,16 @@ export default function TemplateEditor() {
   const allQuestionsAnswered = questions.every(
     (q) => q.variable === "rules" || (answers[q.variable] && answers[q.variable].trim())
   );
+
+  if (loadingTemplate) {
+    return (
+      <DashboardLayout>
+        <div className="flex justify-center py-16">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   // ─── Step 1: Pick a category ───────────────────────────────────────
   if (step === "category") {
@@ -986,15 +1071,15 @@ export default function TemplateEditor() {
       <DashboardLayout>
         <div className="animate-fade-in max-w-2xl">
           <div className="flex items-center gap-4 mb-8">
-            <Button variant="ghost" size="icon" onClick={() => setStep(isBlank ? "category" : "details")}>
+            <Button variant="ghost" size="icon" onClick={() => isEditing ? navigate("/templates") : setStep(isBlank ? "category" : "details")}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
               <h1 className="font-heading text-2xl font-bold">
-                {isBlank ? "Custom Template" : "Optional Extras"}
+                 {isEditing ? "Edit Template" : isBlank ? "Custom Template" : "Optional Extras"}
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
-                {isBlank ? "Name your template and add your waiver text" : "Add photo verification or a safety video"}
+                 {isEditing ? "Update the waiver text and signing options" : isBlank ? "Name your template and add your waiver text" : "Add photo verification or a safety video"}
               </p>
             </div>
           </div>
@@ -1098,7 +1183,7 @@ export default function TemplateEditor() {
             </Card>
 
             <div className="flex justify-between">
-              <Button variant="outline" onClick={() => setStep(isBlank ? "category" : "details")}>
+              <Button variant="outline" onClick={() => isEditing ? navigate("/templates") : setStep(isBlank ? "category" : "details")}>
                 <ArrowLeft className="h-4 w-4 mr-2" /> Back
               </Button>
               {isBlank ? (
@@ -1107,7 +1192,7 @@ export default function TemplateEditor() {
                   disabled={saving || !customName.trim()}
                   className="gap-2"
                 >
-                  <Save className="h-4 w-4" /> {saving ? "Creating..." : "Create Template"}
+                   <Save className="h-4 w-4" /> {saving ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save Changes" : "Create Template")}
                 </Button>
               ) : (
                 <Button onClick={() => setStep("preview")} className="gap-2">
