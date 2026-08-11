@@ -1218,7 +1218,7 @@ export default function TemplateEditor() {
               <div className="flex gap-2">
                 {isEditing && id && (
                   <Button variant="outline" className="gap-2" onClick={() => navigate(`/templates/${id}/versions`)}>
-                    <History className="h-4 w-4" /> Version history
+                    <HistoryIcon className="h-4 w-4" /> Version history
                   </Button>
                 )}
                 <Button variant="outline" className="gap-2" onClick={() => setPreviewOpen(true)}>
