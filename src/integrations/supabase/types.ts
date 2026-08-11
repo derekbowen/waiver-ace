@@ -1359,6 +1359,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      schema_fingerprint: { Args: never; Returns: Json }
       sign_envelope: {
         Args: {
           p_ip_address?: string
