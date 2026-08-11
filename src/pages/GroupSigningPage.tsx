@@ -128,6 +128,20 @@ export default function GroupSigningPage() {
       toast.error("Please take a photo before signing");
       return;
     }
+    const cleanMinors = minors
+      .map((m) => ({ name: m.name.trim(), age: m.age.trim() }))
+      .filter((m) => m.name.length > 0);
+    if (minors.some((m) => !m.name.trim())) {
+      toast.error("Please enter a name for each minor, or remove the empty row");
+      return;
+    }
+    if (cleanMinors.length > 0 && !guardianAttested) {
+      toast.error("Please confirm you are the parent or legal guardian of the minors listed");
+      return;
+    }
+
+    const guardianConsentText =
+      "I certify that I am the parent or legal guardian of the minors listed (or am authorized by their parent/legal guardian), and I sign this waiver on their behalf, agreeing that all of its terms apply equally to them.";
 
     setSubmitting(true);
     try {
@@ -154,7 +168,12 @@ export default function GroupSigningPage() {
           agreed_to_electronic_signing: true,
           signed_at_utc: now,
           user_agent: navigator.userAgent,
+          minors: cleanMinors,
+          minor_names: cleanMinors.map((m) => (m.age ? `${m.name} (age ${m.age})` : m.name)).join(", "),
+          guardian_attested: cleanMinors.length > 0 ? true : undefined,
+          guardian_consent_text: cleanMinors.length > 0 ? guardianConsentText : undefined,
         },
+
         p_user_agent: navigator.userAgent,
         p_photo_storage_key: photoStorageKey,
       });
