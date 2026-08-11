@@ -1185,24 +1185,40 @@ export default function TemplateEditor() {
               </CardContent>
             </Card>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-3">
               <Button variant="outline" onClick={() => isEditing ? navigate("/templates") : setStep(isBlank ? "category" : "details")}>
                 <ArrowLeft className="h-4 w-4 mr-2" /> Back
               </Button>
-              {isBlank ? (
-                <Button
-                  onClick={handleSave}
-                  disabled={saving || !customName.trim()}
-                  className="gap-2"
-                >
-                   <Save className="h-4 w-4" /> {saving ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save Changes" : "Create Template")}
+              <div className="flex gap-2">
+                <Button variant="outline" className="gap-2" onClick={() => setPreviewOpen(true)}>
+                  <Eye className="h-4 w-4" /> Preview
                 </Button>
-              ) : (
-                <Button onClick={() => setStep("preview")} className="gap-2">
-                  Preview <Eye className="h-4 w-4" />
-                </Button>
-              )}
+                {isBlank ? (
+                  <Button
+                    onClick={handleSave}
+                    disabled={saving || !customName.trim()}
+                    className="gap-2"
+                  >
+                     <Save className="h-4 w-4" /> {saving ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save Changes" : "Create Template")}
+                  </Button>
+                ) : (
+                  <Button onClick={() => setStep("preview")} className="gap-2">
+                    Continue <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
+
+            <TemplatePreviewDialog
+              open={previewOpen}
+              onOpenChange={setPreviewOpen}
+              name={getTemplateName()}
+              content={buildContent()}
+              requirePhoto={requirePhoto}
+              requireVideo={requireVideo}
+              videoUrl={videoUrl}
+            />
+
           </div>
         </div>
       </DashboardLayout>
