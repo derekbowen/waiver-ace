@@ -1216,6 +1216,11 @@ export default function TemplateEditor() {
                 <ArrowLeft className="h-4 w-4 mr-2" /> Back
               </Button>
               <div className="flex gap-2">
+                {isEditing && id && (
+                  <Button variant="outline" className="gap-2" onClick={() => navigate(`/templates/${id}/versions`)}>
+                    <History className="h-4 w-4" /> Version history
+                  </Button>
+                )}
                 <Button variant="outline" className="gap-2" onClick={() => setPreviewOpen(true)}>
                   <Eye className="h-4 w-4" /> Preview
                 </Button>
