@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { TemplatePreviewDialog, fillSampleValues } from "@/components/TemplatePreviewDialog";
 
 const defaultVariables = [
   "customer_name", "booking_id", "listing_id", "date", "time",
