@@ -6,7 +6,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { QrCodeDialog } from "@/components/QrCodeDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, FileText, ChevronRight, Copy, Loader2, Pencil } from "lucide-react";
+import { Plus, FileText, ChevronRight, Copy, Loader2, Pencil, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 
 interface Template {
@@ -151,7 +151,7 @@ export default function Templates() {
                         title="Version history"
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/templates/${t.id}/versions`); }}
                       >
-                        <History className="h-4 w-4" />
+                        <HistoryIcon className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
