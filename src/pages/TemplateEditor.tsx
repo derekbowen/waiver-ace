@@ -753,6 +753,7 @@ export default function TemplateEditor() {
   const [loadingTemplate, setLoadingTemplate] = useState(isEditing);
   const [currentVersionId, setCurrentVersionId] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [originalContent, setOriginalContent] = useState<string | null>(null);
 
 
   useEffect(() => {
