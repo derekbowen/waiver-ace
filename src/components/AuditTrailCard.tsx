@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Globe, Clock, Monitor, Hash } from "lucide-react";
+import { Shield, Globe, Clock, Monitor, Hash, Users } from "lucide-react";
 import { format } from "date-fns";
 
 interface AuditTrailCardProps {
@@ -70,6 +70,26 @@ export function AuditTrailCard({ envelope }: AuditTrailCardProps) {
             <div>
               <p className="text-muted-foreground">PDF SHA-256</p>
               <p className="font-mono text-xs break-all">{envelope.pdf_hash}</p>
+            </div>
+          </div>
+        )}
+
+        {Array.isArray(sigData.minors) && sigData.minors.length > 0 && (
+          <div className="flex items-start gap-3">
+            <Users className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+            <div>
+              <p className="text-muted-foreground">Minors covered (signed by guardian)</p>
+              <ul className="text-xs mt-1 space-y-0.5">
+                {sigData.minors.map((m: any, i: number) => (
+                  <li key={i}>
+                    {m?.name}
+                    {m?.age ? ` · age ${m.age}` : ""}
+                  </li>
+                ))}
+              </ul>
+              {sigData.guardian_attested && (
+                <p className="text-xs text-success mt-1">✓ Parent/legal guardian attestation given</p>
+              )}
             </div>
           </div>
         )}

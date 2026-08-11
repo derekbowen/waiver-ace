@@ -206,6 +206,16 @@ serve(async (req: Request) => {
     lines.push(`IP Address: ${envelope.ip_address || "N/A"}`);
     lines.push(`User Agent: ${(sigData.user_agent || envelope.user_agent || "N/A").slice(0, 80)}`);
     lines.push(`Electronic Consent: ${sigData.agreed_to_electronic_signing ? "Yes" : "N/A"}`);
+    const pdfMinors = Array.isArray(sigData.minors) ? sigData.minors : [];
+    if (pdfMinors.length > 0) {
+      lines.push("");
+      lines.push("MINORS / DEPENDENTS COVERED");
+      for (const m of pdfMinors) {
+        lines.push(`- ${m?.name || ""}${m?.age ? ` (age ${m.age})` : ""}`);
+      }
+      lines.push(`Guardian Attestation: ${sigData.guardian_attested ? "Yes" : "N/A"}`);
+      if (sigData.guardian_consent_text) lines.push(String(sigData.guardian_consent_text));
+    }
 
     const pdfBytes = buildPdf(lines);
 
