@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Globe, Clock, Monitor, Hash } from "lucide-react";
+import { Shield, Globe, Clock, Monitor, Hash, Users } from "lucide-react";
 import { format } from "date-fns";
 
 interface AuditTrailCardProps {
