@@ -752,6 +752,8 @@ export default function TemplateEditor() {
   const [saving, setSaving] = useState(false);
   const [loadingTemplate, setLoadingTemplate] = useState(isEditing);
   const [currentVersionId, setCurrentVersionId] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
 
   useEffect(() => {
     if (!id || !profile?.org_id) return;
