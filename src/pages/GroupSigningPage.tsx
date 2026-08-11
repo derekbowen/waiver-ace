@@ -430,24 +430,35 @@ export default function GroupSigningPage() {
                   {minors.length > 0 && (
                     <div className="space-y-2">
                       {minors.map((m, i) => (
-                        <div key={i} className="flex gap-2 items-center">
-                          <Input
-                            value={m.name}
-                            onChange={(e) => updateMinor(i, "name", e.target.value)}
-                            placeholder="Child's full name"
-                            className="flex-1"
-                          />
-                          <Input
-                            value={m.age}
-                            onChange={(e) => updateMinor(i, "age", e.target.value)}
-                            placeholder="Age"
-                            inputMode="numeric"
-                            maxLength={2}
-                            className="w-20"
-                          />
-                          <Button type="button" variant="ghost" size="sm" onClick={() => removeMinor(i)}>
-                            Remove
-                          </Button>
+                        <div key={i} className="space-y-1">
+                          <div className="flex gap-2 items-center">
+                            <Input
+                              value={m.name}
+                              onChange={(e) => updateMinor(i, "name", e.target.value)}
+                              placeholder="Child's full name"
+                              maxLength={100}
+                              aria-invalid={!!minorErrors[i]}
+                              aria-describedby={minorErrors[i] ? `minor-error-${i}` : undefined}
+                              className={`flex-1 ${minorErrors[i] ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                            />
+                            <Input
+                              value={m.age}
+                              onChange={(e) => updateMinor(i, "age", e.target.value)}
+                              placeholder="Age"
+                              inputMode="numeric"
+                              maxLength={2}
+                              aria-invalid={!!minorErrors[i]}
+                              className={`w-20 ${minorErrors[i] ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                            />
+                            <Button type="button" variant="ghost" size="sm" onClick={() => removeMinor(i)}>
+                              Remove
+                            </Button>
+                          </div>
+                          {minorErrors[i] && (
+                            <p id={`minor-error-${i}`} className="text-xs text-destructive">
+                              {minorErrors[i]}
+                            </p>
+                          )}
                         </div>
                       ))}
 
@@ -455,7 +466,13 @@ export default function GroupSigningPage() {
                         <Checkbox
                           id="guardian"
                           checked={guardianAttested}
-                          onCheckedChange={(c) => setGuardianAttested(c === true)}
+                          aria-invalid={!!guardianError}
+                          aria-describedby={guardianError ? "guardian-error" : undefined}
+                          className={guardianError ? "border-destructive" : ""}
+                          onCheckedChange={(c) => {
+                            setGuardianAttested(c === true);
+                            if (c === true) setGuardianError(null);
+                          }}
                         />
                         <Label htmlFor="guardian" className="text-xs cursor-pointer leading-relaxed">
                           I certify that I am the parent or legal guardian of the minors listed above (or am authorized
@@ -463,6 +480,12 @@ export default function GroupSigningPage() {
                           its terms apply equally to them.
                         </Label>
                       </div>
+                      {guardianError && (
+                        <p id="guardian-error" className="text-xs text-destructive">
+                          {guardianError}
+                        </p>
+                      )}
+
                     </div>
                   )}
 
