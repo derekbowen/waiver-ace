@@ -131,8 +131,21 @@ export default function SigningPage() {
       toast.error("Please take a photo before signing");
       return;
     }
+    const cleanMinors = minors
+      .map((m) => ({ name: m.name.trim(), age: m.age.trim() }))
+      .filter((m) => m.name.length > 0);
+    if (minors.some((m) => !m.name.trim())) {
+      toast.error("Please enter a name for each minor, or remove the empty row");
+      return;
+    }
+    if (cleanMinors.length > 0 && !guardianAttested) {
+      toast.error("Please confirm you are the parent or legal guardian of the minors listed");
+      return;
+    }
 
     const consentText = "I agree to sign this document electronically and acknowledge this constitutes a legally binding signature. I consent to the collection and storage of my signature, name, IP address, device information, and timestamp for legal record-keeping purposes.";
+    const guardianConsentText =
+      "I certify that I am the parent or legal guardian of the minors listed (or am authorized by their parent/legal guardian), and I sign this waiver on their behalf, agreeing that all of its terms apply equally to them.";
     const consentGivenAt = new Date().toISOString();
 
     setSubmitting(true);
