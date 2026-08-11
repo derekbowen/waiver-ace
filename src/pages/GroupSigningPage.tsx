@@ -37,10 +37,55 @@ export default function GroupSigningPage() {
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const [minorErrors, setMinorErrors] = useState<Record<number, string>>({});
+  const [guardianError, setGuardianError] = useState<string | null>(null);
+
+  const clearMinorError = (i: number) =>
+    setMinorErrors((e) => {
+      if (!(i in e)) return e;
+      const next = { ...e };
+      delete next[i];
+      return next;
+    });
+
   const addMinor = () => setMinors((m) => [...m, { name: "", age: "" }]);
-  const removeMinor = (i: number) => setMinors((m) => m.filter((_, idx) => idx !== i));
-  const updateMinor = (i: number, field: "name" | "age", value: string) =>
+  const removeMinor = (i: number) => {
+    setMinors((m) => m.filter((_, idx) => idx !== i));
+    setMinorErrors({});
+    setGuardianError(null);
+  };
+  const updateMinor = (i: number, field: "name" | "age", value: string) => {
     setMinors((m) => m.map((row, idx) => (idx === i ? { ...row, [field]: value } : row)));
+    clearMinorError(i);
+  };
+
+  const validateMinors = () => {
+    const errors: Record<number, string> = {};
+    minors.forEach((m, i) => {
+      const name = m.name.trim();
+      const age = m.age.trim();
+      if (!name) {
+        errors[i] = "Enter the child's full name, or remove this row.";
+        return;
+      }
+      if (name.length > 100) {
+        errors[i] = "Name must be 100 characters or less.";
+        return;
+      }
+      if (age) {
+        if (!/^\d{1,2}$/.test(age)) {
+          errors[i] = "Age must be a number (0–17).";
+          return;
+        }
+        if (Number(age) > 17) {
+          errors[i] = "Minors must be under 18. Adults should sign their own waiver.";
+        }
+      }
+    });
+    setMinorErrors(errors);
+    return errors;
+  };
+
 
 
   const loadGroupWaiver = useCallback(async () => {
@@ -131,14 +176,19 @@ export default function GroupSigningPage() {
     const cleanMinors = minors
       .map((m) => ({ name: m.name.trim(), age: m.age.trim() }))
       .filter((m) => m.name.length > 0);
-    if (minors.some((m) => !m.name.trim())) {
-      toast.error("Please enter a name for each minor, or remove the empty row");
+
+    const errors = validateMinors();
+    if (Object.keys(errors).length > 0) {
+      toast.error("Please fix the highlighted minor details before signing");
       return;
     }
     if (cleanMinors.length > 0 && !guardianAttested) {
+      setGuardianError("You must confirm you are the parent or legal guardian to sign for a minor.");
       toast.error("Please confirm you are the parent or legal guardian of the minors listed");
       return;
     }
+    setGuardianError(null);
+
 
     const guardianConsentText =
       "I certify that I am the parent or legal guardian of the minors listed (or am authorized by their parent/legal guardian), and I sign this waiver on their behalf, agreeing that all of its terms apply equally to them.";
@@ -380,24 +430,35 @@ export default function GroupSigningPage() {
                   {minors.length > 0 && (
                     <div className="space-y-2">
                       {minors.map((m, i) => (
-                        <div key={i} className="flex gap-2 items-center">
-                          <Input
-                            value={m.name}
-                            onChange={(e) => updateMinor(i, "name", e.target.value)}
-                            placeholder="Child's full name"
-                            className="flex-1"
-                          />
-                          <Input
-                            value={m.age}
-                            onChange={(e) => updateMinor(i, "age", e.target.value)}
-                            placeholder="Age"
-                            inputMode="numeric"
-                            maxLength={2}
-                            className="w-20"
-                          />
-                          <Button type="button" variant="ghost" size="sm" onClick={() => removeMinor(i)}>
-                            Remove
-                          </Button>
+                        <div key={i} className="space-y-1">
+                          <div className="flex gap-2 items-center">
+                            <Input
+                              value={m.name}
+                              onChange={(e) => updateMinor(i, "name", e.target.value)}
+                              placeholder="Child's full name"
+                              maxLength={100}
+                              aria-invalid={!!minorErrors[i]}
+                              aria-describedby={minorErrors[i] ? `minor-error-${i}` : undefined}
+                              className={`flex-1 ${minorErrors[i] ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                            />
+                            <Input
+                              value={m.age}
+                              onChange={(e) => updateMinor(i, "age", e.target.value)}
+                              placeholder="Age"
+                              inputMode="numeric"
+                              maxLength={2}
+                              aria-invalid={!!minorErrors[i]}
+                              className={`w-20 ${minorErrors[i] ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                            />
+                            <Button type="button" variant="ghost" size="sm" onClick={() => removeMinor(i)}>
+                              Remove
+                            </Button>
+                          </div>
+                          {minorErrors[i] && (
+                            <p id={`minor-error-${i}`} className="text-xs text-destructive">
+                              {minorErrors[i]}
+                            </p>
+                          )}
                         </div>
                       ))}
 
@@ -405,7 +466,13 @@ export default function GroupSigningPage() {
                         <Checkbox
                           id="guardian"
                           checked={guardianAttested}
-                          onCheckedChange={(c) => setGuardianAttested(c === true)}
+                          aria-invalid={!!guardianError}
+                          aria-describedby={guardianError ? "guardian-error" : undefined}
+                          className={guardianError ? "border-destructive" : ""}
+                          onCheckedChange={(c) => {
+                            setGuardianAttested(c === true);
+                            if (c === true) setGuardianError(null);
+                          }}
                         />
                         <Label htmlFor="guardian" className="text-xs cursor-pointer leading-relaxed">
                           I certify that I am the parent or legal guardian of the minors listed above (or am authorized
@@ -413,6 +480,12 @@ export default function GroupSigningPage() {
                           its terms apply equally to them.
                         </Label>
                       </div>
+                      {guardianError && (
+                        <p id="guardian-error" className="text-xs text-destructive">
+                          {guardianError}
+                        </p>
+                      )}
+
                     </div>
                   )}
 
