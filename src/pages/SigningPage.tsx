@@ -32,6 +32,12 @@ export default function SigningPage() {
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
+  const [guardianAttested, setGuardianAttested] = useState(false);
+  const addMinor = () => setMinors((m) => [...m, { name: "", age: "" }]);
+  const removeMinor = (i: number) => setMinors((m) => m.filter((_, idx) => idx !== i));
+  const updateMinor = (i: number, field: "name" | "age", value: string) =>
+    setMinors((m) => m.map((row, idx) => (idx === i ? { ...row, [field]: value } : row)));
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
