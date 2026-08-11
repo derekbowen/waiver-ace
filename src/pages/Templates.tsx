@@ -143,6 +143,7 @@ export default function Templates() {
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/templates/${t.id}`); }}
                       >
                         <Pencil className="h-3.5 w-3.5" /> Edit
+                      </Button>
                       <Button
                         variant="ghost"
                         size="sm"
