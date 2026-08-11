@@ -176,14 +176,19 @@ export default function GroupSigningPage() {
     const cleanMinors = minors
       .map((m) => ({ name: m.name.trim(), age: m.age.trim() }))
       .filter((m) => m.name.length > 0);
-    if (minors.some((m) => !m.name.trim())) {
-      toast.error("Please enter a name for each minor, or remove the empty row");
+
+    const errors = validateMinors();
+    if (Object.keys(errors).length > 0) {
+      toast.error("Please fix the highlighted minor details before signing");
       return;
     }
     if (cleanMinors.length > 0 && !guardianAttested) {
+      setGuardianError("You must confirm you are the parent or legal guardian to sign for a minor.");
       toast.error("Please confirm you are the parent or legal guardian of the minors listed");
       return;
     }
+    setGuardianError(null);
+
 
     const guardianConsentText =
       "I certify that I am the parent or legal guardian of the minors listed (or am authorized by their parent/legal guardian), and I sign this waiver on their behalf, agreeing that all of its terms apply equally to them.";
