@@ -323,7 +323,14 @@ export default function GroupSigningPage() {
                 onScroll={handleScroll}
                 className="max-h-[400px] overflow-y-auto p-6 text-sm leading-relaxed whitespace-pre-wrap"
               >
-                {templateContent}
+                {templateContent.replace(
+                  /\{\{minor_names\}\}/g,
+                  minors
+                    .filter((m) => m.name.trim())
+                    .map((m) => (m.age.trim() ? `${m.name.trim()} (age ${m.age.trim()})` : m.name.trim()))
+                    .join(", ")
+                )}
+
               </div>
               {!scrolledToEnd && (
                 <div className="border-t px-6 py-3 text-center text-xs text-muted-foreground bg-accent/50">
