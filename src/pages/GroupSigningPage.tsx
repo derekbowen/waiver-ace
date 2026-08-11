@@ -357,6 +357,60 @@ export default function GroupSigningPage() {
                   <p className="text-xs text-muted-foreground">For your records — we'll send you a copy if provided</p>
                 </div>
 
+                <div className="space-y-3 rounded-lg border p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <Label className="text-sm">Minors / dependents (optional)</Label>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Add any children under 18 you are signing for as their parent or legal guardian.
+                      </p>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={addMinor}>
+                      Add minor
+                    </Button>
+                  </div>
+
+                  {minors.length > 0 && (
+                    <div className="space-y-2">
+                      {minors.map((m, i) => (
+                        <div key={i} className="flex gap-2 items-center">
+                          <Input
+                            value={m.name}
+                            onChange={(e) => updateMinor(i, "name", e.target.value)}
+                            placeholder="Child's full name"
+                            className="flex-1"
+                          />
+                          <Input
+                            value={m.age}
+                            onChange={(e) => updateMinor(i, "age", e.target.value)}
+                            placeholder="Age"
+                            inputMode="numeric"
+                            maxLength={2}
+                            className="w-20"
+                          />
+                          <Button type="button" variant="ghost" size="sm" onClick={() => removeMinor(i)}>
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+
+                      <div className="flex items-start gap-3 pt-1">
+                        <Checkbox
+                          id="guardian"
+                          checked={guardianAttested}
+                          onCheckedChange={(c) => setGuardianAttested(c === true)}
+                        />
+                        <Label htmlFor="guardian" className="text-xs cursor-pointer leading-relaxed">
+                          I certify that I am the parent or legal guardian of the minors listed above (or am authorized
+                          by their parent/legal guardian), and I sign this waiver on their behalf, agreeing that all of
+                          its terms apply equally to them.
+                        </Label>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
                 <div className="space-y-2">
                   <Label>Signature</Label>
                   <SignatureCanvas onSignature={setSignatureDataUrl} />
