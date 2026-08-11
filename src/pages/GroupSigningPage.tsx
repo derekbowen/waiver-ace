@@ -37,10 +37,55 @@ export default function GroupSigningPage() {
   const [submitting, setSubmitting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const [minorErrors, setMinorErrors] = useState<Record<number, string>>({});
+  const [guardianError, setGuardianError] = useState<string | null>(null);
+
+  const clearMinorError = (i: number) =>
+    setMinorErrors((e) => {
+      if (!(i in e)) return e;
+      const next = { ...e };
+      delete next[i];
+      return next;
+    });
+
   const addMinor = () => setMinors((m) => [...m, { name: "", age: "" }]);
-  const removeMinor = (i: number) => setMinors((m) => m.filter((_, idx) => idx !== i));
-  const updateMinor = (i: number, field: "name" | "age", value: string) =>
+  const removeMinor = (i: number) => {
+    setMinors((m) => m.filter((_, idx) => idx !== i));
+    setMinorErrors({});
+    setGuardianError(null);
+  };
+  const updateMinor = (i: number, field: "name" | "age", value: string) => {
     setMinors((m) => m.map((row, idx) => (idx === i ? { ...row, [field]: value } : row)));
+    clearMinorError(i);
+  };
+
+  const validateMinors = () => {
+    const errors: Record<number, string> = {};
+    minors.forEach((m, i) => {
+      const name = m.name.trim();
+      const age = m.age.trim();
+      if (!name) {
+        errors[i] = "Enter the child's full name, or remove this row.";
+        return;
+      }
+      if (name.length > 100) {
+        errors[i] = "Name must be 100 characters or less.";
+        return;
+      }
+      if (age) {
+        if (!/^\d{1,2}$/.test(age)) {
+          errors[i] = "Age must be a number (0–17).";
+          return;
+        }
+        if (Number(age) > 17) {
+          errors[i] = "Minors must be under 18. Adults should sign their own waiver.";
+        }
+      }
+    });
+    setMinorErrors(errors);
+    return errors;
+  };
+
 
 
   const loadGroupWaiver = useCallback(async () => {
