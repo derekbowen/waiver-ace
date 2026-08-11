@@ -1250,14 +1250,36 @@ export default function TemplateEditor() {
                 {selectedPreset.icon && <selectedPreset.icon className="h-4 w-4 text-primary" />}
                 {selectedPreset.name}
                 {answers.host_name && <span className="text-muted-foreground font-normal">— {answers.host_name}</span>}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto gap-2"
+                  onClick={() => setPreviewOpen(true)}
+                >
+                  <Eye className="h-3.5 w-3.5" /> Full preview
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="max-h-[500px] overflow-y-auto rounded-lg border bg-accent/20 p-6 text-sm leading-relaxed whitespace-pre-wrap">
-                {previewContent}
+                {fillSampleValues(previewContent)}
               </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Shown with sample guest data (including minor names). Real values fill in when the waiver is sent.
+              </p>
             </CardContent>
           </Card>
+
+          <TemplatePreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            name={getTemplateName()}
+            content={previewContent}
+            requirePhoto={requirePhoto}
+            requireVideo={requireVideo}
+            videoUrl={videoUrl}
+          />
+
 
           {(requirePhoto || requireVideo) && (
             <Card className="mb-6">
