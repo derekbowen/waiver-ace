@@ -143,6 +143,14 @@ export default function Templates() {
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/templates/${t.id}`); }}
                       >
                         <Pencil className="h-3.5 w-3.5" /> Edit
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        title="Version history"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/templates/${t.id}/versions`); }}
+                      >
+                        <History className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
