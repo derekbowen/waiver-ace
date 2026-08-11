@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight, Shield } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight, Shield, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 import { TemplatePreviewDialog, fillSampleValues } from "@/components/TemplatePreviewDialog";
 
@@ -753,6 +753,7 @@ export default function TemplateEditor() {
   const [loadingTemplate, setLoadingTemplate] = useState(isEditing);
   const [currentVersionId, setCurrentVersionId] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [originalContent, setOriginalContent] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -778,10 +779,11 @@ export default function TemplateEditor() {
         if (versionError) throw versionError;
 
         const storedContent = version?.content as { body?: string } | string | null;
+        const storedBody =
+          typeof storedContent === "string" ? storedContent : storedContent?.body || "";
         setCustomName(template.name || "");
-        setCustomContent(
-          typeof storedContent === "string" ? storedContent : storedContent?.body || "",
-        );
+        setCustomContent(storedBody);
+        setOriginalContent(storedBody);
         setRequirePhoto(template.require_photo === true);
         setRequireVideo(template.require_video === true);
         setVideoUrl(template.video_url || "");
@@ -902,20 +904,44 @@ export default function TemplateEditor() {
         content: { body: content },
         variables: detectedVars,
       };
-      const { error: vErr } = currentVersionId
-        ? await supabase
+
+      let vErr: any = null;
+      if (currentVersionId && content === originalContent) {
+        // Nothing changed in the waiver text — keep the current version as-is.
+        ({ error: vErr } = await supabase
+          .from("template_versions")
+          .update(versionValues)
+          .eq("id", currentVersionId)
+          .eq("template_id", template.id));
+      } else {
+        const { data: latest } = await supabase
+          .from("template_versions")
+          .select("version")
+          .eq("template_id", template.id)
+          .order("version", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const nextVersion = (latest?.version ?? 0) + 1;
+
+        if (nextVersion > 1) {
+          const { error: clearErr } = await supabase
             .from("template_versions")
-            .update(versionValues)
-            .eq("id", currentVersionId)
-            .eq("template_id", template.id)
-        : await supabase.from("template_versions").insert({
-            template_id: template.id,
-            version: 1,
-            ...versionValues,
-            is_current: true,
-          });
+            .update({ is_current: false })
+            .eq("template_id", template.id);
+          if (clearErr) throw clearErr;
+        }
+
+        ({ error: vErr } = await supabase.from("template_versions").insert({
+          template_id: template.id,
+          version: nextVersion,
+          ...versionValues,
+          is_current: true,
+        }));
+      }
 
       if (vErr) throw vErr;
+
 
       toast.success(isEditing ? "Template updated!" : "Template created!");
       navigate("/templates");
@@ -1190,6 +1216,11 @@ export default function TemplateEditor() {
                 <ArrowLeft className="h-4 w-4 mr-2" /> Back
               </Button>
               <div className="flex gap-2">
+                {isEditing && id && (
+                  <Button variant="outline" className="gap-2" onClick={() => navigate(`/templates/${id}/versions`)}>
+                    <HistoryIcon className="h-4 w-4" /> Version history
+                  </Button>
+                )}
                 <Button variant="outline" className="gap-2" onClick={() => setPreviewOpen(true)}>
                   <Eye className="h-4 w-4" /> Preview
                 </Button>

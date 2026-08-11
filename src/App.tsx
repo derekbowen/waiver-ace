@@ -47,6 +47,7 @@ import EmbedSign from "./pages/embed/EmbedSign";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Templates = lazy(() => import("./pages/Templates"));
 const TemplateEditor = lazy(() => import("./pages/TemplateEditor"));
+const TemplateVersions = lazy(() => import("./pages/TemplateVersions"));
 const Envelopes = lazy(() => import("./pages/Envelopes"));
 const EnvelopeDetail = lazy(() => import("./pages/EnvelopeDetail"));
 const NewEnvelope = lazy(() => import("./pages/NewEnvelope"));
@@ -133,6 +134,8 @@ const App = () => (
             <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
             <Route path="/templates/new" element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />
             <Route path="/templates/:id" element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />
+            <Route path="/templates/:id/versions" element={<ProtectedRoute><TemplateVersions /></ProtectedRoute>} />
+
             <Route path="/envelopes" element={<ProtectedRoute><Envelopes /></ProtectedRoute>} />
             <Route path="/envelopes/new" element={<ProtectedRoute><NewEnvelope /></ProtectedRoute>} />
             <Route path="/envelopes/:id" element={<ProtectedRoute><EnvelopeDetail /></ProtectedRoute>} />
