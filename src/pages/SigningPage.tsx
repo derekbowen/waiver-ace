@@ -329,7 +329,13 @@ export default function SigningPage() {
                 onScroll={handleScroll}
                 className="max-h-[400px] overflow-y-auto p-6 text-sm leading-relaxed whitespace-pre-wrap"
               >
-                {templateContent}
+                {templateContent.replace(
+                  /\{\{minor_names\}\}/g,
+                  minors
+                    .map((m) => m.name.trim())
+                    .filter(Boolean)
+                    .join(", ") || "None",
+                )}
               </div>
               {!scrolledToEnd && (
                 <div className="border-t px-6 py-3 text-center text-xs text-muted-foreground bg-accent/50">
