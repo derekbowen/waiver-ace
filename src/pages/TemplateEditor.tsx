@@ -902,20 +902,44 @@ export default function TemplateEditor() {
         content: { body: content },
         variables: detectedVars,
       };
-      const { error: vErr } = currentVersionId
-        ? await supabase
+
+      let vErr: any = null;
+      if (currentVersionId && content === originalContent) {
+        // Nothing changed in the waiver text — keep the current version as-is.
+        ({ error: vErr } = await supabase
+          .from("template_versions")
+          .update(versionValues)
+          .eq("id", currentVersionId)
+          .eq("template_id", template.id));
+      } else {
+        const { data: latest } = await supabase
+          .from("template_versions")
+          .select("version")
+          .eq("template_id", template.id)
+          .order("version", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const nextVersion = (latest?.version ?? 0) + 1;
+
+        if (nextVersion > 1) {
+          const { error: clearErr } = await supabase
             .from("template_versions")
-            .update(versionValues)
-            .eq("id", currentVersionId)
-            .eq("template_id", template.id)
-        : await supabase.from("template_versions").insert({
-            template_id: template.id,
-            version: 1,
-            ...versionValues,
-            is_current: true,
-          });
+            .update({ is_current: false })
+            .eq("template_id", template.id);
+          if (clearErr) throw clearErr;
+        }
+
+        ({ error: vErr } = await supabase.from("template_versions").insert({
+          template_id: template.id,
+          version: nextVersion,
+          ...versionValues,
+          is_current: true,
+        }));
+      }
 
       if (vErr) throw vErr;
+
 
       toast.success(isEditing ? "Template updated!" : "Template created!");
       navigate("/templates");
