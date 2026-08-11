@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { TemplatePreviewDialog, fillSampleValues } from "@/components/TemplatePreviewDialog";
 
 const defaultVariables = [
   "customer_name", "booking_id", "listing_id", "date", "time",
@@ -751,6 +752,8 @@ export default function TemplateEditor() {
   const [saving, setSaving] = useState(false);
   const [loadingTemplate, setLoadingTemplate] = useState(isEditing);
   const [currentVersionId, setCurrentVersionId] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
 
   useEffect(() => {
     if (!id || !profile?.org_id) return;
@@ -1182,24 +1185,40 @@ export default function TemplateEditor() {
               </CardContent>
             </Card>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-3">
               <Button variant="outline" onClick={() => isEditing ? navigate("/templates") : setStep(isBlank ? "category" : "details")}>
                 <ArrowLeft className="h-4 w-4 mr-2" /> Back
               </Button>
-              {isBlank ? (
-                <Button
-                  onClick={handleSave}
-                  disabled={saving || !customName.trim()}
-                  className="gap-2"
-                >
-                   <Save className="h-4 w-4" /> {saving ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save Changes" : "Create Template")}
+              <div className="flex gap-2">
+                <Button variant="outline" className="gap-2" onClick={() => setPreviewOpen(true)}>
+                  <Eye className="h-4 w-4" /> Preview
                 </Button>
-              ) : (
-                <Button onClick={() => setStep("preview")} className="gap-2">
-                  Preview <Eye className="h-4 w-4" />
-                </Button>
-              )}
+                {isBlank ? (
+                  <Button
+                    onClick={handleSave}
+                    disabled={saving || !customName.trim()}
+                    className="gap-2"
+                  >
+                     <Save className="h-4 w-4" /> {saving ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save Changes" : "Create Template")}
+                  </Button>
+                ) : (
+                  <Button onClick={() => setStep("preview")} className="gap-2">
+                    Continue <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
+
+            <TemplatePreviewDialog
+              open={previewOpen}
+              onOpenChange={setPreviewOpen}
+              name={getTemplateName()}
+              content={buildContent()}
+              requirePhoto={requirePhoto}
+              requireVideo={requireVideo}
+              videoUrl={videoUrl}
+            />
+
           </div>
         </div>
       </DashboardLayout>
@@ -1231,14 +1250,36 @@ export default function TemplateEditor() {
                 {selectedPreset.icon && <selectedPreset.icon className="h-4 w-4 text-primary" />}
                 {selectedPreset.name}
                 {answers.host_name && <span className="text-muted-foreground font-normal">— {answers.host_name}</span>}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto gap-2"
+                  onClick={() => setPreviewOpen(true)}
+                >
+                  <Eye className="h-3.5 w-3.5" /> Full preview
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="max-h-[500px] overflow-y-auto rounded-lg border bg-accent/20 p-6 text-sm leading-relaxed whitespace-pre-wrap">
-                {previewContent}
+                {fillSampleValues(previewContent)}
               </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Shown with sample guest data (including minor names). Real values fill in when the waiver is sent.
+              </p>
             </CardContent>
           </Card>
+
+          <TemplatePreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            name={getTemplateName()}
+            content={previewContent}
+            requirePhoto={requirePhoto}
+            requireVideo={requireVideo}
+            videoUrl={videoUrl}
+          />
+
 
           {(requirePhoto || requireVideo) && (
             <Card className="mb-6">
