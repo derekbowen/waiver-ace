@@ -47,6 +47,7 @@ import EmbedSign from "./pages/embed/EmbedSign";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Templates = lazy(() => import("./pages/Templates"));
 const TemplateEditor = lazy(() => import("./pages/TemplateEditor"));
+const TemplateVersions = lazy(() => import("./pages/TemplateVersions"));
 const Envelopes = lazy(() => import("./pages/Envelopes"));
 const EnvelopeDetail = lazy(() => import("./pages/EnvelopeDetail"));
 const NewEnvelope = lazy(() => import("./pages/NewEnvelope"));
