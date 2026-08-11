@@ -779,10 +779,11 @@ export default function TemplateEditor() {
         if (versionError) throw versionError;
 
         const storedContent = version?.content as { body?: string } | string | null;
+        const storedBody =
+          typeof storedContent === "string" ? storedContent : storedContent?.body || "";
         setCustomName(template.name || "");
-        setCustomContent(
-          typeof storedContent === "string" ? storedContent : storedContent?.body || "",
-        );
+        setCustomContent(storedBody);
+        setOriginalContent(storedBody);
         setRequirePhoto(template.require_photo === true);
         setRequireVideo(template.require_video === true);
         setVideoUrl(template.video_url || "");
