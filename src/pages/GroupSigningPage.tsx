@@ -271,7 +271,7 @@ export default function GroupSigningPage() {
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setScrolledToEnd(false); setVideoWatched(false); }}>
+          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setMinors([]); setGuardianAttested(false); setScrolledToEnd(false); setVideoWatched(false); }}>
             Next Person — Sign Another
           </Button>
         </div>
