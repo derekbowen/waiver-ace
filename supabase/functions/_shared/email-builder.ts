@@ -157,11 +157,32 @@ function renderSection(section: EmailSection): string {
   }
 }
 
+// Convert HTML to a plain-text fallback (required by the email API)
+function htmlToText(html: string): string {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, '$2 ($1)')
+    .replace(/<br\s*\/?>(?=)/gi, '\n')
+    .replace(/<\/(p|div|tr|h1|h2|h3|li|table)>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n\s*\n\s*\n+/g, '\n\n')
+    .trim();
+}
+
 // Helper to send email via Lovable Emails
 export async function sendEmail(params: {
   to: string | string[];
   subject: string;
   html: string;
+  text?: string;
   from?: string;
 }): Promise<{ success: boolean; id?: string; error?: string }> {
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -169,6 +190,7 @@ export async function sendEmail(params: {
 
   const recipients = Array.isArray(params.to) ? params.to : [params.to];
   const messageIds: string[] = [];
+  const textBody = (params.text || htmlToText(params.html) || params.subject).slice(0, 100000);
 
   for (const recipient of recipients) {
     try {
@@ -179,6 +201,7 @@ export async function sendEmail(params: {
           sender_domain: 'notify.rentalwaivers.com',
           subject: params.subject,
           html: params.html,
+          text: textBody,
           purpose: 'transactional',
           label: 'legacy-transactional',
           idempotency_key: crypto.randomUUID(),
@@ -186,6 +209,7 @@ export async function sendEmail(params: {
         { apiKey: LOVABLE_API_KEY, sendUrl: Deno.env.get('LOVABLE_SEND_URL') }
       );
       if (result?.id) messageIds.push(result.id);
+
     } catch (error) {
       console.error('Lovable email send error:', error);
       return {
