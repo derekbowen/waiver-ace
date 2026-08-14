@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "audit:sitemap": "node scripts/audit-sitemaps.mjs"
   },
   "dependencies": {
     "@capacitor/camera": "^8.0.2",
