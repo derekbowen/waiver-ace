@@ -177,47 +177,182 @@ function htmlToText(html: string): string {
     .trim();
 }
 
-// Helper to send email via Lovable Emails
+// ---------------- Delivery logging + retry helpers ----------------
+
+const MAX_ATTEMPTS = 4; // 1 initial + 3 retries
+const BASE_DELAY_MS = 500;
+
+function adminClient() {
+  const url = Deno.env.get('SUPABASE_URL');
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!url || !key) return null;
+  return createClient(url, key, { auth: { persistSession: false } });
+}
+
+async function logDelivery(entry: {
+  message_id: string;
+  template_name: string;
+  recipient_email: string;
+  status: 'pending' | 'sent' | 'failed' | 'dlq';
+  error_message?: string | null;
+  metadata?: Record<string, unknown>;
+}) {
+  try {
+    const client = adminClient();
+    if (!client) return;
+    await client.from('email_send_log').insert(entry);
+  } catch (e) {
+    console.error('email_send_log insert failed:', e);
+  }
+}
+
+async function logEnvelopeEvent(envelopeId: string | undefined, eventType: string, metadata: Record<string, unknown>) {
+  if (!envelopeId) return;
+  try {
+    const client = adminClient();
+    if (!client) return;
+    await client.from('envelope_events').insert({
+      envelope_id: envelopeId,
+      event_type: eventType,
+      metadata,
+    });
+  } catch (e) {
+    console.error('envelope_events insert failed:', e);
+  }
+}
+
+// Transient = worth retrying. Permanent (4xx other than 408/429) = fail fast.
+function isTransient(error: any): boolean {
+  const status = typeof error?.status === 'number' ? error.status : undefined;
+  if (status === undefined) return true; // network / timeout / unknown
+  if (status === 408 || status === 429) return true;
+  return status >= 500;
+}
+
+function backoffMs(attempt: number, error: any): number {
+  const retryAfter = typeof error?.retryAfterSeconds === 'number' ? error.retryAfterSeconds * 1000 : null;
+  if (retryAfter && retryAfter > 0) return Math.min(retryAfter, 15_000);
+  const exp = BASE_DELAY_MS * Math.pow(2, attempt - 1);
+  return Math.min(exp + Math.floor(Math.random() * 250), 8_000);
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Helper to send email via Lovable Emails, with automatic retries on transient failures
 export async function sendEmail(params: {
   to: string | string[];
   subject: string;
   html: string;
   text?: string;
   from?: string;
-}): Promise<{ success: boolean; id?: string; error?: string }> {
+  templateName?: string;
+  envelopeId?: string;
+}): Promise<{ success: boolean; id?: string; error?: string; attempts?: number }> {
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
   if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY is not configured');
 
   const recipients = Array.isArray(params.to) ? params.to : [params.to];
   const messageIds: string[] = [];
   const textBody = (params.text || htmlToText(params.html) || params.subject).slice(0, 100000);
+  const templateName = params.templateName || 'legacy-transactional';
+  let totalAttempts = 0;
 
   for (const recipient of recipients) {
-    try {
-      const result = await sendLovableEmail(
-        {
-          to: recipient,
-          from: params.from || 'Rental Waivers <noreply@rentalwaivers.com>',
-          sender_domain: 'notify.rentalwaivers.com',
-          subject: params.subject,
-          html: params.html,
-          text: textBody,
-          purpose: 'transactional',
-          label: 'legacy-transactional',
-          idempotency_key: crypto.randomUUID(),
-        },
-        { apiKey: LOVABLE_API_KEY, sendUrl: Deno.env.get('LOVABLE_SEND_URL') }
-      );
-      if (result?.id) messageIds.push(result.id);
+    // Stable per-recipient identity so retries are deduped upstream and
+    // all log rows for this email correlate on the same message_id.
+    const messageId = crypto.randomUUID();
+    const idempotencyKey = messageId;
 
-    } catch (error) {
-      console.error('Lovable email send error:', error);
+    await logDelivery({
+      message_id: messageId,
+      template_name: templateName,
+      recipient_email: recipient,
+      status: 'pending',
+      metadata: { subject: params.subject, envelope_id: params.envelopeId ?? null },
+    });
+
+    let lastError: any = null;
+    let delivered = false;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      totalAttempts++;
+      try {
+        const result = await sendLovableEmail(
+          {
+            to: recipient,
+            from: params.from || 'Rental Waivers <noreply@rentalwaivers.com>',
+            sender_domain: 'notify.rentalwaivers.com',
+            subject: params.subject,
+            html: params.html,
+            text: textBody,
+            purpose: 'transactional',
+            label: templateName,
+            idempotency_key: idempotencyKey,
+          },
+          { apiKey: LOVABLE_API_KEY, sendUrl: Deno.env.get('LOVABLE_SEND_URL') }
+        );
+        if (result?.id) messageIds.push(result.id);
+        delivered = true;
+
+        await logDelivery({
+          message_id: messageId,
+          template_name: templateName,
+          recipient_email: recipient,
+          status: 'sent',
+          metadata: { attempt, provider_id: result?.id ?? null, envelope_id: params.envelopeId ?? null },
+        });
+        await logEnvelopeEvent(params.envelopeId, 'email_sent', {
+          recipient,
+          template: templateName,
+          message_id: messageId,
+          attempts: attempt,
+        });
+        break;
+      } catch (error: any) {
+        lastError = error;
+        const transient = isTransient(error);
+        const willRetry = transient && attempt < MAX_ATTEMPTS;
+        const errMsg = error instanceof Error ? error.message : 'Failed to send email';
+
+        console.error(`Lovable email send error (attempt ${attempt}/${MAX_ATTEMPTS}, transient=${transient}):`, error);
+
+        await logDelivery({
+          message_id: messageId,
+          template_name: templateName,
+          recipient_email: recipient,
+          status: willRetry ? 'pending' : (transient ? 'dlq' : 'failed'),
+          error_message: errMsg,
+          metadata: {
+            attempt,
+            transient,
+            will_retry: willRetry,
+            status_code: error?.status ?? null,
+            envelope_id: params.envelopeId ?? null,
+          },
+        });
+        await logEnvelopeEvent(params.envelopeId, willRetry ? 'email_retry' : 'email_failed', {
+          recipient,
+          template: templateName,
+          message_id: messageId,
+          attempt,
+          transient,
+          error: errMsg,
+        });
+
+        if (!willRetry) break;
+        await sleep(backoffMs(attempt, error));
+      }
+    }
+
+    if (!delivered) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to send email',
+        attempts: totalAttempts,
+        error: lastError instanceof Error ? lastError.message : 'Failed to send email',
       };
     }
   }
 
-  return { success: true, id: messageIds.join(',') };
+  return { success: true, id: messageIds.join(','), attempts: totalAttempts };
 }
+
