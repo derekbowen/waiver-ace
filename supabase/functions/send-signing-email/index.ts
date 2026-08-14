@@ -95,9 +95,9 @@ serve(async (req) => {
       });
     }
 
-    // Check per-envelope email send cap (max 5 sends including retries)
+    // Check per-envelope email send cap (max 5 successful sends including resends)
     const MAX_EMAILS_PER_ENVELOPE = 5;
-    const { data: sendCount } = await adminClient
+    const { count: sentCount } = await adminClient
       .from('email_send_log')
       .select('id', { count: 'exact', head: true })
       .eq('recipient_email', envelope.signer_email)
@@ -105,13 +105,13 @@ serve(async (req) => {
       .eq('status', 'sent')
       .filter('metadata->>envelope_id', 'eq', envelope_id);
 
-    const existingSends = (sendCount as any)?.length ?? 0;
-    if (existingSends >= MAX_EMAILS_PER_ENVELOPE) {
+    if ((sentCount ?? 0) >= MAX_EMAILS_PER_ENVELOPE) {
       return new Response(JSON.stringify({ error: 'Email send limit reached for this envelope' }), {
         status: 429,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
 
     const { data: org } = await adminClient
       .from('organizations')
@@ -155,7 +155,10 @@ serve(async (req) => {
       to: envelope.signer_email,
       subject: `Action Required: Please sign "${templateName}"`,
       html,
+      templateName: 'signing_request',
+      envelopeId: envelope_id,
     });
+
 
     if (!result.success) {
       return new Response(JSON.stringify({ error: 'Failed to send email', details: result.error }), {

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AuditTrailCard } from "@/components/AuditTrailCard";
+import { EmailDeliveryCard } from "@/components/EmailDeliveryCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users, Camera, X } from "lucide-react";
@@ -175,17 +176,20 @@ export default function EnvelopeDetail() {
   const resendEmail = async () => {
     setResending(true);
     try {
-      const { error } = await supabase.functions.invoke("send-signing-email", {
+      const { data, error } = await supabase.functions.invoke("send-signing-email", {
         body: { envelope_id: id },
       });
       if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
       toast.success("Signing email resent");
+      fetchDetail();
     } catch (err: any) {
       toast.error(err.message || "Failed to resend email");
     } finally {
       setResending(false);
     }
   };
+
 
   const cancelEnvelope = async () => {
     const { error } = await supabase
@@ -375,6 +379,19 @@ export default function EnvelopeDetail() {
             </CardContent>
           </Card>
         )}
+
+        {!envelope.is_group_waiver && (
+          <div className="mt-6">
+            <EmailDeliveryCard
+              events={events}
+              signerEmail={envelope.signer_email}
+              resending={resending}
+              onResend={resendEmail}
+              canResend={["draft", "sent", "viewed"].includes(envelope.status)}
+            />
+          </div>
+        )}
+
 
         {["completed", "signed"].includes(envelope.status) && (
           <AuditTrailCard envelope={envelope} />
