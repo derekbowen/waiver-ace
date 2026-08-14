@@ -155,7 +155,10 @@ serve(async (req) => {
       to: envelope.signer_email,
       subject: `Action Required: Please sign "${templateName}"`,
       html,
+      templateName: 'signing_request',
+      envelopeId: envelope_id,
     });
+
 
     if (!result.success) {
       return new Response(JSON.stringify({ error: 'Failed to send email', details: result.error }), {
