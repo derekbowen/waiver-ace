@@ -11,7 +11,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { CREDIT_PACKAGES } from "@/lib/credit-packages";
 import { JsonLd } from "@/components/JsonLd";
-import { faqSchema, softwareApplicationSchema, organizationSchema } from "@/lib/structured-data";
+import { faqSchema, softwareApplicationSchema } from "@/lib/structured-data";
 import logo from "@/assets/logo.png";
 import { useState } from "react";
 
@@ -728,13 +728,14 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Organization schema is emitted once in index.html <head> — do not duplicate it here */}
       <JsonLd
         data={[
-          organizationSchema(),
           softwareApplicationSchema(),
           faqSchema(LANDING_FAQS),
         ]}
       />
+
 
       <div className="mt-auto">
         <Footer />

@@ -25,17 +25,17 @@ export function softwareApplicationSchema() {
     name: "Rental Waivers",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
+    url: "https://www.rentalwaivers.com",
+    description:
+      "Rental waiver software for collecting legally binding online liability waivers from guests.",
     offers: {
       "@type": "Offer",
-      price: "0",
+      price: "0.06",
       priceCurrency: "USD",
-      description: "Pay-per-waiver starting at 6¢. No monthly fees.",
+      description: "Pay per signed waiver. No monthly fee. 250 free credits on signup.",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "127",
-    },
+    // No aggregateRating: Google requires ratings to come from reviews that are
+    // actually displayed on the page. Fabricated ratings risk a manual action.
   };
 }
 
@@ -149,7 +149,8 @@ export function articleSchema(opts: {
         url: "https://www.rentalwaivers.com/favicon.png",
       },
     },
-    mainEntityOfPage: opts.url,
+    mainEntityOfPage: { "@type": "WebPage", "@id": opts.url },
+    url: opts.url,
   };
 }
 
@@ -160,7 +161,8 @@ export function legalServiceSchema(opts: {
 }) {
   return {
     "@context": "https://schema.org",
-    "@type": "LegalService",
+    "@type": "Service",
+    serviceType: "Liability waiver software",
     name: `${opts.state} Liability Waiver Guide & Software`,
     description: opts.description,
     areaServed: { "@type": "State", name: opts.state },
