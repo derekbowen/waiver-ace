@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AuditTrailCard } from "@/components/AuditTrailCard";
+import { EmailDeliveryCard } from "@/components/EmailDeliveryCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Copy, Send, XCircle, ExternalLink, Download, Loader2, Shield, Users, Camera, X } from "lucide-react";
