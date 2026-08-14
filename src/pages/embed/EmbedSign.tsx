@@ -221,7 +221,7 @@ export default function EmbedSign() {
 
   const PoweredBy = () => (
     <a
-      href={`https://rentalwaivers.com/?utm_source=${encodeURIComponent(utmSource)}${
+      href={`https://www.rentalwaivers.com/?utm_source=${encodeURIComponent(utmSource)}${
         refDomain ? `&ref_domain=${encodeURIComponent(refDomain)}` : ""
       }`}
       target="_top"

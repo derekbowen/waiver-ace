@@ -51,7 +51,28 @@ const LANDING_FAQS = [
     answer:
       "Most hosts send their first waiver in under 5 minutes. Pick a pre-built template, customize it, and share the link. Every new account starts with 250 free credits — no credit card required.",
   },
+  {
+    question: "What is a rental waiver?",
+    answer:
+      "A rental waiver is a liability waiver a customer signs before using rented property or equipment. It documents that the guest understands the risks, agrees to assume them, and releases the owner from claims arising from ordinary use. Rental Waivers turns that document into an online waiver your guests sign from a link.",
+  },
+  {
+    question: "Do I need an Airbnb liability waiver for my short-term rental?",
+    answer:
+      "Airbnb's host protection does not replace a signed liability waiver, and it excludes many amenities entirely. If your listing has a pool, hot tub, dock, trampoline, ATV, or any activity, a signed Airbnb liability waiver is the record that shows the guest accepted the risk. Send it with your booking confirmation and require it before check-in.",
+  },
+  {
+    question: "How do I create a pool waiver for a rental property?",
+    answer:
+      "Start from our pool and hot tub template, add your property address and house rules, and include the minors section so parents can sign for their children. Guests receive a link, sign on their phone, and the signed PDF is stored against the booking — the standard setup for a liability waiver for rental property.",
+  },
+  {
+    question: "Are digital waivers better than paper waivers?",
+    answer:
+      "Digital waivers beat paper on every measure that matters in a dispute: they cannot be lost, they are timestamped and IP-stamped, they are searchable by guest name or date, and they are signed before arrival instead of on a clipboard at the gate. Paper waivers also cost staff time to file and scan.",
+  },
 ];
+
 
 function FaqItem({ q, a, idx }: { q: string; a: string; idx: number }) {
   const [open, setOpen] = useState(false);
@@ -165,8 +186,9 @@ export default function Landing() {
             <div className="md:col-span-7">
               <div className="h-px hairline mb-6" />
               <p className="text-lg md:text-xl text-ink/80 leading-snug max-w-xl font-light">
-                Legally binding digital liability waivers for pool hosts, bounce houses, kayak tours and vacation rentals. Send a link, your guest signs in sixty seconds, you keep a tamper-proof record.
+                Rental waiver software for guests to sign on their phone. Legally binding digital liability waivers for Airbnb and vacation rentals, pool rentals, bounce houses, kayak tours and equipment hire. Send a link, your guest signs in sixty seconds, you keep a tamper-proof record.
               </p>
+
             </div>
             <div className="md:col-span-5 md:text-right">
               <div className="flex flex-col sm:flex-row md:flex-col md:items-end gap-3 md:gap-4">

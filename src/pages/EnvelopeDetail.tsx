@@ -137,7 +137,7 @@ export default function EnvelopeDetail() {
 
   const copySigningLink = async () => {
     if (!envelope) return;
-    const publicOrigin = "https://rentalwaivers.com";
+    const publicOrigin = "https://www.rentalwaivers.com";
     const groupToken = envelope.is_group_waiver ? await ensureGroupToken(envelope) : null;
     if (envelope.is_group_waiver && !groupToken) {
       toast.error("Unable to create this group signing link. Please refresh and try again.");
