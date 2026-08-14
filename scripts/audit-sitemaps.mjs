@@ -118,19 +118,18 @@ function parseRobots(text) {
   return groups;
 }
 
-/** Google's longest-match-wins rule matcher. */
+/** Google's longest-match-wins rule matcher ("*" wildcard, "$" end anchor). */
 function matchLength(pattern, pathname) {
   if (pattern === "") return -1;
-  const re = new RegExp(
+  const anchored = pattern.endsWith("$");
+  const body = anchored ? pattern.slice(0, -1) : pattern;
+  const source =
     "^" +
-      pattern
-        .replace(/[.+^${}()|[\]\\?]/g, "\\$&")
-        .replace(/\*/g, ".*")
-        .replace(/\$$/, "$") +
-      (pattern.endsWith("$") ? "" : ""),
-  );
-  return re.test(pathname) ? pattern.replace(/\*/g, "").length : -1;
+    body.replace(/[.+^${}()|[\]\\?]/g, "\\$&").replace(/\\?\*/g, ".*") +
+    (anchored ? "$" : "");
+  return new RegExp(source).test(pathname) ? body.replace(/\*/g, "").length : -1;
 }
+
 
 function isAllowed(groups, pathname, agent = "*") {
   const group =
