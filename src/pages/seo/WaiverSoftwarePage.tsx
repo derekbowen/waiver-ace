@@ -3,6 +3,7 @@ import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta, ComparisonTable } f
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, Smartphone, QrCode, Shield, Wifi, MapPin, Code, FileText, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InternalLinks } from "@/components/InternalLinks";
 
 export default function WaiverSoftwarePage() {
   return (
@@ -177,6 +178,7 @@ export default function WaiverSoftwarePage() {
         headline="Start collecting digital waivers today"
         subtext="No monthly fees. No contracts. Pay per waiver. Set up in under 5 minutes."
       />
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }

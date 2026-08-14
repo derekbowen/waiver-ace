@@ -3,6 +3,7 @@ import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta, ComparisonTable } f
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, Smartphone, WifiOff, MapPin, Users, FileText, ArrowRight, Clock, DollarSign, Shield } from "lucide-react";
+import { InternalLinks } from "@/components/InternalLinks";
 
 export default function RentalWaiverSoftwarePage() {
   return (
@@ -172,6 +173,7 @@ export default function RentalWaiverSoftwarePage() {
         headline="Get your rental waiver live today"
         subtext="First 250 waivers free on signup. No credit card. No monthly fee."
       />
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }

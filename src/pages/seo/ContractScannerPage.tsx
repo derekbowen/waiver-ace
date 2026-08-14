@@ -7,6 +7,7 @@ import {
   BadgeCheck, Pencil, Briefcase, ShieldCheck, BookOpen, ArrowRight, Target,
   Download, Clock, Scale, Brain,
 } from "lucide-react";
+import { InternalLinks } from "@/components/InternalLinks";
 
 const PRICING_TIERS = [
   { label: "Base Scan", credits: "10 / page", desc: "Risk score, clause analysis, red flags, missing clauses, and negotiation points", icon: FileSearch },
@@ -171,6 +172,7 @@ export default function ContractScannerPage() {
         headline="Ready to Know What You're Signing?"
         subtext="Paste your first contract and get an AI risk analysis in under 90 seconds. No subscription required — pay only for what you scan."
       />
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }

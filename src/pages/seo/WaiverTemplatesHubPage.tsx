@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta, ComparisonTable } from "@/components/SeoPageLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, ArrowRight, CheckCircle } from "lucide-react";
+import { InternalLinks } from "@/components/InternalLinks";
 
 const templates = [
   { name: "Kayak Rental Waiver", slug: "kayak-rental-waiver-template" },
@@ -144,6 +145,7 @@ export default function WaiverTemplatesHubPage() {
         headline="Stop printing waivers — go digital today"
         subtext="Pick a template, customize it, and start collecting digital signatures in under 10 minutes."
       />
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }

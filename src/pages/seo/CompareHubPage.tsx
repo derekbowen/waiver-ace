@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta, ComparisonTable } from "@/components/SeoPageLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, CheckCircle, XCircle, Minus } from "lucide-react";
+import { InternalLinks } from "@/components/InternalLinks";
 
 const competitors = [
   { name: "Smartwaiver", slug: "smartwaiver-alternative", pricing: "$18–$260+/mo", focus: "Generic", angle: "No monthly fee vs $18–$260/mo lock-in", priority: "P1" },
@@ -168,6 +169,7 @@ export default function CompareHubPage() {
         headline="Try RentalWaivers free — 250 credits on us"
         subtext="No credit card. No monthly fee. No commitment. See why rental businesses are switching."
       />
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }
