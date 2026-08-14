@@ -51,44 +51,29 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, noind
     setMeta("twitter:description", metaDescription);
 
     const baseUrl = `https://www.rentalwaivers.com${effectiveCanonicalPath}`;
-    const sep = effectiveCanonicalPath.includes("?") ? "&" : "?";
-    const langs = ["en", "es", "fr", "de", "pt", "zh", "ja", "ko", "it", "ar", "hi"];
-
-    // Self-canonicalize per language so each ?lang= variant is indexable
-    // independently, instead of being collapsed by GSC as
-    // "Alternate page with proper canonical tag".
     const params = new URLSearchParams(location.search);
-    const activeLang = params.get("lang");
-    const isValidLang = !!activeLang && langs.includes(activeLang) && activeLang !== "en";
-    const selfUrl = isValidLang ? `${baseUrl}${sep}lang=${activeLang}` : baseUrl;
+    const isTranslated = !!params.get("lang") && params.get("lang") !== "en";
 
+    // Canonical always points at the clean English URL. ?lang= variants are
+    // blocked in robots.txt, so they must not be self-canonical or advertised
+    // via hreflang — that produced "Alternate page with proper canonical tag"
+    // and "Duplicate, Google chose different canonical" exclusions in GSC.
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) {
       canonical = document.createElement("link");
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute("href", selfUrl);
-    setMeta("og:url", selfUrl);
+    canonical.setAttribute("href", baseUrl);
+    setMeta("og:url", baseUrl);
 
-    // Remove old hreflangs first (avoid duplicates across nav)
+    // Translated variants are never indexed independently
+    if (isTranslated) robotsTag.setAttribute("content", "noindex,follow");
+
+    // Remove any legacy hreflang alternates
     document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
-
-    // Only emit hreflangs for indexable pages
-    if (!noindex) {
-      const hreflangs = [
-        ...langs.map((lang) => ({ lang, href: lang === "en" ? baseUrl : `${baseUrl}${sep}lang=${lang}` })),
-        { lang: "x-default", href: baseUrl },
-      ];
-      hreflangs.forEach(({ lang, href }) => {
-        const link = document.createElement("link");
-        link.rel = "alternate";
-        link.hreflang = lang;
-        link.href = href;
-        document.head.appendChild(link);
-      });
-    }
   }, [metaTitle, metaDescription, effectiveCanonicalPath, noindex, location.search]);
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

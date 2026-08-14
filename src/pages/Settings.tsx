@@ -299,14 +299,14 @@ export default function Settings() {
                   <div className="flex items-center gap-2">
                     <Input
                       readOnly
-                      value={`https://rentalwaivers.com/login?ref=${referralCode}`}
+                      value={`https://www.rentalwaivers.com/login?ref=${referralCode}`}
                       className="font-mono text-xs"
                     />
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={() => {
-                        navigator.clipboard.writeText(`https://rentalwaivers.com/login?ref=${referralCode}`);
+                        navigator.clipboard.writeText(`https://www.rentalwaivers.com/login?ref=${referralCode}`);
                         setCopied(true);
                         toast.success("Referral link copied!");
                         setTimeout(() => setCopied(false), 2000);
