@@ -379,6 +379,19 @@ export default function EnvelopeDetail() {
           </Card>
         )}
 
+        {!envelope.is_group_waiver && (
+          <div className="mt-6">
+            <EmailDeliveryCard
+              events={events}
+              signerEmail={envelope.signer_email}
+              resending={resending}
+              onResend={resendEmail}
+              canResend={["draft", "sent", "viewed"].includes(envelope.status)}
+            />
+          </div>
+        )}
+
+
         {["completed", "signed"].includes(envelope.status) && (
           <AuditTrailCard envelope={envelope} />
         )}
