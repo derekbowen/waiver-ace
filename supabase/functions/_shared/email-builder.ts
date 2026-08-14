@@ -5,6 +5,7 @@
  */
 
 import { sendLovableEmail } from 'npm:@lovable.dev/email-js'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const PRIMARY = '#162a4a';        // hsl(220, 65%, 18%)
 const PRIMARY_FG = '#fafafa';     // hsl(0, 0%, 98%)
