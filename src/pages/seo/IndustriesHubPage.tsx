@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta } from "@/components/SeoPageLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Waves, Bike, Ship, Zap, Snowflake, Truck, PartyPopper, CarFront, Wrench, Tent, ArrowRight, Target, DoorClosed, Activity, Axe, Mountain, Plane, Flag, Wind, Heart } from "lucide-react";
+import { InternalLinks } from "@/components/InternalLinks";
 
 const industries = [
   { name: "Kayak Rentals", slug: "kayak-rental-waiver-software", icon: Waves, desc: "Digital waivers for kayak and paddle sport rental operators" },
@@ -128,6 +129,7 @@ export default function IndustriesHubPage() {
         headline="Find your industry and get started"
         subtext="Purpose-built waiver software for every rental type. No monthly fees."
       />
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }

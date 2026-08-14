@@ -3,6 +3,7 @@ import { seoLandingPages } from "@/lib/seo-landing-data";
 import { competitorAltPages } from "@/lib/competitor-alt-data";
 import { allBlogArticles } from "@/lib/blog-data";
 import { stateWaiverLawPages as stateLawPages } from "@/lib/state-waiver-laws";
+import { waiverTemplatePages } from "@/lib/waiver-template-pages";
 
 interface InternalLinksProps {
   /** Current page slug to exclude from links */
@@ -28,12 +29,16 @@ export function InternalLinks({ currentSlug }: InternalLinksProps) {
     .filter((b) => b.slug !== currentSlug)
     .slice(0, 5);
 
+  const templates = waiverTemplatePages
+    .filter((t) => t.slug !== currentSlug)
+    .slice(0, 6);
+
   return (
     <section className="border-t py-12 bg-muted/20">
       <div className="container max-w-6xl">
         <h2 className="font-heading text-lg font-bold mb-6 text-center">Explore More</h2>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 text-sm">
           <div>
             <h3 className="font-semibold mb-3 text-foreground">Waiver Types</h3>
             <ul className="space-y-1.5">
@@ -89,6 +94,24 @@ export function InternalLinks({ currentSlug }: InternalLinksProps) {
           </div>
 
           <div>
+            <h3 className="font-semibold mb-3 text-foreground">Free Waiver Templates</h3>
+            <ul className="space-y-1.5">
+              {templates.map((t) => (
+                <li key={t.slug}>
+                  <Link to={`/waiver-templates/${t.slug}`} className="text-muted-foreground hover:text-primary transition-colors">
+                    {t.name} template
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link to="/waiver-templates" className="text-primary font-medium hover:underline">
+                  All templates →
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
             <h3 className="font-semibold mb-3 text-foreground">Guides & Resources</h3>
             <ul className="space-y-1.5">
               {popularBlogs.map((b) => (
@@ -104,13 +127,23 @@ export function InternalLinks({ currentSlug }: InternalLinksProps) {
                 </Link>
               </li>
               <li>
-                <Link to="/waiver-templates" className="text-muted-foreground hover:text-primary transition-colors">
-                  Waiver templates
+                <Link to="/pricing-info" className="text-muted-foreground hover:text-primary transition-colors">
+                  Pricing
                 </Link>
               </li>
               <li>
-                <Link to="/pricing-info" className="text-muted-foreground hover:text-primary transition-colors">
-                  Pricing
+                <Link to="/rental-waiver-software" className="text-muted-foreground hover:text-primary transition-colors">
+                  Rental waiver software
+                </Link>
+              </li>
+              <li>
+                <Link to="/waiver-software" className="text-muted-foreground hover:text-primary transition-colors">
+                  Online waiver software
+                </Link>
+              </li>
+              <li>
+                <Link to="/contract-scanner-info" className="text-muted-foreground hover:text-primary transition-colors">
+                  AI contract scanner
                 </Link>
               </li>
             </ul>

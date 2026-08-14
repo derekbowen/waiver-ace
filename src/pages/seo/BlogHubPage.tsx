@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { allBlogArticles as blogArticles } from "@/lib/blog-data";
 import { ArrowRight, Clock, Tag } from "lucide-react";
 import { breadcrumbSchema } from "@/lib/structured-data";
+import { InternalLinks } from "@/components/InternalLinks";
 
 export default function BlogHubPage() {
   return (
@@ -65,6 +66,7 @@ export default function BlogHubPage() {
           ))}
         </div>
       </section>
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }

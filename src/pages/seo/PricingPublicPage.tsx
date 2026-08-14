@@ -3,6 +3,7 @@ import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta, ComparisonTable } f
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Coins, Zap, Shield, Clock } from "lucide-react";
+import { InternalLinks } from "@/components/InternalLinks";
 
 const packages = [
   { credits: "200", price: "$20", per: "10¢", best: "" },
@@ -156,6 +157,7 @@ export default function PricingPublicPage() {
         headline="Start free — 250 credits on us"
         subtext="No credit card. No monthly fee. No contracts. Just waivers that work."
       />
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }

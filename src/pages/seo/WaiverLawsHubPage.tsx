@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { SeoPageLayout, SeoHero, SeoSection, SeoFaq, SeoCta } from "@/components/SeoPageLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Scale, Shield, AlertTriangle, Users } from "lucide-react";
+import { InternalLinks } from "@/components/InternalLinks";
 
 const strongStates = [
   { state: "California", note: "Generally enforces waivers with clear, unambiguous language. Cannot waive gross negligence." },
@@ -154,6 +155,7 @@ export default function WaiverLawsHubPage() {
         headline="Get a compliant digital waiver live today"
         subtext="Legally-reviewed templates. Full audit trails. No monthly fee."
       />
-    </SeoPageLayout>
+          <InternalLinks />
+</SeoPageLayout>
   );
 }
