@@ -728,13 +728,14 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Organization schema is emitted once in index.html <head> — do not duplicate it here */}
       <JsonLd
         data={[
-          organizationSchema(),
           softwareApplicationSchema(),
           faqSchema(LANDING_FAQS),
         ]}
       />
+
 
       <div className="mt-auto">
         <Footer />
