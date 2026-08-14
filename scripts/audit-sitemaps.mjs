@@ -124,7 +124,7 @@ function matchLength(pattern, pathname) {
   const re = new RegExp(
     "^" +
       pattern
-        .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+        .replace(/[.+^${}()|[\]\\?]/g, "\\$&")
         .replace(/\*/g, ".*")
         .replace(/\$$/, "$") +
       (pattern.endsWith("$") ? "" : ""),
