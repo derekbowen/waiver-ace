@@ -42,7 +42,8 @@ const tierDot = {
 };
 
 export default function WaiverLawStatePage() {
-  const { state } = useParams<{ state: string }>();
+  const { slug, state: stateParam } = useParams<{ slug?: string; state?: string }>();
+  const state = slug ?? stateParam;
   const page = getStateLawPage(state || "");
   if (!page) return <Navigate to="/waiver-laws" replace />;
 
