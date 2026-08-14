@@ -9,7 +9,7 @@ Disallow: /templates
 Disallow: /envelopes
 Disallow: /settings
 Disallow: /analytics
-Disallow: /pricing
+Disallow: /pricing$
 Disallow: /admin/
 Disallow: /api-keys
 Disallow: /webhooks
@@ -17,7 +17,7 @@ Disallow: /audit-log
 Disallow: /documents
 Disallow: /credit-dispute
 Disallow: /listing-analyzer
-Disallow: /contract-scanner
+Disallow: /contract-scanner$
 Disallow: /photosell
 
 # Token-bound / utility routes
