@@ -671,6 +671,106 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ─────────────── Directory / internal links ─────────────── */}
+      <section className="py-24 md:py-32 border-t border-hairline">
+        <div className="container max-w-6xl">
+          <div className="grid md:grid-cols-12 gap-10 mb-12">
+            <div className="md:col-span-5">
+              <p className="eyebrow mb-6">§ 09b · Browse</p>
+              <h2 className="display text-4xl md:text-5xl text-ink">
+                Waivers by industry, state &amp; template.
+              </h2>
+            </div>
+            <div className="md:col-span-6 md:col-start-7">
+              <p className="text-lg text-muted-foreground leading-relaxed font-light">
+                Every rental category, state liability-waiver rules, free templates, and platform comparisons.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-10">
+            {[
+              {
+                title: "By industry",
+                hub: { label: "All industries", to: "/industries" },
+                links: [
+                  ["Bounce house rentals", "/industries/bounce-house-rental-waiver-software"],
+                  ["Jet ski rentals", "/industries/jet-ski-rental-waiver-software"],
+                  ["Kayak rentals", "/industries/kayak-rental-waiver-software"],
+                  ["ATV rentals", "/industries/atv-rental-waiver-software"],
+                  ["Boat rentals", "/industries/boat-rental-waiver-software"],
+                  ["Golf cart rentals", "/industries/golf-cart-rental-waiver-software"],
+                  ["Party rentals", "/industries/party-rental-waiver-software"],
+                  ["Equipment rentals", "/industries/equipment-rental-waiver-software"],
+                ],
+              },
+              {
+                title: "By state law",
+                hub: { label: "All states", to: "/waiver-laws" },
+                links: [
+                  ["California waiver laws", "/waiver-laws/california"],
+                  ["Florida waiver laws", "/waiver-laws/florida"],
+                  ["Texas waiver laws", "/waiver-laws/texas"],
+                  ["Arizona waiver laws", "/waiver-laws/arizona"],
+                  ["Colorado waiver laws", "/waiver-laws/colorado"],
+                  ["New York waiver laws", "/waiver-laws/new-york"],
+                ],
+              },
+              {
+                title: "Free templates",
+                hub: { label: "All templates", to: "/waiver-templates" },
+                links: [
+                  ["Kayak rental waiver", "/waiver-templates/kayak-rental-waiver-template"],
+                  ["Bounce house waiver", "/waiver-templates/bounce-house-rental-waiver-template"],
+                  ["ATV rental waiver", "/waiver-templates/atv-rental-waiver-template"],
+                  ["Boat rental waiver", "/waiver-templates/boat-rental-waiver-template"],
+                  ["Jet ski rental waiver", "/waiver-templates/jet-ski-rental-waiver-template"],
+                  ["RV rental waiver", "/waiver-templates/rv-rental-waiver-template"],
+                ],
+              },
+              {
+                title: "Comparisons & guides",
+                hub: { label: "All comparisons", to: "/compare" },
+                links: [
+                  ["Smartwaiver alternative", "/alternatives/smartwaiver-alternative"],
+                  ["WaiverForever alternative", "/alternatives/waiverforever-alternative"],
+                  ["WaiverFile alternative", "/alternatives/waiverfile-alternative"],
+                  ["Jotform waiver alternative", "/alternatives/jotform-waiver-alternative"],
+                  ["DocuSign waiver alternative", "/alternatives/docusign-waiver-alternative"],
+                  ["Digital vs paper waivers", "/blog/digital-vs-paper-waivers"],
+                ],
+              },
+            ].map((col) => (
+              <nav key={col.title} aria-label={col.title}>
+                <h3 className="text-sm text-ink mb-5 pb-3 border-b border-hairline">{col.title}</h3>
+                <ul className="space-y-2.5">
+                  {col.links.map(([label, to]) => (
+                    <li key={to}>
+                      <Link
+                        to={to}
+                        className="text-sm text-muted-foreground hover:text-ink font-light transition-colors"
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                  <li className="pt-2">
+                    <Link
+                      to={col.hub.to}
+                      className="inline-flex items-center gap-1.5 text-sm text-ink hover:text-ochre group"
+                    >
+                      {col.hub.label}
+                      <ArrowUpRight className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       {/* ─────────────── FAQ ─────────────── */}
       <section id="faq" className="py-24 md:py-32 border-t border-hairline bg-paper">
         <div className="container max-w-4xl">
