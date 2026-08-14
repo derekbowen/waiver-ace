@@ -132,7 +132,7 @@ function matchLength(pattern, pathname) {
   return re.test(pathname) ? pattern.replace(/\*/g, "").length : -1;
 }
 
-function isAllowed(groups, pathname, agent = "googlebot") {
+function isAllowed(groups, pathname, agent = "*") {
   const group =
     groups.find((g) => g.agents.includes(agent)) ?? groups.find((g) => g.agents.includes("*"));
   if (!group) return true;
