@@ -1,0 +1,2 @@
+- [x] Restore paused Test/Live backends (resume issued, verifying health)
+- [ ] Reply draft for Travis McNabb (Guesty check-in waiver link)
