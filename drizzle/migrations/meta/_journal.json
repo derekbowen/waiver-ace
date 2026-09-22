@@ -15,6 +15,13 @@
       "when": 1790074905927,
       "tag": "0001_deduct_credit_caller_guard_and_grant",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790075470022,
+      "tag": "0002_create_agent_keys",
+      "breakpoints": true
     }
   ]
 }
