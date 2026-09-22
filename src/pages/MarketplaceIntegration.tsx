@@ -216,9 +216,11 @@ export default function MarketplaceIntegration() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="sharetribe">ShareTribe</SelectItem>
+                    <SelectItem value="guesty">Guesty</SelectItem>
                     <SelectItem value="other">Other / Custom</SelectItem>
                   </SelectContent>
                 </Select>
+
               </div>
 
               <div className="space-y-2">
