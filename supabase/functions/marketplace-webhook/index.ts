@@ -299,6 +299,28 @@ serve(async (req: Request) => {
         console.error("Email error:", emailErr);
       }
 
+      // Guesty: hold the reservation as unconfirmed until the waiver is signed.
+      let guestyHold: { held: boolean; error?: string } | null = null;
+      if (integration.platform === "guesty" && customer.reservationId) {
+        if (hasGuestyCredentials(integration as any)) {
+          guestyHold = await holdReservationForWaiver(
+            integration as any,
+            customer.reservationId,
+            signingUrl
+          );
+        } else {
+          guestyHold = { held: false, error: "Guesty API credentials not configured" };
+        }
+        await supabase.from("envelope_events").insert({
+          envelope_id: envelope.id,
+          event_type: guestyHold.held ? "guesty.reservation_held" : "guesty.hold_failed",
+          metadata: {
+            reservation_id: customer.reservationId,
+            error: guestyHold.error || null,
+          },
+        });
+      }
+
 
       // Trigger auto-recharge if needed
       if (credit?.needs_recharge) {
