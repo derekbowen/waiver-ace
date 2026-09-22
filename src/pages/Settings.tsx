@@ -282,6 +282,26 @@ export default function Settings() {
             </Card>
           )}
 
+          {hasOrg && (
+            <Card className="border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <ExternalLink className="h-4 w-4 text-primary" />
+                  Completion Email
+                </CardTitle>
+                <CardDescription>
+                  Add your own instructions — lock codes, parking, meeting spot — to the email guests get after signing
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/settings/completion-email"}>
+                  <ExternalLink className="h-4 w-4" />
+                  Edit Completion Email
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {hasOrg && referralCode && (
             <Card className="border-primary/20">
               <CardHeader>
