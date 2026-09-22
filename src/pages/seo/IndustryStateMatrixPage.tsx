@@ -309,7 +309,9 @@ export default function IndustryStateMatrixPage() {
 
       <SeoSection title={`All ${state.state} Verticals`} muted>
         <div className="flex flex-wrap gap-2">
-          {allIndustryPages.slice(0, 12).map((ind) => (
+          {allIndustryPages
+            .filter((ind) => (PRIORITY_INDUSTRY_SLUGS as readonly string[]).includes(ind.slug))
+            .map((ind) => (
             <Link
               key={ind.slug}
               to={matrixUrl(ind.slug, state.slug)}
