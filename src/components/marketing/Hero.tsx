@@ -26,7 +26,7 @@ export function Hero() {
           </p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <LinkButton to="/app" size="lg">
+            <LinkButton to="/login" size="lg">
               Start free
               <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
             </LinkButton>

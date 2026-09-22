@@ -16,7 +16,7 @@ export function FinalCta() {
             minutes.
           </p>
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <LinkButton to="/app" size="lg" variant="accent">
+            <LinkButton to="/login" size="lg" variant="accent">
               Start free
               <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
             </LinkButton>

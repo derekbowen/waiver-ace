@@ -37,7 +37,7 @@ export function GuestyPreview() {
                 a shareable link in your existing guest messaging.
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <LinkButton to="/app/integrations/guesty">
+                <LinkButton to="/login">
                   Request early access
                   <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
                 </LinkButton>

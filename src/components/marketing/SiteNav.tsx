@@ -29,10 +29,10 @@ export function SiteNav() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <LinkButton to="/app" variant="ghost" size="sm">
+          <LinkButton to="/login" variant="ghost" size="sm">
             Sign in
           </LinkButton>
-          <LinkButton to="/app" size="sm">
+          <LinkButton to="/login" size="sm">
             Start free
           </LinkButton>
         </div>
@@ -77,13 +77,13 @@ export function SiteNav() {
             </ul>
             <div className="mt-4 grid grid-cols-2 gap-2 pb-2">
               <Link
-              to="/app"
+              to="/login"
               className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-hairline-strong text-sm font-medium text-ink">
               
                 Sign in
               </Link>
               <Link
-              to="/app"
+              to="/login"
               className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-brand text-sm font-medium text-ink-inverse">
               
                 Start free

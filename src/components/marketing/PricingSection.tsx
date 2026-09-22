@@ -48,7 +48,7 @@ export function PricingSection() {
                 </li>
               )}
             </ul>
-            <LinkButton to="/app" size="lg" className="mt-6 w-full">
+            <LinkButton to="/login" size="lg" className="mt-6 w-full">
               Start free
             </LinkButton>
             <p className="mt-3 text-center text-xs text-ink-muted">
