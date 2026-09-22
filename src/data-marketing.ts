@@ -1,14 +1,15 @@
 import type { Integration } from '@/components/marketing/types';
 
-export const CONTACT_EMAIL = 'derekcbowen@outlook.com';
+export const CONTACT_EMAIL = 'hello@rentalwaivers.com';
 
 export const PRIMARY_NAV = [
 { label: 'Product', href: '/#product' },
 { label: 'Solutions', href: '/#solutions' },
 { label: 'Integrations', href: '/#integrations' },
 { label: 'Pricing', href: '/#pricing' },
-{ label: 'Developers', href: '/docs' },
-{ label: 'Resources', href: '/#footer-resources' }];
+{ label: 'Industries', href: '/industries' },
+{ label: 'Templates', href: '/waiver-templates' },
+{ label: 'Developers', href: '/docs' }];
 
 
 /** Only capabilities with a shipped implementation belong in "Available now". */
