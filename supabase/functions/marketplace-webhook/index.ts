@@ -231,6 +231,9 @@ serve(async (req: Request) => {
             listing_title: customer.listingTitle || "",
             date: customer.bookingDate || new Date().toLocaleDateString(),
             state: customer.state || "",
+            ...(customer.reservationId
+              ? { guesty_reservation_id: customer.reservationId }
+              : {}),
           },
         })
         .select()
