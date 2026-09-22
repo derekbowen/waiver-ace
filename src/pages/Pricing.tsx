@@ -33,12 +33,12 @@ export default function Pricing() {
         body: { packageId },
       });
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
+      if (!data?.url) throw new Error("Checkout could not be started. Please try again.");
+      // Same-tab redirect: opening a new tab after an await is blocked by most
+      // popup blockers, which made the button look dead.
+      window.location.href = data.url;
     } catch (err: any) {
       toast.error(err.message || "Failed to start checkout");
-    } finally {
       setLoadingPkg(null);
     }
   };
