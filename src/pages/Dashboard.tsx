@@ -11,7 +11,7 @@ import { FileText, Mail, CheckCircle, Clock, Coins, AlertTriangle, MessageSquare
 import { toast } from "sonner";
 
 export default function Dashboard() {
-  const { profile } = useAuth();
+  const { profile, refreshWallet } = useAuth();
   const { credits, status, isPaused, isLow, isOverdraft, loading: walletLoading } = useWallet();
   const [stats, setStats] = useState({ templates: 0, sent: 0, completed: 0, pending: 0 });
 
@@ -34,6 +34,41 @@ export default function Dashboard() {
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
+
+  // After returning from Stripe checkout, make sure purchased credits land
+  // even if the Stripe webhook never fired.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") !== "success") return;
+
+    let cancelled = false;
+    (async () => {
+      for (let attempt = 0; attempt < 3 && !cancelled; attempt++) {
+        try {
+          const { data, error } = await supabase.functions.invoke("verify-purchase");
+          if (error) throw error;
+          if (data?.recovered > 0) {
+            toast.success(data.message || "Credits added to your account.");
+            await refreshWallet();
+            break;
+          }
+          if (attempt === 0) toast.success("Payment received. Updating your balance...");
+          await refreshWallet();
+          break;
+        } catch {
+          await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+        }
+      }
+      if (!cancelled) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("checkout");
+        window.history.replaceState({}, "", url.toString());
+      }
+    })();
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Realtime: re-fetch stats when any envelope changes
   useEffect(() => {
