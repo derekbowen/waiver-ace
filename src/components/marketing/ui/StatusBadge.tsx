@@ -1,7 +1,7 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import type { WaiverStatus } from '../../types';
-import { TONE_CLASSES, WAIVER_STATUS, type StatusTone } from '../../utils/status';
+import type { WaiverStatus } from '@/components/marketing/types';
+import { TONE_CLASSES, WAIVER_STATUS, type StatusTone } from '@/components/marketing/status';
 
 export function StatusBadge({ status, className }: {status: WaiverStatus;className?: string;}) {
   const meta = WAIVER_STATUS[status];

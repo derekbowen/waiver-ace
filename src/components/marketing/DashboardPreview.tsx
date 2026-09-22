@@ -1,7 +1,7 @@
 import React from 'react';
 import { BellIcon, CheckCircle2Icon, SearchIcon, SendIcon } from 'lucide-react';
 import { StatusBadge } from '@/components/marketing/ui/StatusBadge';
-import type { WaiverStatus } from '../../types';
+import type { WaiverStatus } from '@/components/marketing/types';
 
 const ROWS: {guest: string;property: string;template: string;status: WaiverStatus;progress: string;}[] = [
 {

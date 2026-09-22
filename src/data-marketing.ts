@@ -1,4 +1,4 @@
-import type { Integration } from '../types';
+import type { Integration } from '@/components/marketing/types';
 
 export const CONTACT_EMAIL = 'derekcbowen@outlook.com';
 
