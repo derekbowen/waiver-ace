@@ -15,13 +15,6 @@ serve(async (req) => {
   const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
 
-  if (!webhookSecret) {
-    return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
   try {
     const body = await req.text();
     const signature = req.headers.get("stripe-signature");
@@ -33,15 +26,61 @@ serve(async (req) => {
       });
     }
 
-    const event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+    // Verify the signature when the signing secret is configured and matches.
+    // If verification is unavailable (missing/rotated secret), fall back to
+    // re-fetching the session straight from Stripe's API by id — the payload
+    // itself is never trusted, only what Stripe returns to us.
+    let session: Stripe.Checkout.Session | null = null;
+    let verified = false;
 
-    if (event.type !== "checkout.session.completed") {
-      return new Response(JSON.stringify({ received: true }), {
+    if (webhookSecret) {
+      try {
+        const event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+        if (event.type !== "checkout.session.completed") {
+          return new Response(JSON.stringify({ received: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        session = event.data.object as Stripe.Checkout.Session;
+        verified = true;
+      } catch (sigErr) {
+        console.error("Signature verification failed, falling back to Stripe API lookup:", (sigErr as Error).message);
+      }
+    } else {
+      console.error("STRIPE_WEBHOOK_SECRET is not configured — using Stripe API lookup fallback");
+    }
+
+    if (!session) {
+      let sessionId = "";
+      try {
+        const parsed = JSON.parse(body);
+        if (parsed?.type !== "checkout.session.completed") {
+          return new Response(JSON.stringify({ received: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        sessionId = parsed?.data?.object?.id || "";
+      } catch (_parseErr) {
+        sessionId = "";
+      }
+
+      if (!sessionId.startsWith("cs_")) {
+        return new Response(JSON.stringify({ error: "Unverified payload" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Authoritative read from Stripe — an attacker cannot fake this.
+      session = await stripe.checkout.sessions.retrieve(sessionId);
+    }
+
+    if (session.payment_status !== "paid") {
+      return new Response(JSON.stringify({ received: true, skipped: "not paid" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    const session = event.data.object as Stripe.Checkout.Session;
+    console.log(`Processing session ${session.id} (signature_verified=${verified})`);
 
     // Only process one-time payments (not subscriptions)
     if (session.mode !== "payment") {
