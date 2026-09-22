@@ -246,7 +246,11 @@ export default function MarketplaceIntegration() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Platform Settings</CardTitle>
-              <CardDescription>Optional: Connect to your marketplace API to pull additional booking details</CardDescription>
+              <CardDescription>
+                {platform === "guesty"
+                  ? "Required for booking holds: your Guesty Open API credentials let us confirm the reservation once the waiver is signed"
+                  : "Optional: Connect to your marketplace API to pull additional booking details"}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -263,18 +267,18 @@ export default function MarketplaceIntegration() {
               </div>
 
               <div className="space-y-2">
-                <Label>Client ID (optional)</Label>
-                <Input value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder="Your ShareTribe Client ID" />
+                <Label>Client ID{platform === "guesty" ? "" : " (optional)"}</Label>
+                <Input value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder={platform === "guesty" ? "Your Guesty Open API Client ID" : "Your ShareTribe Client ID"} />
               </div>
 
               <div className="space-y-2">
-                <Label>Client Secret (optional)</Label>
-                <Input type="password" value={clientSecret} onChange={(e) => setClientSecret(e.target.value)} placeholder="Your ShareTribe Client Secret" />
+                <Label>Client Secret{platform === "guesty" ? "" : " (optional)"}</Label>
+                <Input type="password" value={clientSecret} onChange={(e) => setClientSecret(e.target.value)} placeholder={platform === "guesty" ? "Your Guesty Open API Client Secret" : "Your ShareTribe Client Secret"} />
               </div>
 
               <div className="space-y-2">
                 <Label>API Base URL (optional)</Label>
-                <Input value={apiBaseUrl} onChange={(e) => setApiBaseUrl(e.target.value)} placeholder="https://flex-api.sharetribe.com/v1" />
+                <Input value={apiBaseUrl} onChange={(e) => setApiBaseUrl(e.target.value)} placeholder={platform === "guesty" ? "https://open-api.guesty.com/v1" : "https://flex-api.sharetribe.com/v1"} />
               </div>
             </CardContent>
           </Card>
