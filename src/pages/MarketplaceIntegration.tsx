@@ -203,6 +203,32 @@ export default function MarketplaceIntegration() {
             </CardContent>
           </Card>
 
+          {/* Guesty setup */}
+          {platform === "guesty" && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Guesty Setup</CardTitle>
+                <CardDescription>
+                  Send confirmed reservations from Guesty and we'll email the guest a waiver automatically
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <ol className="list-decimal list-inside space-y-1">
+                  <li>In Guesty, open <span className="font-medium text-foreground">Integrations → Webhooks</span> (or Marketplace → Webhooks).</li>
+                  <li>Create a new webhook and paste the Webhook URL above.</li>
+                  <li>Add a custom header <code className="bg-accent px-1 rounded">x-webhook-secret</code> with the secret above.</li>
+                  <li>Subscribe to the <span className="font-medium text-foreground">Reservation</span> events (new / updated).</li>
+                  <li>Save. Test with a confirmed reservation — the guest gets the waiver email within seconds.</li>
+                </ol>
+                <p>
+                  Only reservations with a <span className="font-medium text-foreground">confirmed</span> (or reserved) status create a waiver.
+                  Inquiries, cancellations and declines are ignored, and repeat events for the same reservation never charge twice.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+
           {/* Platform settings */}
           <Card>
             <CardHeader>
