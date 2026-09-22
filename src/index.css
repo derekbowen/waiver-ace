@@ -95,6 +95,58 @@
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 220 14% 16%;
     --sidebar-ring: 220 60% 60%;
+
+    /* Marketing surface tokens (rgb triplets) */
+    --rw-canvas: 11 20 32;
+    --rw-surface: 17 28 43;
+    --rw-surface-sunken: 13 23 36;
+    --rw-border: 38 54 74;
+    --rw-border-strong: 56 75 99;
+    --rw-ink: 232 238 245;
+    --rw-ink-muted: 163 178 196;
+    --rw-ink-subtle: 138 154 173;
+    --rw-ink-inverse: 11 20 32;
+    --rw-brand: 86 179 208;
+    --rw-brand-hover: 120 199 224;
+    --rw-brand-soft: 18 44 58;
+    --rw-gold: 224 161 96;
+    --rw-gold-soft: 51 37 22;
+    --rw-ok: 90 200 160;
+    --rw-ok-soft: 16 45 37;
+    --rw-caution: 231 168 80;
+    --rw-caution-soft: 51 38 17;
+    --rw-alert: 240 137 130;
+    --rw-alert-soft: 55 25 24;
+    --rw-info: 122 176 240;
+    --rw-info-soft: 18 34 56;
+  }
+}
+
+@layer base {
+  :root {
+    /* Marketing surface tokens (rgb triplets) — light */
+    --rw-canvas: 248 250 252;
+    --rw-surface: 255 255 255;
+    --rw-surface-sunken: 243 246 249;
+    --rw-border: 224 230 237;
+    --rw-border-strong: 200 209 219;
+    --rw-ink: 13 29 50;
+    --rw-ink-muted: 84 101 122;
+    --rw-ink-subtle: 118 134 153;
+    --rw-ink-inverse: 255 255 255;
+    --rw-brand: 15 107 136;
+    --rw-brand-hover: 12 88 113;
+    --rw-brand-soft: 234 245 249;
+    --rw-gold: 190 122 56;
+    --rw-gold-soft: 253 243 232;
+    --rw-ok: 21 122 90;
+    --rw-ok-soft: 233 247 241;
+    --rw-caution: 168 99 16;
+    --rw-caution-soft: 253 244 230;
+    --rw-alert: 175 44 38;
+    --rw-alert-soft: 253 238 237;
+    --rw-info: 30 96 168;
+    --rw-info-soft: 236 244 253;
   }
 }
 
