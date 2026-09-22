@@ -25,6 +25,11 @@ export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Preserve a same-origin return path (used by the OAuth consent flow).
+  const rawNext = searchParams.get("next");
+  const nextPath = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : null;
+  const returnUrl = nextPath ? window.location.origin + nextPath : window.location.origin;
+
   // Capture referral code from URL (?ref=CODE) and persist in sessionStorage
   useEffect(() => {
     const ref = searchParams.get("ref");
@@ -38,7 +43,7 @@ export default function Login() {
     setGoogleLoading(true);
     try {
       const { error } = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: returnUrl,
       });
       if (error) throw error;
       import("@/lib/gtm-events").then(({ trackSignIn }) => trackSignIn("google"));
@@ -53,7 +58,7 @@ export default function Login() {
     setAppleLoading(true);
     try {
       const { error } = await lovable.auth.signInWithOAuth("apple", {
-        redirect_uri: window.location.origin,
+        redirect_uri: returnUrl,
       });
       if (error) throw error;
       import("@/lib/gtm-events").then(({ trackSignIn }) => trackSignIn("apple"));
@@ -93,7 +98,7 @@ export default function Login() {
           password,
           options: {
             data: { full_name: fullName },
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: returnUrl,
           },
         });
         if (error) throw error;
@@ -108,7 +113,7 @@ export default function Login() {
           throw error;
         }
         import("@/lib/gtm-events").then(({ trackSignIn }) => trackSignIn("email"));
-        navigate("/dashboard");
+        navigate(nextPath ?? "/dashboard");
       }
     } catch (err: any) {
       toast.error(err.message);
