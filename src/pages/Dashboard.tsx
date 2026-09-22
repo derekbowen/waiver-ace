@@ -11,7 +11,7 @@ import { FileText, Mail, CheckCircle, Clock, Coins, AlertTriangle, MessageSquare
 import { toast } from "sonner";
 
 export default function Dashboard() {
-  const { profile } = useAuth();
+  const { profile, refreshWallet } = useAuth();
   const { credits, status, isPaused, isLow, isOverdraft, loading: walletLoading } = useWallet();
   const [stats, setStats] = useState({ templates: 0, sent: 0, completed: 0, pending: 0 });
 
