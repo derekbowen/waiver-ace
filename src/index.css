@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :where(:root) {
     /* Warm bone neutrals — editorial light palette */
     --background: 36 28% 97%;
     --foreground: 25 18% 11%;
@@ -123,7 +123,7 @@
 }
 
 @layer base {
-  :root {
+  :where(:root) {
     /* Marketing surface tokens (rgb triplets) — light */
     --rw-canvas: 248 250 252;
     --rw-surface: 255 255 255;
