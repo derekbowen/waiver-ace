@@ -99,3 +99,33 @@ export function matrixFaq(industry: IndustryPage, state: StateWaiverLawPage) {
     },
   ];
 }
+
+/**
+ * Pair-specific operating context. This is the block that makes an indexed
+ * matrix page materially different from both its industry page and its state
+ * page — it combines the state's own statute set with the vertical's real
+ * claim drivers and cost math rather than restating template copy.
+ */
+export function matrixLocalContext(industry: IndustryPage, state: StateWaiverLawPage) {
+  const noun = industry.name.toLowerCase();
+  const primaryStatute = state.keyStatutes[0];
+  const secondaryStatute = state.keyStatutes[1];
+
+  const claimDrivers = industry.legalNotes.slice(0, 3);
+  const topRisk = industry.painPoints[0];
+  const example = industry.useCaseExample;
+
+  const paragraphs = [
+    `The two documents a ${state.state} ${noun} claim usually turns on are the signed waiver and the intake record behind it. ${primaryStatute ? `${primaryStatute.name} is the first thing opposing counsel reads — ${primaryStatute.description.charAt(0).toLowerCase()}${primaryStatute.description.slice(1)}` : state.enforcementSummary}`,
+    secondaryStatute
+      ? `${secondaryStatute.name} shapes the second half of the analysis: ${secondaryStatute.description.charAt(0).toLowerCase()}${secondaryStatute.description.slice(1)} For ${noun}, that is why the hazard list on your form matters more than the release paragraph itself.`
+      : `${state.rentalSpecific}`,
+    topRisk
+      ? `Operationally, the failure mode we see most often in ${noun} is ${topRisk.title.toLowerCase()}. ${topRisk.description} A waiver that was never captured is worth exactly as much in ${state.state} court as no waiver at all.`
+      : `${state.rentalSpecific}`,
+  ];
+
+  const costNote = `${example.business.split(",")[0]} is a useful comparison point: ${example.scenario} ${example.outcome}`;
+
+  return { paragraphs, claimDrivers, costNote };
+}
