@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
-import { ADDITIONAL_TOOLS, CAPABILITIES } from '../../data/marketing';
+import { ADDITIONAL_TOOLS, CAPABILITIES } from '@/data-marketing';
 
 export function Capabilities() {
   return (
@@ -18,7 +18,7 @@ export function Capabilities() {
         <ul className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
           {CAPABILITIES.map((item) =>
           <li key={item.title} className="flex gap-3 border-t border-hairline pt-4">
-              <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+              <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-brand" aria-hidden="true" />
               <div>
                 <h3 className="text-sm font-semibold text-ink">{item.title}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-ink-muted">{item.body}</p>

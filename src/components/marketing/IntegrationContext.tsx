@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckIcon, ClockIcon } from 'lucide-react';
-import { AVAILABLE_NOW, COMING_SOON } from '../../data/marketing';
+import { AVAILABLE_NOW, COMING_SOON } from '@/data-marketing';
 
 export function IntegrationContext() {
   return (
@@ -19,7 +19,7 @@ export function IntegrationContext() {
         <div className="mt-8 grid gap-5 lg:grid-cols-2">
           <div className="rounded-xl border border-hairline bg-surface p-6 shadow-card">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-success/25 bg-success-soft px-2.5 py-1 text-xs font-semibold text-success">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-ok/25 bg-ok-soft px-2.5 py-1 text-xs font-semibold text-ok">
                 <CheckIcon className="h-3.5 w-3.5" aria-hidden="true" />
                 Available now
               </span>
@@ -27,7 +27,7 @@ export function IntegrationContext() {
             <ul className="mt-5 space-y-4">
               {AVAILABLE_NOW.map((item) =>
               <li key={item.title} className="flex gap-3">
-                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden="true" />
+                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-ok" aria-hidden="true" />
                   <div>
                     <p className="text-sm font-semibold text-ink">{item.title}</p>
                     <p className="text-sm leading-relaxed text-ink-muted">{item.detail}</p>
@@ -38,7 +38,7 @@ export function IntegrationContext() {
           </div>
 
           <div className="rounded-xl border border-dashed border-hairline-strong bg-surface p-6">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold-soft px-2.5 py-1 text-xs font-semibold text-gold">
               <ClockIcon className="h-3.5 w-3.5" aria-hidden="true" />
               In development
             </span>

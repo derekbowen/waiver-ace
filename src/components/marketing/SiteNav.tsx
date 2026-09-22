@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MenuIcon, XIcon } from 'lucide-react';
-import { Logo } from '../ui/Logo';
-import { LinkButton } from '../ui/Button';
-import { PRIMARY_NAV } from '../../data/marketing';
+import { Logo } from '@/components/marketing/ui/Logo';
+import { LinkButton } from '@/components/marketing/ui/Button';
+import { PRIMARY_NAV } from '@/data-marketing';
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
@@ -84,7 +84,7 @@ export function SiteNav() {
               </Link>
               <Link
               to="/app"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-primary text-sm font-medium text-white">
+              className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-brand text-sm font-medium text-ink-inverse">
               
                 Start free
               </Link>

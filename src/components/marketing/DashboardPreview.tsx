@@ -1,6 +1,6 @@
 import React from 'react';
 import { BellIcon, CheckCircle2Icon, SearchIcon, SendIcon } from 'lucide-react';
-import { StatusBadge } from '../ui/StatusBadge';
+import { StatusBadge } from '@/components/marketing/ui/StatusBadge';
 import type { WaiverStatus } from '../../types';
 
 const ROWS: {guest: string;property: string;template: string;status: WaiverStatus;progress: string;}[] = [
@@ -55,7 +55,7 @@ export function DashboardPreview() {
               key={item}
               className={
               item === 'Waivers' ?
-              'rounded-md bg-primary-soft px-2.5 py-1.5 font-medium text-primary' :
+              'rounded-md bg-brand-soft px-2.5 py-1.5 font-medium text-brand' :
               'px-2.5 py-1.5 text-ink-muted'
               }>
               
@@ -79,7 +79,7 @@ export function DashboardPreview() {
               <span className="hidden items-center gap-1.5 rounded-lg border border-hairline px-2 py-1.5 text-[11px] text-ink-subtle sm:inline-flex">
                 <SearchIcon className="h-3 w-3" aria-hidden="true" /> Search
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 py-1.5 text-[11px] font-medium text-white">
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-2.5 py-1.5 text-[11px] font-medium text-ink-inverse">
                 <SendIcon className="h-3 w-3" aria-hidden="true" /> Send waiver
               </span>
             </div>
@@ -115,8 +115,8 @@ export function DashboardPreview() {
             )}
           </ul>
 
-          <div className="mt-3 flex items-center gap-2 rounded-lg border border-hairline bg-success-soft px-3 py-2">
-            <CheckCircle2Icon className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
+          <div className="mt-3 flex items-center gap-2 rounded-lg border border-hairline bg-ok-soft px-3 py-2">
+            <CheckCircle2Icon className="h-4 w-4 shrink-0 text-ok" aria-hidden="true" />
             <p className="text-[11px] text-ink-muted">
               All arrivals for tomorrow have a completed waiver on file.
             </p>

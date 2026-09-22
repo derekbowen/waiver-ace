@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckIcon, InfoIcon } from 'lucide-react';
-import { CREDIT_PACKAGES } from '../../data/marketing';
-import { LinkButton } from '../ui/Button';
+import { CREDIT_PACKAGES } from '@/data-marketing';
+import { LinkButton } from '@/components/marketing/ui/Button';
 
 const INCLUDED = [
 'Unlimited waiver templates',
@@ -29,9 +29,9 @@ export function PricingSection() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-          <div className="rounded-2xl border-2 border-primary bg-primary-soft p-6 shadow-raised">
+          <div className="rounded-2xl border-2 border-brand bg-brand-soft p-6 shadow-raised">
             <div className="flex items-center justify-between gap-3">
-              <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white">
+              <span className="rounded-full bg-brand px-2.5 py-1 text-xs font-semibold text-ink-inverse">
                 Recommended for most operators
               </span>
             </div>
@@ -43,7 +43,7 @@ export function PricingSection() {
             <ul className="mt-5 space-y-2.5">
               {INCLUDED.map((item) =>
               <li key={item} className="flex gap-2.5 text-sm text-ink">
-                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-brand" aria-hidden="true" />
                   {item}
                 </li>
               )}

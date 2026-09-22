@@ -14,7 +14,7 @@ export function Logo({ to = '/', compact = false }: LogoProps) {
   return (
     <Link to={to} className="group inline-flex items-center gap-2.5" aria-label="RentalWaivers home">
       <span
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-white shadow-card"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand text-ink-inverse shadow-card"
         aria-hidden="true">
         
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9">
@@ -25,7 +25,7 @@ export function Logo({ to = '/', compact = false }: LogoProps) {
       </span>
       {!compact &&
       <span className="font-display text-[1.0625rem] font-bold leading-none tracking-tight text-ink">
-          Rental<span className="text-primary">Waivers</span>
+          Rental<span className="text-brand">Waivers</span>
         </span>
       }
     </Link>);

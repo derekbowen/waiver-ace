@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRightIcon, PlayCircleIcon, ShieldCheckIcon } from 'lucide-react';
-import { LinkButton } from '../ui/Button';
+import { LinkButton } from '@/components/marketing/ui/Button';
 import { DashboardPreview } from './DashboardPreview';
 
 export function Hero() {
@@ -9,7 +9,7 @@ export function Hero() {
       <div className="mx-auto grid max-w-content items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14 lg:px-8 lg:py-20">
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-sunken px-3 py-1 text-xs font-medium text-ink-muted">
-            <ShieldCheckIcon className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+            <ShieldCheckIcon className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
             Digital waivers for hospitality operators
           </p>
 

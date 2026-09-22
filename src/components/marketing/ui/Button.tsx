@@ -9,11 +9,11 @@ const BASE =
 'inline-flex items-center justify-center gap-2 font-medium rounded-lg border transition-colors duration-150 disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-primary text-white border-primary hover:bg-primary-hover hover:border-primary-hover',
+  primary: 'bg-brand text-ink-inverse border-brand hover:bg-brand-hover hover:border-brand-hover',
   secondary: 'bg-surface text-ink border-hairline-strong hover:bg-sunken',
   ghost: 'bg-transparent text-ink-muted border-transparent hover:bg-sunken hover:text-ink',
-  danger: 'bg-danger text-white border-danger hover:opacity-90',
-  accent: 'bg-accent text-white border-accent hover:opacity-90'
+  danger: 'bg-alert text-ink-inverse border-alert hover:opacity-90',
+  accent: 'bg-gold text-ink-inverse border-gold hover:opacity-90'
 };
 
 /** All sizes keep a >=44px touch target on small screens. */

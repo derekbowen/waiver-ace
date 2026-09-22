@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MailIcon } from 'lucide-react';
-import { Logo } from '../ui/Logo';
-import { CONTACT_EMAIL } from '../../data/marketing';
+import { Logo } from '@/components/marketing/ui/Logo';
+import { CONTACT_EMAIL } from '@/data-marketing';
 
 const GROUPS: {title: string;links: {label: string;to: string;external?: boolean;}[];}[] = [
 {
@@ -62,7 +62,7 @@ export function SiteFooter() {
               <li key={link.label}>
                     <Link
                   to={link.to}
-                  className="inline-flex min-h-[32px] items-center text-sm text-ink-muted transition-colors hover:text-primary">
+                  className="inline-flex min-h-[32px] items-center text-sm text-ink-muted transition-colors hover:text-brand">
                   
                       {link.label}
                     </Link>
@@ -76,7 +76,7 @@ export function SiteFooter() {
             <h2 className="font-display text-sm font-semibold text-ink">Contact</h2>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="mt-3 inline-flex min-h-[32px] items-center gap-2 text-sm text-ink-muted transition-colors hover:text-primary">
+              className="mt-3 inline-flex min-h-[32px] items-center gap-2 text-sm text-ink-muted transition-colors hover:text-brand">
               
               <MailIcon className="h-4 w-4" aria-hidden="true" />
               {CONTACT_EMAIL}

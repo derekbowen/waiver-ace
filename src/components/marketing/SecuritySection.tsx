@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScaleIcon, ShieldCheckIcon } from 'lucide-react';
-import { SECURITY_POINTS } from '../../data/marketing';
+import { SECURITY_POINTS } from '@/data-marketing';
 
 export function SecuritySection() {
   return (
@@ -8,7 +8,7 @@ export function SecuritySection() {
       <div className="mx-auto max-w-content px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
         <div className="max-w-2xl">
           <span className="inline-flex items-center gap-2 rounded-full border border-hairline bg-surface px-3 py-1 text-xs font-medium text-ink-muted">
-            <ShieldCheckIcon className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+            <ShieldCheckIcon className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
             Security and trust
           </span>
           <h2 id="security-heading" className="mt-4 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">

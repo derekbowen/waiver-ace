@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRightIcon, MailIcon } from 'lucide-react';
-import { LinkButton } from '../ui/Button';
-import { CONTACT_EMAIL } from '../../data/marketing';
+import { LinkButton } from '@/components/marketing/ui/Button';
+import { CONTACT_EMAIL } from '@/data-marketing';
 
 export function FinalCta() {
   return (

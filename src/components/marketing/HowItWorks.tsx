@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileTextIcon, SendIcon, CheckCircle2Icon } from 'lucide-react';
-import { HOW_IT_WORKS } from '../../data/marketing';
+import { HOW_IT_WORKS } from '@/data-marketing';
 
 const PREVIEWS = [
 <ul key="a" className="space-y-2">
@@ -8,7 +8,7 @@ const PREVIEWS = [
   <li
     key={t}
     className={`flex items-center justify-between rounded-md border px-3 py-2 text-xs ${
-    i === 0 ? 'border-primary/40 bg-primary-soft text-primary' : 'border-hairline bg-surface text-ink-muted'}`
+    i === 0 ? 'border-brand/40 bg-brand-soft text-brand' : 'border-hairline bg-surface text-ink-muted'}`
     }>
     
         {t}
@@ -30,7 +30,7 @@ const PREVIEWS = [
         {opt.label}
         <span
       className={`flex h-4 w-4 items-center justify-center rounded border ${
-      opt.on ? 'border-primary bg-primary text-white' : 'border-hairline-strong'}`
+      opt.on ? 'border-brand bg-brand text-ink-inverse' : 'border-hairline-strong'}`
       }
       aria-hidden="true">
       
@@ -51,7 +51,7 @@ const PREVIEWS = [
     className="flex items-center justify-between rounded-md border border-hairline bg-surface px-3 py-2 text-xs">
     
         <span className="text-ink">{s.name}</span>
-        <span className={s.done ? 'font-medium text-success' : 'text-ink-subtle'}>{s.state}</span>
+        <span className={s.done ? 'font-medium text-ok' : 'text-ink-subtle'}>{s.state}</span>
       </div>
   )}
   </div>];
@@ -76,7 +76,7 @@ export function HowItWorks() {
             return (
               <li key={step.step} className="flex flex-col rounded-xl border border-hairline bg-canvas p-5">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-soft text-primary">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-soft text-brand">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <span className="font-display text-xs font-semibold tracking-wide text-ink-subtle">

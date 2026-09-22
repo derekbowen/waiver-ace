@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRightIcon, CalendarCheckIcon, ClockIcon, FileCheck2Icon, BellRingIcon, UsersIcon } from 'lucide-react';
-import { LinkButton } from '../ui/Button';
+import { LinkButton } from '@/components/marketing/ui/Button';
 
 const FLOW = [
 { icon: CalendarCheckIcon, title: 'A reservation triggers the right waiver', body: 'Property and booking details map to the waiver template you have assigned.' },
@@ -16,7 +16,7 @@ export function GuestyPreview() {
       <div className="mx-auto max-w-content px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
         <div className="rounded-2xl border border-dashed border-hairline-strong bg-canvas p-6 sm:p-8 lg:p-10">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold-soft px-3 py-1 text-xs font-semibold text-gold">
               <ClockIcon className="h-3.5 w-3.5" aria-hidden="true" />
               Guesty integration in development
             </span>

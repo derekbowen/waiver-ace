@@ -1,6 +1,6 @@
 import React from "react";
 import { BikeIcon, CarFrontIcon, HomeIcon, MapIcon, ShipIcon, WavesIcon, BoxIcon } from "lucide-react";
-import { USE_CASES } from "../../data/marketing";
+import { USE_CASES } from "@/data-marketing";
 const ICON_MAP: Record<string, BoxIcon> = {
   waves: WavesIcon,
   car: CarFrontIcon,
@@ -26,7 +26,7 @@ export function UseCases() {
           {USE_CASES.map((item) => {
           const Icon = ICON_MAP[item.icon];
           return <li key={item.title} className="rounded-xl border border-hairline bg-surface p-5 shadow-card transition-shadow hover:shadow-raised">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-soft text-accent">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold-soft text-gold">
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <h3 className="mt-4 font-display text-base font-semibold text-ink">{item.title}</h3>
