@@ -3,6 +3,7 @@ import { ArrowRightIcon, CheckCircle2Icon, PlayCircleIcon, ShieldCheckIcon } fro
 import { LinkButton } from '@/components/marketing/ui/Button';
 import { DashboardPreview } from '@/components/marketing/DashboardPreview';
 import heroVideo from '@/assets/hero-rental-cinematic.mp4.asset.json';
+import heroPoster from '@/assets/hero-lifestyle.jpg';
 
 export function Hero() {
   return (
@@ -70,6 +71,7 @@ export function Hero() {
             <video
               className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[520px]"
               src={heroVideo.url}
+              poster={heroPoster}
               autoPlay
               muted
               loop
@@ -92,7 +94,7 @@ export function Hero() {
           </div>
 
           {/* Floating proof chip */}
-          <div className="absolute -left-1 bottom-8 z-20 hidden items-center gap-2 rounded-xl border border-hairline bg-surface/95 px-3 py-2 shadow-pop backdrop-blur sm:flex">
+          <div className="absolute left-4 top-4 z-20 hidden items-center gap-2 rounded-xl border border-hairline bg-surface/95 px-3 py-2 shadow-pop backdrop-blur sm:flex">
             <CheckCircle2Icon className="h-4 w-4 text-ok" aria-hidden="true" />
             <span className="text-[12px] font-medium text-ink">Waiver signed · 2 min before arrival</span>
           </div>
