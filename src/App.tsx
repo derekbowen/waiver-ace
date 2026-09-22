@@ -53,6 +53,7 @@ const EnvelopeDetail = lazy(() => import("./pages/EnvelopeDetail"));
 const NewEnvelope = lazy(() => import("./pages/NewEnvelope"));
 const Settings = lazy(() => import("./pages/Settings"));
 const ApiKeys = lazy(() => import("./pages/ApiKeys"));
+const AgentKeys = lazy(() => import("./pages/AgentKeys"));
 const PhotoSell = lazy(() => import("./pages/PhotoSell"));
 const Webhooks = lazy(() => import("./pages/Webhooks"));
 const TeamMembers = lazy(() => import("./pages/TeamMembers"));
@@ -145,6 +146,7 @@ const App = () => (
             <Route path="/envelopes/:id/certificate" element={<ProtectedRoute><CompletionCertificate /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/settings/api-keys" element={<ProtectedRoute><ApiKeys /></ProtectedRoute>} />
+            <Route path="/settings/agents" element={<ProtectedRoute><AgentKeys /></ProtectedRoute>} />
             <Route path="/settings/webhooks" element={<ProtectedRoute><Webhooks /></ProtectedRoute>} />
             <Route path="/settings/team" element={<ProtectedRoute><TeamMembers /></ProtectedRoute>} />
             <Route path="/settings/marketplace" element={<ProtectedRoute><MarketplaceIntegration /></ProtectedRoute>} />
