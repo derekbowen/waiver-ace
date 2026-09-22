@@ -61,6 +61,7 @@ const BulkSend = lazy(() => import("./pages/BulkSend"));
 const CompletionCertificate = lazy(() => import("./pages/CompletionCertificate"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const MarketplaceIntegration = lazy(() => import("./pages/MarketplaceIntegration"));
+const CompletionEmailEditor = lazy(() => import("./pages/CompletionEmailEditor"));
 const AdminCredits = lazy(() => import("./pages/AdminCredits"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const ContractScanner = lazy(() => import("./pages/ContractScanner"));
