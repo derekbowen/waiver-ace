@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "sdk_version": "3.0.1",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://llsgwfzoutdpgrgtcbif.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "rental-waivers",
+      "version": "0.1.0",
+      "title": "Rental waivers"
+    },
+    "tools": [
+      {
+        "name": "account_summary",
+        "title": "Account summary",
+        "description": "Summarize the signed-in account: organization name, remaining credits, and waiver counts by status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_templates",
+        "title": "List waiver templates",
+        "description": "List the account's waiver templates, with the id needed to send a waiver.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "active_only": {
+              "type": "boolean",
+              "description": "Only return active templates (default true)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "send_waiver",
+        "title": "Send a waiver",
+        "description": "Create a waiver from a template and email it to the signer. Deducts credits from the account, the same as sending from the app.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "template_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Template to send (see list_templates)."
+            },
+            "signer_email": {
+              "type": "string",
+              "format": "email",
+              "description": "Email address of the person who must sign."
+            },
+            "signer_name": {
+              "type": "string",
+              "description": "Name of the signer."
+            },
+            "booking_id": {
+              "type": "string",
+              "description": "Your own booking or reservation reference."
+            },
+            "rental_date": {
+              "type": "string",
+              "description": "Rental or effective date for the waiver, as YYYY-MM-DD."
+            },
+            "expires_in_days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "Expire the waiver after this many days."
+            }
+          },
+          "required": [
+            "template_id",
+            "signer_email"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_waivers",
+        "title": "List waivers",
+        "description": "List the signed-in account's waivers (envelopes), newest first, optionally filtered by status or signer email.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "sent",
+                "viewed",
+                "completed",
+                "expired",
+                "canceled"
+              ],
+              "description": "Only return waivers with this status."
+            },
+            "signer_email": {
+              "type": "string",
+              "description": "Only return waivers for this signer email."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Maximum waivers to return (default 20)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_waiver",
+        "title": "Get waiver",
+        "description": "Get one waiver by its id, including status, signer details, signing link, and recent activity events.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "waiver_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The waiver (envelope) id."
+            }
+          },
+          "required": [
+            "waiver_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

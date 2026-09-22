@@ -69,6 +69,7 @@ const Documents = lazy(() => import("./pages/Documents"));
 const CreditDispute = lazy(() => import("./pages/CreditDispute"));
 const AuditLog = lazy(() => import("./pages/AuditLog"));
 const ListingAnalyzer = lazy(() => import("./pages/ListingAnalyzer"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,6 +101,7 @@ const App = () => (
             {/* Public / SEO — statically loaded for crawlers */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="/sign/:token" element={<SigningPage />} />
             <Route path="/waiver/:groupToken" element={<GroupSigningPage />} />
             <Route path="/waiver/kiosk/:templateId" element={<KioskPage />} />
