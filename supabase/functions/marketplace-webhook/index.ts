@@ -111,8 +111,24 @@ serve(async (req: Request) => {
       const orgName = (integration as any).organizations?.name || "Rental Waivers";
 
       // Extract customer info from the webhook payload
-      // Supports both ShareTribe format and a generic format
+      // Supports ShareTribe, Guesty and a generic format
       const customer = extractCustomerInfo(body, integration.platform);
+
+      // Guesty: only act on confirmed bookings — ignore inquiries,
+      // cancellations, declines and other lifecycle noise.
+      if (integration.platform === "guesty") {
+        const reservation = body?.reservation || body?.data?.reservation || body;
+        const status = String(reservation?.status || "").toLowerCase();
+        const event = String(body?.event || body?.eventType || "").toLowerCase();
+        const confirmed = status === "confirmed" || status === "reserved";
+
+        if (event.includes("cancel") || !confirmed) {
+          return new Response(
+            JSON.stringify({ skipped: true, reason: `Reservation status "${status || "unknown"}" is not confirmed` }),
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
 
       if (!customer.email) {
         return new Response(
@@ -120,6 +136,7 @@ serve(async (req: Request) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
 
       // Get or auto-create the default template for this org
       let templateVersionId: string;
@@ -254,38 +271,30 @@ serve(async (req: Request) => {
       const baseUrl = Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
       const signingUrl = `${baseUrl}/sign/${envelope.signing_token}`;
 
-      // Send the email
+      // Send the email through the shared sender (retries + delivery logging)
       let emailSent = false;
-      const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-      if (RESEND_API_KEY) {
-        try {
-          const emailRes = await fetch("https://api.resend.com/emails", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${RESEND_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              from: `${orgName} <onboarding@resend.dev>`,
-              to: [customer.email],
-              subject: `Sign your waiver for ${customer.listingTitle || "your booking"}`,
-              html: generateWaiverEmailHtml({
-                customerName: customer.name || "",
-                signingUrl,
-                listingTitle: customer.listingTitle,
-                bookingDate: customer.bookingDate,
-                orgName,
-              }),
-            }),
-          });
-          emailSent = emailRes.ok;
-          if (!emailRes.ok) {
-            console.error("Email send failed:", await emailRes.text());
-          }
-        } catch (emailErr) {
-          console.error("Email error:", emailErr);
+      try {
+        const result = await sendEmail({
+          to: customer.email,
+          subject: `Sign your waiver for ${customer.listingTitle || "your booking"}`,
+          html: generateWaiverEmailHtml({
+            customerName: customer.name || "",
+            signingUrl,
+            listingTitle: customer.listingTitle,
+            bookingDate: customer.bookingDate,
+            orgName,
+          }),
+          templateName: "marketplace-waiver-request",
+          envelopeId: envelope.id,
+        });
+        emailSent = result.success;
+        if (!result.success) {
+          console.error("Email send failed:", result.error);
         }
+      } catch (emailErr) {
+        console.error("Email error:", emailErr);
       }
+
 
       // Trigger auto-recharge if needed
       if (credit?.needs_recharge) {
@@ -423,7 +432,42 @@ function extractCustomerInfo(payload: any, platform: string): CustomerInfo {
     };
   }
 
+  // Guesty reservation webhook format
+  if (platform === "guesty") {
+    const r = payload?.reservation || payload?.data?.reservation || payload || {};
+    const guest = r.guest || r.guestDetails || {};
+    const listing = r.listing || {};
+    const name =
+      guest.fullName ||
+      [guest.firstName, guest.lastName].filter(Boolean).join(" ").trim() ||
+      r.guestName ||
+      "";
+    const email =
+      guest.email ||
+      (Array.isArray(guest.emails) ? guest.emails[0] : "") ||
+      r.guestEmail ||
+      "";
+    const checkIn = r.checkIn || r.checkInDateLocalized || r.startDate;
+
+    return {
+      name,
+      email,
+      bookingId: r.confirmationCode || r._id || r.id || "",
+      listingId: r.listingId || listing._id || "",
+      listingTitle: listing.nickname || listing.title || r.listingName || "",
+      hostId: r.accountId || "",
+      customerId: guest._id || guest.id || "",
+      bookingDate: checkIn ? new Date(checkIn).toLocaleDateString() : "",
+      state:
+        listing.address?.state ||
+        listing.address?.city ||
+        r.listingAddress?.state ||
+        "",
+    };
+  }
+
   // Generic / direct API format
+
   return {
     name: payload.customer_name || payload.name || "",
     email: payload.customer_email || payload.email || "",
