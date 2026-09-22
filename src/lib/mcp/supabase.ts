@@ -67,7 +67,7 @@ export async function requireOrgId(
   const { data, error } = await supabase
     .from("profiles")
     .select("org_id")
-    .eq("id", userId)
+    .eq("user_id", userId)
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data?.org_id) throw new Error("No organization found for this account");
