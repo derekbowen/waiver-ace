@@ -379,6 +379,18 @@ export default function SigningPage() {
                   </div>
                 </div>
 
+                {envelope?.signer_email && (
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input value={String(envelope.signer_email)} readOnly disabled className="bg-muted" />
+                    <p className="text-xs text-muted-foreground">
+                      Your signed copy will be sent here. Contact the host if this is wrong.
+                    </p>
+                  </div>
+                )}
+
+
+
                 <div className="space-y-3 rounded-lg border p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
