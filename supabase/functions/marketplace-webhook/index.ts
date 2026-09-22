@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { buildEmail, sendEmail } from "../_shared/email-builder.ts";
 import { calculateCreditCost, orgIsBranded } from "../_shared/credit-cost.ts";
+import { holdReservationForWaiver, hasGuestyCredentials } from "../_shared/guesty.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -230,6 +231,9 @@ serve(async (req: Request) => {
             listing_title: customer.listingTitle || "",
             date: customer.bookingDate || new Date().toLocaleDateString(),
             state: customer.state || "",
+            ...(customer.reservationId
+              ? { guesty_reservation_id: customer.reservationId }
+              : {}),
           },
         })
         .select()
@@ -295,6 +299,28 @@ serve(async (req: Request) => {
         console.error("Email error:", emailErr);
       }
 
+      // Guesty: hold the reservation as unconfirmed until the waiver is signed.
+      let guestyHold: { held: boolean; error?: string } | null = null;
+      if (integration.platform === "guesty" && customer.reservationId) {
+        if (hasGuestyCredentials(integration as any)) {
+          guestyHold = await holdReservationForWaiver(
+            integration as any,
+            customer.reservationId,
+            signingUrl
+          );
+        } else {
+          guestyHold = { held: false, error: "Guesty API credentials not configured" };
+        }
+        await supabase.from("envelope_events").insert({
+          envelope_id: envelope.id,
+          event_type: guestyHold.held ? "guesty.reservation_held" : "guesty.hold_failed",
+          metadata: {
+            reservation_id: customer.reservationId,
+            error: guestyHold.error || null,
+          },
+        });
+      }
+
 
       // Trigger auto-recharge if needed
       if (credit?.needs_recharge) {
@@ -320,6 +346,7 @@ serve(async (req: Request) => {
           signing_url: signingUrl,
           email_sent: emailSent,
           credits_remaining: credit?.new_balance,
+          ...(guestyHold ? { guesty_reservation_held: guestyHold.held, guesty_error: guestyHold.error || null } : {}),
         }),
         { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -398,6 +425,7 @@ interface CustomerInfo {
   customerId?: string;
   bookingDate?: string;
   state?: string;
+  reservationId?: string;
 }
 
 function extractCustomerInfo(payload: any, platform: string): CustomerInfo {
@@ -453,6 +481,7 @@ function extractCustomerInfo(payload: any, platform: string): CustomerInfo {
       name,
       email,
       bookingId: r.confirmationCode || r._id || r.id || "",
+      reservationId: r._id || r.id || "",
       listingId: r.listingId || listing._id || "",
       listingTitle: listing.nickname || listing.title || r.listingName || "",
       hostId: r.accountId || "",

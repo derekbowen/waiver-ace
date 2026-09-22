@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { buildEmail, sendEmail } from "../_shared/email-builder.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limiter.ts";
+import { confirmReservationAfterSigning } from "../_shared/guesty.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -226,6 +227,36 @@ serve(async (req) => {
       pdfDownloadUrl = signedUrl?.signedUrl || "";
     } catch (pdfErr) {
       console.error("Non-fatal: PDF generation failed:", pdfErr);
+    }
+
+    // --- Guesty write-back: confirm the reservation now that the waiver is signed ---
+    try {
+      const reservationId = ((envelope.payload as Record<string, any>) || {}).guesty_reservation_id;
+      const isSigned = ["completed", "signed"].includes(envelope.status);
+      if (reservationId && isSigned) {
+        const { data: integration } = await supabase
+          .from("marketplace_integrations")
+          .select("platform, client_id, client_secret, api_base_url")
+          .eq("org_id", envelope.org_id)
+          .eq("platform", "guesty")
+          .eq("is_active", true)
+          .maybeSingle();
+
+        if (integration) {
+          const result = await confirmReservationAfterSigning(integration as any, reservationId, {
+            signedAt: envelope.signed_at,
+            signerName: signerName,
+            pdfUrl: pdfDownloadUrl,
+          });
+          await supabase.from("envelope_events").insert({
+            envelope_id: envelope_id,
+            event_type: result.confirmed ? "guesty.reservation_confirmed" : "guesty.confirm_failed",
+            metadata: { reservation_id: reservationId, error: result.error || null },
+          });
+        }
+      }
+    } catch (guestyErr) {
+      console.error("Non-fatal: Guesty sync failed:", guestyErr);
     }
 
     const emails: Promise<any>[] = [];

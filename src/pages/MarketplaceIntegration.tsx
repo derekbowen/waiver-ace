@@ -224,6 +224,19 @@ export default function MarketplaceIntegration() {
                   Only reservations with a <span className="font-medium text-foreground">confirmed</span> (or reserved) status create a waiver.
                   Inquiries, cancellations and declines are ignored, and repeat events for the same reservation never charge twice.
                 </p>
+                <div className="rounded-lg border border-border p-3 space-y-1">
+                  <p className="font-medium text-foreground">Booking is held until the waiver is signed</p>
+                  <p>
+                    When the reservation arrives we put it back to <span className="font-medium text-foreground">reserved</span> (not confirmed)
+                    and tag it <span className="font-medium text-foreground">Waiver pending</span>. The moment the guest signs, we set it to
+                    <span className="font-medium text-foreground"> confirmed</span>, swap the tag to <span className="font-medium text-foreground">Waiver signed</span>,
+                    and add a note with the signed date and a link to the signed PDF.
+                  </p>
+                  <p>
+                    This needs your Guesty <span className="font-medium text-foreground">Open API</span> Client ID and Secret below
+                    (Guesty → Integrations → API keys). Without them we still email the waiver, but we can't change the booking status.
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -233,7 +246,11 @@ export default function MarketplaceIntegration() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Platform Settings</CardTitle>
-              <CardDescription>Optional: Connect to your marketplace API to pull additional booking details</CardDescription>
+              <CardDescription>
+                {platform === "guesty"
+                  ? "Required for booking holds: your Guesty Open API credentials let us confirm the reservation once the waiver is signed"
+                  : "Optional: Connect to your marketplace API to pull additional booking details"}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -250,18 +267,18 @@ export default function MarketplaceIntegration() {
               </div>
 
               <div className="space-y-2">
-                <Label>Client ID (optional)</Label>
-                <Input value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder="Your ShareTribe Client ID" />
+                <Label>Client ID{platform === "guesty" ? "" : " (optional)"}</Label>
+                <Input value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder={platform === "guesty" ? "Your Guesty Open API Client ID" : "Your ShareTribe Client ID"} />
               </div>
 
               <div className="space-y-2">
-                <Label>Client Secret (optional)</Label>
-                <Input type="password" value={clientSecret} onChange={(e) => setClientSecret(e.target.value)} placeholder="Your ShareTribe Client Secret" />
+                <Label>Client Secret{platform === "guesty" ? "" : " (optional)"}</Label>
+                <Input type="password" value={clientSecret} onChange={(e) => setClientSecret(e.target.value)} placeholder={platform === "guesty" ? "Your Guesty Open API Client Secret" : "Your ShareTribe Client Secret"} />
               </div>
 
               <div className="space-y-2">
                 <Label>API Base URL (optional)</Label>
-                <Input value={apiBaseUrl} onChange={(e) => setApiBaseUrl(e.target.value)} placeholder="https://flex-api.sharetribe.com/v1" />
+                <Input value={apiBaseUrl} onChange={(e) => setApiBaseUrl(e.target.value)} placeholder={platform === "guesty" ? "https://open-api.guesty.com/v1" : "https://flex-api.sharetribe.com/v1"} />
               </div>
             </CardContent>
           </Card>
