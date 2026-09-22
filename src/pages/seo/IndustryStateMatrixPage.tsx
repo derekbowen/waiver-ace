@@ -11,7 +11,9 @@ import {
   matrixIntro,
   matrixChecklist,
   matrixFaq,
+  matrixLocalContext,
 } from "@/lib/industry-state-matrix";
+import { isPriorityMatrixPair, PRIORITY_INDUSTRY_SLUGS } from "@/lib/matrix-priority";
 import { stateWaiverLawPages } from "@/lib/state-waiver-laws";
 import { allIndustryPages } from "@/lib/industry-pages";
 import { JsonLd } from "@/components/JsonLd";
