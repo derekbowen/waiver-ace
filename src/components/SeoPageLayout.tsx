@@ -38,7 +38,8 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, noind
       robotsTag.name = "robots";
       document.head.appendChild(robotsTag);
     }
-    robotsTag.setAttribute("content", noindex ? "noindex,nofollow" : "index,follow,max-image-preview:large");
+    // noindex,follow (never nofollow) so link equity still flows to hubs
+    robotsTag.setAttribute("content", noindex ? "noindex,follow" : "index,follow,max-image-preview:large");
 
     // Update OG tags dynamically
     const setMeta = (property: string, content: string) => {
