@@ -31,9 +31,6 @@ Disallow: /find-my-waiver
 # Block query-string crawl traps (translation/UTM variants)
 Disallow: /*?*
 
-# Googlebot — explicit allow for crawl budget
-User-agent: Googlebot
-Allow: /
 
 # Crawl-delay for less-capable bots
 User-agent: Bingbot

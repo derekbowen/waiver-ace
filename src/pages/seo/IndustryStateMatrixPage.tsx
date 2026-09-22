@@ -11,7 +11,9 @@ import {
   matrixIntro,
   matrixChecklist,
   matrixFaq,
+  matrixLocalContext,
 } from "@/lib/industry-state-matrix";
+import { isPriorityMatrixPair, PRIORITY_INDUSTRY_SLUGS } from "@/lib/matrix-priority";
 import { stateWaiverLawPages } from "@/lib/state-waiver-laws";
 import { allIndustryPages } from "@/lib/industry-pages";
 import { JsonLd } from "@/components/JsonLd";
@@ -50,6 +52,10 @@ export default function IndustryStateMatrixPage() {
   const intro = matrixIntro(industry, state);
   const checklist = matrixChecklist(industry, state);
   const faqs = matrixFaq(industry, state);
+  const localContext = matrixLocalContext(industry, state);
+  // Only the curated subset is indexable — the full 27 × 50 cross-join is
+  // templated and Google files it under "Crawled – currently not indexed".
+  const isPriority = isPriorityMatrixPair(industrySlug, stateSlug);
 
   // Adjacent state suggestions: pull 4 other states from the relatedStates list of this state
   const nearbyStates = state.relatedStates.slice(0, 4);
@@ -61,6 +67,7 @@ export default function IndustryStateMatrixPage() {
       metaTitle={title}
       metaDescription={description}
       canonicalPath={matrixUrl(industrySlug, stateSlug)}
+      noindex={!isPriority}
     >
       <JsonLd
         data={[
@@ -212,6 +219,28 @@ export default function IndustryStateMatrixPage() {
         </div>
       </SeoSection>
 
+      <SeoSection title={`How ${state.state} Claims Actually Play Out for ${industry.name}`}>
+        <div className="space-y-4">
+          {localContext.paragraphs.map((p, i) => (
+            <p key={i} className="text-sm text-muted-foreground leading-relaxed">
+              {p}
+            </p>
+          ))}
+          <div className="rounded-lg border p-4 space-y-2">
+            <p className="text-sm font-medium">
+              Clauses {state.state} {industry.name.toLowerCase()} operators should not ship without
+            </p>
+            {localContext.claimDrivers.map((c, i) => (
+              <div key={i} className="flex gap-2 items-start text-sm">
+                <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <span className="text-muted-foreground">{c}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">{localContext.costNote}</p>
+        </div>
+      </SeoSection>
+
       <SeoSection title="Get a Compliant Waiver Live Today">
         <div className="text-center space-y-4">
           <p className="text-sm text-muted-foreground max-w-xl mx-auto">
@@ -280,15 +309,17 @@ export default function IndustryStateMatrixPage() {
 
       <SeoSection title={`All ${state.state} Verticals`} muted>
         <div className="flex flex-wrap gap-2">
-          {allIndustryPages.slice(0, 12).map((ind) => (
-            <Link
-              key={ind.slug}
-              to={matrixUrl(ind.slug, state.slug)}
-              className="text-xs px-2.5 py-1 rounded-full border hover:border-primary/40 hover:bg-primary/5 transition-colors text-muted-foreground hover:text-foreground"
-            >
-              {ind.name} in {state.state}
-            </Link>
-          ))}
+          {allIndustryPages
+            .filter((ind) => (PRIORITY_INDUSTRY_SLUGS as readonly string[]).includes(ind.slug))
+            .map((ind) => (
+              <Link
+                key={ind.slug}
+                to={matrixUrl(ind.slug, state.slug)}
+                className="text-xs px-2.5 py-1 rounded-full border hover:border-primary/40 hover:bg-primary/5 transition-colors text-muted-foreground hover:text-foreground"
+              >
+                {ind.name} in {state.state}
+              </Link>
+            ))}
         </div>
         <p className="text-xs text-muted-foreground mt-3">
           <Link to={`/waiver-laws/${state.slug}`} className="text-primary hover:underline">
