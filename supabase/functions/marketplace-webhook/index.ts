@@ -346,6 +346,7 @@ serve(async (req: Request) => {
           signing_url: signingUrl,
           email_sent: emailSent,
           credits_remaining: credit?.new_balance,
+          ...(guestyHold ? { guesty_reservation_held: guestyHold.held, guesty_error: guestyHold.error || null } : {}),
         }),
         { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -424,6 +425,7 @@ interface CustomerInfo {
   customerId?: string;
   bookingDate?: string;
   state?: string;
+  reservationId?: string;
 }
 
 function extractCustomerInfo(payload: any, platform: string): CustomerInfo {
@@ -479,6 +481,7 @@ function extractCustomerInfo(payload: any, platform: string): CustomerInfo {
       name,
       email,
       bookingId: r.confirmationCode || r._id || r.id || "",
+      reservationId: r._id || r.id || "",
       listingId: r.listingId || listing._id || "",
       listingTitle: listing.nickname || listing.title || r.listingName || "",
       hostId: r.accountId || "",
