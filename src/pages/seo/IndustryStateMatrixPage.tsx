@@ -67,6 +67,7 @@ export default function IndustryStateMatrixPage() {
       metaTitle={title}
       metaDescription={description}
       canonicalPath={matrixUrl(industrySlug, stateSlug)}
+      noindex={!isPriority}
     >
       <JsonLd
         data={[
