@@ -224,6 +224,19 @@ export default function MarketplaceIntegration() {
                   Only reservations with a <span className="font-medium text-foreground">confirmed</span> (or reserved) status create a waiver.
                   Inquiries, cancellations and declines are ignored, and repeat events for the same reservation never charge twice.
                 </p>
+                <div className="rounded-lg border border-border p-3 space-y-1">
+                  <p className="font-medium text-foreground">Booking is held until the waiver is signed</p>
+                  <p>
+                    When the reservation arrives we put it back to <span className="font-medium text-foreground">reserved</span> (not confirmed)
+                    and tag it <span className="font-medium text-foreground">Waiver pending</span>. The moment the guest signs, we set it to
+                    <span className="font-medium text-foreground"> confirmed</span>, swap the tag to <span className="font-medium text-foreground">Waiver signed</span>,
+                    and add a note with the signed date and a link to the signed PDF.
+                  </p>
+                  <p>
+                    This needs your Guesty <span className="font-medium text-foreground">Open API</span> Client ID and Secret below
+                    (Guesty → Integrations → API keys). Without them we still email the waiver, but we can't change the booking status.
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
