@@ -271,38 +271,30 @@ serve(async (req: Request) => {
       const baseUrl = Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
       const signingUrl = `${baseUrl}/sign/${envelope.signing_token}`;
 
-      // Send the email
+      // Send the email through the shared sender (retries + delivery logging)
       let emailSent = false;
-      const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-      if (RESEND_API_KEY) {
-        try {
-          const emailRes = await fetch("https://api.resend.com/emails", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${RESEND_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              from: `${orgName} <onboarding@resend.dev>`,
-              to: [customer.email],
-              subject: `Sign your waiver for ${customer.listingTitle || "your booking"}`,
-              html: generateWaiverEmailHtml({
-                customerName: customer.name || "",
-                signingUrl,
-                listingTitle: customer.listingTitle,
-                bookingDate: customer.bookingDate,
-                orgName,
-              }),
-            }),
-          });
-          emailSent = emailRes.ok;
-          if (!emailRes.ok) {
-            console.error("Email send failed:", await emailRes.text());
-          }
-        } catch (emailErr) {
-          console.error("Email error:", emailErr);
+      try {
+        const result = await sendEmail({
+          to: customer.email,
+          subject: `Sign your waiver for ${customer.listingTitle || "your booking"}`,
+          html: generateWaiverEmailHtml({
+            customerName: customer.name || "",
+            signingUrl,
+            listingTitle: customer.listingTitle,
+            bookingDate: customer.bookingDate,
+            orgName,
+          }),
+          templateName: "marketplace-waiver-request",
+          envelopeId: envelope.id,
+        });
+        emailSent = result.success;
+        if (!result.success) {
+          console.error("Email send failed:", result.error);
         }
+      } catch (emailErr) {
+        console.error("Email error:", emailErr);
       }
+
 
       // Trigger auto-recharge if needed
       if (credit?.needs_recharge) {
