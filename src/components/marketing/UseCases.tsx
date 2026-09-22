@@ -1,7 +1,7 @@
 import React from "react";
-import { BikeIcon, CarFrontIcon, HomeIcon, MapIcon, ShipIcon, WavesIcon, BoxIcon } from "lucide-react";
+import { BikeIcon, CarFrontIcon, HomeIcon, MapIcon, ShipIcon, WavesIcon, type LucideIcon } from "lucide-react";
 import { USE_CASES } from "@/data-marketing";
-const ICON_MAP: Record<string, BoxIcon> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   waves: WavesIcon,
   car: CarFrontIcon,
   ship: ShipIcon,
