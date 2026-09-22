@@ -222,6 +222,45 @@ async function logEnvelopeEvent(envelopeId: string | undefined, eventType: strin
   }
 }
 
+/**
+ * The Lovable Email API rejects transactional sends without an
+ * unsubscribe_token (400 missing_unsubscribe). One token per address,
+ * reused across every email we send to that recipient.
+ */
+async function getUnsubscribeToken(email: string): Promise<string | null> {
+  const normalized = email.trim().toLowerCase();
+  try {
+    const client = adminClient();
+    if (!client) return null;
+
+    const { data: existing } = await client
+      .from('email_unsubscribe_tokens')
+      .select('token')
+      .eq('email', normalized)
+      .maybeSingle();
+    if (existing?.token) return existing.token;
+
+    const token = crypto.randomUUID().replace(/-/g, '');
+    const { error } = await client
+      .from('email_unsubscribe_tokens')
+      .upsert({ token, email: normalized }, { onConflict: 'email' });
+    if (error) {
+      console.error('unsubscribe token upsert failed:', error);
+      // Another concurrent send may have won the race — read it back.
+      const { data: raced } = await client
+        .from('email_unsubscribe_tokens')
+        .select('token')
+        .eq('email', normalized)
+        .maybeSingle();
+      return raced?.token ?? null;
+    }
+    return token;
+  } catch (e) {
+    console.error('unsubscribe token lookup failed:', e);
+    return null;
+  }
+}
+
 // Transient = worth retrying. Permanent (4xx other than 408/429) = fail fast.
 function isTransient(error: any): boolean {
   const status = typeof error?.status === 'number' ? error.status : undefined;
