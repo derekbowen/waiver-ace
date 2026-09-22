@@ -52,6 +52,10 @@ export default function IndustryStateMatrixPage() {
   const intro = matrixIntro(industry, state);
   const checklist = matrixChecklist(industry, state);
   const faqs = matrixFaq(industry, state);
+  const localContext = matrixLocalContext(industry, state);
+  // Only the curated subset is indexable — the full 27 × 50 cross-join is
+  // templated and Google files it under "Crawled – currently not indexed".
+  const isPriority = isPriorityMatrixPair(industrySlug, stateSlug);
 
   // Adjacent state suggestions: pull 4 other states from the relatedStates list of this state
   const nearbyStates = state.relatedStates.slice(0, 4);
