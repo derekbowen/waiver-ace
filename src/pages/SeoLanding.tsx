@@ -45,6 +45,28 @@ export default function SeoLanding() {
       setMetaName("robots", "index,follow,max-image-preview:large");
 
       const fullUrl = `https://www.rentalwaivers.com/waivers/${page.slug}`;
+
+      // Per-page social preview metadata (og:* and twitter:*)
+      const setMetaProp = (key: string, content: string) => {
+        let el =
+          (document.querySelector(`meta[property="${key}"]`) as HTMLMetaElement | null) ??
+          (document.querySelector(`meta[name="${key}"]`) as HTMLMetaElement | null);
+        if (!el) {
+          el = document.createElement("meta");
+          if (key.startsWith("og:")) el.setAttribute("property", key);
+          else el.setAttribute("name", key);
+          document.head.appendChild(el);
+        }
+        el.setAttribute("content", content);
+      };
+      setMetaProp("og:title", page.metaTitle);
+      setMetaProp("og:description", page.metaDescription);
+      setMetaProp("og:url", fullUrl);
+      setMetaProp("og:type", "website");
+      setMetaProp("twitter:card", "summary_large_image");
+      setMetaProp("twitter:title", page.metaTitle);
+      setMetaProp("twitter:description", page.metaDescription);
+
       let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
       if (!canonical) {
         canonical = document.createElement("link");
