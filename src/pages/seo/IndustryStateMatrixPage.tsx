@@ -219,6 +219,28 @@ export default function IndustryStateMatrixPage() {
         </div>
       </SeoSection>
 
+      <SeoSection title={`How ${state.state} Claims Actually Play Out for ${industry.name}`}>
+        <div className="space-y-4">
+          {localContext.paragraphs.map((p, i) => (
+            <p key={i} className="text-sm text-muted-foreground leading-relaxed">
+              {p}
+            </p>
+          ))}
+          <div className="rounded-lg border p-4 space-y-2">
+            <p className="text-sm font-medium">
+              Clauses {state.state} {industry.name.toLowerCase()} operators should not ship without
+            </p>
+            {localContext.claimDrivers.map((c, i) => (
+              <div key={i} className="flex gap-2 items-start text-sm">
+                <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <span className="text-muted-foreground">{c}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">{localContext.costNote}</p>
+        </div>
+      </SeoSection>
+
       <SeoSection title="Get a Compliant Waiver Live Today">
         <div className="text-center space-y-4">
           <p className="text-sm text-muted-foreground max-w-xl mx-auto">
