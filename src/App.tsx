@@ -61,6 +61,7 @@ const BulkSend = lazy(() => import("./pages/BulkSend"));
 const CompletionCertificate = lazy(() => import("./pages/CompletionCertificate"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const MarketplaceIntegration = lazy(() => import("./pages/MarketplaceIntegration"));
+const CompletionEmailEditor = lazy(() => import("./pages/CompletionEmailEditor"));
 const AdminCredits = lazy(() => import("./pages/AdminCredits"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const ContractScanner = lazy(() => import("./pages/ContractScanner"));
@@ -145,6 +146,7 @@ const App = () => (
             <Route path="/settings/webhooks" element={<ProtectedRoute><Webhooks /></ProtectedRoute>} />
             <Route path="/settings/team" element={<ProtectedRoute><TeamMembers /></ProtectedRoute>} />
             <Route path="/settings/marketplace" element={<ProtectedRoute><MarketplaceIntegration /></ProtectedRoute>} />
+            <Route path="/settings/completion-email" element={<ProtectedRoute><CompletionEmailEditor /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/envelopes/bulk" element={<ProtectedRoute><BulkSend /></ProtectedRoute>} />
             <Route path="/photosell" element={<ProtectedRoute><PhotoSell /></ProtectedRoute>} />

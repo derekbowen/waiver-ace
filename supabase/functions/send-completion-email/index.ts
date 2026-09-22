@@ -126,7 +126,7 @@ serve(async (req) => {
 
     const { data: org } = await supabase
       .from("organizations")
-      .select("name")
+      .select("*")
       .eq("id", envelope.org_id)
       .single();
 
@@ -262,6 +262,39 @@ serve(async (req) => {
     const emails: Promise<any>[] = [];
     const origin = "https://rentalwaivers.com";
 
+    // --- Host-authored custom completion message ---
+    const orgAny = (org || {}) as Record<string, any>;
+    const escapeHtml = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const fillTokens = (s: string) =>
+      s
+        .replace(/\{\{signer_name\}\}/g, signerName)
+        .replace(/\{\{org_name\}\}/g, orgName)
+        .replace(/\{\{document\}\}/g, templateName)
+        .replace(/\{\{date\}\}/g, signedDate)
+        .replace(/\{\{booking_id\}\}/g, envelope.booking_id || "");
+
+    const customMessage = (orgAny.completion_email_message || "").trim();
+    const customSubject = (orgAny.completion_email_subject || "").trim();
+    const customBtnLabel = (orgAny.completion_email_button_label || "").trim();
+    const customBtnUrl = (orgAny.completion_email_button_url || "").trim();
+
+    const customSections: any[] = [];
+    if (customMessage) {
+      customSections.push({
+        type: "callout",
+        variant: "info",
+        content: escapeHtml(fillTokens(customMessage)).replace(/\n/g, "<br>"),
+      });
+    }
+    if (customBtnLabel && /^https:\/\//i.test(customBtnUrl)) {
+      customSections.push({
+        type: "button",
+        content: escapeHtml(fillTokens(customBtnLabel)),
+        href: customBtnUrl,
+      });
+    }
+
     // Build PDF link sections
     const pdfSections = pdfDownloadUrl ? [
       {
@@ -287,6 +320,7 @@ serve(async (req) => {
             variant: 'success',
             content: 'Your waiver has been signed and recorded successfully.',
           },
+          ...customSections,
           {
             type: 'text',
             content: 'Here are the details of your signed document:',
@@ -313,7 +347,7 @@ serve(async (req) => {
       emails.push(
         sendEmail({
           to: signerEmail,
-          subject: `✓ Waiver Signed — Your copy from ${orgName}`,
+          subject: customSubject ? fillTokens(customSubject) : `✓ Waiver Signed — Your copy from ${orgName}`,
           html: signerHtml,
         })
       );
