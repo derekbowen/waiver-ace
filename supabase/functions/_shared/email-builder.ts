@@ -329,6 +329,7 @@ export async function sendEmail(params: {
             purpose: 'transactional',
             label: templateName,
             idempotency_key: idempotencyKey,
+            ...(unsubscribeToken ? { unsubscribe_token: unsubscribeToken } : {}),
           },
           { apiKey: LOVABLE_API_KEY, sendUrl: Deno.env.get('LOVABLE_SEND_URL') }
         );
