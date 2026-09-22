@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 @layer base {
-  :where(:root) {
+  :root {
     /* Warm bone neutrals — editorial light palette */
     --background: 36 28% 97%;
     --foreground: 25 18% 11%;
