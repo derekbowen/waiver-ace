@@ -96,18 +96,34 @@ export default function SigningPage() {
         setSigned(true);
       }
 
+      const unsigned = env.status !== "completed" && env.status !== "signed";
+
+      // Prefill from the booking details the envelope was created with
+      // (e.g. the guest name that came in from Guesty).
+      if (unsigned && env.signer_name) {
+        const name = String(env.signer_name).trim();
+        setFullName(name);
+        const derived = name
+          .split(/\s+/)
+          .map((part: string) => part[0] || "")
+          .join("")
+          .toUpperCase()
+          .slice(0, 5);
+        if (derived) setInitials(derived);
+      }
+
       // Prefill from cookie ONLY when the envelope's recipient matches.
       const recognized = getRecognizedSigner();
       if (
         recognized &&
         env.signer_email &&
         recognized.email === String(env.signer_email).toLowerCase() &&
-        env.status !== "completed" &&
-        env.status !== "signed"
+        unsigned
       ) {
         setFullName(recognized.name);
         if (recognized.initials) setInitials(recognized.initials);
       }
+
 
       setLoading(false);
     };
@@ -362,6 +378,18 @@ export default function SigningPage() {
                     <Input value={initials} onChange={(e) => setInitials(e.target.value)} placeholder="JD" maxLength={5} />
                   </div>
                 </div>
+
+                {envelope?.signer_email && (
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input value={String(envelope.signer_email)} readOnly disabled className="bg-muted" />
+                    <p className="text-xs text-muted-foreground">
+                      Your signed copy will be sent here. Contact the host if this is wrong.
+                    </p>
+                  </div>
+                )}
+
+
 
                 <div className="space-y-3 rounded-lg border p-4">
                   <div className="flex items-start justify-between gap-3">
