@@ -111,8 +111,24 @@ serve(async (req: Request) => {
       const orgName = (integration as any).organizations?.name || "Rental Waivers";
 
       // Extract customer info from the webhook payload
-      // Supports both ShareTribe format and a generic format
+      // Supports ShareTribe, Guesty and a generic format
       const customer = extractCustomerInfo(body, integration.platform);
+
+      // Guesty: only act on confirmed bookings — ignore inquiries,
+      // cancellations, declines and other lifecycle noise.
+      if (integration.platform === "guesty") {
+        const reservation = body?.reservation || body?.data?.reservation || body;
+        const status = String(reservation?.status || "").toLowerCase();
+        const event = String(body?.event || body?.eventType || "").toLowerCase();
+        const confirmed = status === "confirmed" || status === "reserved";
+
+        if (event.includes("cancel") || !confirmed) {
+          return new Response(
+            JSON.stringify({ skipped: true, reason: `Reservation status "${status || "unknown"}" is not confirmed` }),
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
 
       if (!customer.email) {
         return new Response(
@@ -120,6 +136,7 @@ serve(async (req: Request) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
 
       // Get or auto-create the default template for this org
       let templateVersionId: string;
