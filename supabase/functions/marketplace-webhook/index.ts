@@ -440,7 +440,42 @@ function extractCustomerInfo(payload: any, platform: string): CustomerInfo {
     };
   }
 
+  // Guesty reservation webhook format
+  if (platform === "guesty") {
+    const r = payload?.reservation || payload?.data?.reservation || payload || {};
+    const guest = r.guest || r.guestDetails || {};
+    const listing = r.listing || {};
+    const name =
+      guest.fullName ||
+      [guest.firstName, guest.lastName].filter(Boolean).join(" ").trim() ||
+      r.guestName ||
+      "";
+    const email =
+      guest.email ||
+      (Array.isArray(guest.emails) ? guest.emails[0] : "") ||
+      r.guestEmail ||
+      "";
+    const checkIn = r.checkIn || r.checkInDateLocalized || r.startDate;
+
+    return {
+      name,
+      email,
+      bookingId: r.confirmationCode || r._id || r.id || "",
+      listingId: r.listingId || listing._id || "",
+      listingTitle: listing.nickname || listing.title || r.listingName || "",
+      hostId: r.accountId || "",
+      customerId: guest._id || guest.id || "",
+      bookingDate: checkIn ? new Date(checkIn).toLocaleDateString() : "",
+      state:
+        listing.address?.state ||
+        listing.address?.city ||
+        r.listingAddress?.state ||
+        "",
+    };
+  }
+
   // Generic / direct API format
+
   return {
     name: payload.customer_name || payload.name || "",
     email: payload.customer_email || payload.email || "",
