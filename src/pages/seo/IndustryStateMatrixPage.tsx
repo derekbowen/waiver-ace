@@ -312,14 +312,14 @@ export default function IndustryStateMatrixPage() {
           {allIndustryPages
             .filter((ind) => (PRIORITY_INDUSTRY_SLUGS as readonly string[]).includes(ind.slug))
             .map((ind) => (
-            <Link
-              key={ind.slug}
-              to={matrixUrl(ind.slug, state.slug)}
-              className="text-xs px-2.5 py-1 rounded-full border hover:border-primary/40 hover:bg-primary/5 transition-colors text-muted-foreground hover:text-foreground"
-            >
-              {ind.name} in {state.state}
-            </Link>
-          ))}
+              <Link
+                key={ind.slug}
+                to={matrixUrl(ind.slug, state.slug)}
+                className="text-xs px-2.5 py-1 rounded-full border hover:border-primary/40 hover:bg-primary/5 transition-colors text-muted-foreground hover:text-foreground"
+              >
+                {ind.name} in {state.state}
+              </Link>
+            ))}
         </div>
         <p className="text-xs text-muted-foreground mt-3">
           <Link to={`/waiver-laws/${state.slug}`} className="text-primary hover:underline">
