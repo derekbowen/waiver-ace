@@ -101,6 +101,7 @@ const App = () => (
             {/* Public / SEO — statically loaded for crawlers */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="/sign/:token" element={<SigningPage />} />
             <Route path="/waiver/:groupToken" element={<GroupSigningPage />} />
             <Route path="/waiver/kiosk/:templateId" element={<KioskPage />} />
