@@ -302,6 +302,7 @@ export async function sendEmail(params: {
     // all log rows for this email correlate on the same message_id.
     const messageId = crypto.randomUUID();
     const idempotencyKey = messageId;
+    const unsubscribeToken = await getUnsubscribeToken(recipient);
 
     await logDelivery({
       message_id: messageId,
