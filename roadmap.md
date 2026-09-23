@@ -1,8 +1,10 @@
 # Roadmap
 
 ## Done
-- Publish requested for email fix (htmlToText + retries) → https://www.rentalwaivers.com (deploy in progress)
+- Published email fix (htmlToText + retries) → www.rentalwaivers.com
+- Added missing completion_email_* columns to organizations in Test (parity fix)
+- E2E test: created + signed test waiver, completion email with kayak lock code (1987) sent to signer and host — both status "sent" in email_send_log
+- Answered lease-agreement keyword question: not implementing (wrong audience)
 
 ## Open
-- End-to-end waiver test with kayak-lock-code completion email: can create/sign a test envelope in Test backend and verify email_send_log shows status "sent". Blocker: cannot confirm arrival in a real inbox — need the user's email address to send to, and Live is read-only from my tools (user can trigger a real envelope on the live site).
-- Lease/rental agreement keywords: answered — not implementing (wrong audience: landlord/tenant contracts, not waivers).
+- Confirm arrival in a real inbox on the live site: user should send one real waiver from www.rentalwaivers.com (Live backend is read-only from my tools) and check their inbox.
