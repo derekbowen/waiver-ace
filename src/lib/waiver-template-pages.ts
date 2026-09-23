@@ -360,8 +360,9 @@ export const waiverTemplatePages: WaiverTemplatePage[] = [
 
 import { extraTemplatePages } from "./waiver-template-pages-extra";
 import { rentalTemplatePages } from "./waiver-template-pages-rentals";
+import { agreementTemplatePages } from "./waiver-template-pages-agreements";
 
-export const allWaiverTemplatePages: WaiverTemplatePage[] = [...waiverTemplatePages, ...extraTemplatePages, ...rentalTemplatePages];
+export const allWaiverTemplatePages: WaiverTemplatePage[] = [...waiverTemplatePages, ...extraTemplatePages, ...rentalTemplatePages, ...agreementTemplatePages];
 
 export function getWaiverTemplatePage(slug: string): WaiverTemplatePage | undefined {
   return allWaiverTemplatePages.find((p) => p.slug === slug);
