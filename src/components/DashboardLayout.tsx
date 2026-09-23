@@ -218,7 +218,7 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
                   isActive ? "text-primary" : "text-muted-foreground active:text-foreground"
                 )}>
                 <item.icon className={cn("h-5 w-5 shrink-0", isActive && "stroke-[2.5px]")} />
-                <span className="leading-none">{item.label}</span>
+                <span className="leading-none">{item.label.replace(" Waivers", "")}</span>
               </Link>);
           })}
 

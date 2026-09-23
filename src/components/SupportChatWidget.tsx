@@ -121,10 +121,10 @@ export default function SupportChatWidget() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Need help? Text us"
-        className="fixed bottom-5 right-4 z-[60] flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-primary-foreground shadow-xl transition hover:opacity-90"
+        className="fixed bottom-20 md:bottom-5 right-4 z-[60] flex items-center gap-2 rounded-full bg-primary p-3 sm:px-4 sm:py-3 text-primary-foreground shadow-xl transition hover:opacity-90"
       >
         <Lock className="h-5 w-5" />
-        <span className="text-sm font-semibold">Need help? Text us</span>
+        <span className="hidden sm:inline text-sm font-semibold">Need help? Text us</span>
       </button>
     </>
   );
