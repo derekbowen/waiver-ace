@@ -35,6 +35,7 @@ import WaiverLawsHubPage from "./pages/seo/WaiverLawsHubPage";
 import CompareHubPage from "./pages/seo/CompareHubPage";
 import CompetitorAltPage from "./pages/seo/CompetitorAltPage";
 import PricingPublicPage from "./pages/seo/PricingPublicPage";
+import CheapestWaiverSoftwarePage from "./pages/seo/CheapestWaiverSoftwarePage";
 import BlogHubPage from "./pages/seo/BlogHubPage";
 import BlogArticlePage from "./pages/seo/BlogArticlePage";
 import ContractScannerPage from "./pages/seo/ContractScannerPage";
