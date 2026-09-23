@@ -1064,6 +1064,7 @@ export type Database = {
       }
       templates: {
         Row: {
+          allow_minors: boolean
           brand_color: string | null
           brand_font: string | null
           created_at: string
@@ -1080,6 +1081,7 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          allow_minors?: boolean
           brand_color?: string | null
           brand_font?: string | null
           created_at?: string
@@ -1096,6 +1098,7 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          allow_minors?: boolean
           brand_color?: string | null
           brand_font?: string | null
           created_at?: string
