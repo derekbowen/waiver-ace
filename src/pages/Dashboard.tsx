@@ -176,7 +176,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-5">
           {statCards.map((s) => (
             <Card key={s.label}>
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6 md:pb-2">
@@ -189,6 +189,42 @@ export default function Dashboard() {
             </Card>
           ))}
         </div>
+
+        {/* Marketing page conversions (owner/admin only) */}
+        {isAdmin && pageStats.length > 0 && (
+          <Card className="mt-6">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Marketing Page Performance</CardTitle>
+              <p className="text-xs text-muted-foreground">Views, signups, and conversion for each public page</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-muted-foreground">
+                      <th className="py-2 pr-4 font-medium">Page</th>
+                      <th className="py-2 pr-4 font-medium text-right">Views</th>
+                      <th className="py-2 pr-4 font-medium text-right">Signups</th>
+                      <th className="py-2 font-medium text-right">Conversion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pageStats.slice(0, 25).map((p) => (
+                      <tr key={p.path} className="border-b last:border-0">
+                        <td className="py-2 pr-4 font-mono text-xs break-all">{p.path}</td>
+                        <td className="py-2 pr-4 text-right">{p.views}</td>
+                        <td className="py-2 pr-4 text-right">{p.signups}</td>
+                        <td className="py-2 text-right">
+                          {p.views > 0 ? `${((p.signups / p.views) * 100).toFixed(1)}%` : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Help & Support section */}
         {profile?.org_id && (
