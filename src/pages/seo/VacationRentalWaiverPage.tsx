@@ -135,7 +135,7 @@ export default function VacationRentalWaiverPage() {
           ))}
         </div>
         <p className="text-sm text-muted-foreground mt-6">
-          Our <Link to="/waiver-templates/vacation-rental-waiver-template" className="text-primary underline underline-offset-4">free vacation rental waiver template</Link> includes all of these clauses, plus assumption of risk, release of liability, and indemnification language.
+          Our <Link to="/waiver-templates/vacation-rental-waiver-template" className="text-primary underline underline-offset-4">free vacation rental waiver template</Link> includes all of these clauses, plus assumption of risk, release of liability, and indemnification language. For the general version used by every kind of rental business, see our <Link to="/p/rental-liability-waiver" className="text-primary underline underline-offset-4">rental liability waiver guide and free PDF</Link>.
         </p>
       </SeoSection>
 
