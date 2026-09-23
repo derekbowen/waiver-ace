@@ -31,6 +31,10 @@ import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
 import VacationRentalWaiverPage from "./pages/seo/VacationRentalWaiverPage";
 import RentalAgreementPage from "./pages/seo/RentalAgreementPage";
 import RentalLiabilityWaiverPage from "./pages/seo/RentalLiabilityWaiverPage";
+import IntegrationsHubPage from "./pages/seo/IntegrationsHubPage";
+import IntegrationDetailPage from "./pages/seo/IntegrationDetailPage";
+import IntegrationIndustryPage from "./pages/seo/IntegrationIndustryPage";
+import IntegrationStatePage from "./pages/seo/IntegrationStatePage";
 import BounceHouseWaiverPage from "./pages/seo/BounceHouseWaiverPage";
 import IndustriesHubPage from "./pages/seo/IndustriesHubPage";
 import WaiverTemplatesHubPage from "./pages/seo/WaiverTemplatesHubPage";
@@ -136,6 +140,10 @@ const App = () => (
             <Route path="/p/vacation-rental-waiver" element={<VacationRentalWaiverPage />} />
             <Route path="/p/rental-agreement" element={<RentalAgreementPage />} />
             <Route path="/p/rental-liability-waiver" element={<RentalLiabilityWaiverPage />} />
+            <Route path="/integrations" element={<IntegrationsHubPage />} />
+            <Route path="/integrations/:platformSlug" element={<IntegrationDetailPage />} />
+            <Route path="/integrations/:platformSlug/state/:stateSlug" element={<IntegrationStatePage />} />
+            <Route path="/integrations/:platformSlug/:industrySlug" element={<IntegrationIndustryPage />} />
             <Route path="/waivers/bounce-house-rental-waivers" element={<BounceHouseWaiverPage />} />
             <Route path="/industries" element={<IndustriesHubPage />} />
             <Route path="/industries/:industrySlug/state/:stateSlug" element={<IndustryStateMatrixPage />} />
