@@ -60,6 +60,7 @@ const Templates = lazy(() => import("./pages/Templates"));
 const TemplateEditor = lazy(() => import("./pages/TemplateEditor"));
 const TemplateVersions = lazy(() => import("./pages/TemplateVersions"));
 const Envelopes = lazy(() => import("./pages/Envelopes"));
+const SignedWaivers = lazy(() => import("./pages/SignedWaivers"));
 const EnvelopeDetail = lazy(() => import("./pages/EnvelopeDetail"));
 const NewEnvelope = lazy(() => import("./pages/NewEnvelope"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -178,6 +179,7 @@ const App = () => (
             <Route path="/templates/:id/versions" element={<ProtectedRoute><TemplateVersions /></ProtectedRoute>} />
 
             <Route path="/envelopes" element={<ProtectedRoute><Envelopes /></ProtectedRoute>} />
+            <Route path="/signed-waivers" element={<ProtectedRoute><SignedWaivers /></ProtectedRoute>} />
             <Route path="/envelopes/new" element={<ProtectedRoute><NewEnvelope /></ProtectedRoute>} />
             <Route path="/envelopes/:id" element={<ProtectedRoute><EnvelopeDetail /></ProtectedRoute>} />
             <Route path="/envelopes/:id/certificate" element={<ProtectedRoute><CompletionCertificate /></ProtectedRoute>} />

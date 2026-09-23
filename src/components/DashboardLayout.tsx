@@ -5,6 +5,7 @@ import logo from "@/assets/logo.png";
 import {
   FileText,
   Mail,
+  FileCheck,
   Settings,
   LayoutDashboard,
   LogOut,
@@ -35,6 +36,7 @@ const navItems = [
 { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 { label: "Templates", href: "/templates", icon: FileText },
 { label: "Envelopes", href: "/envelopes", icon: Mail },
+{ label: "Signed Waivers", href: "/signed-waivers", icon: FileCheck },
 { label: "PhotoSell", href: "/photosell", icon: Sparkles },
 { label: "Contracts", href: "/contract-scanner", icon: FileSearch },
 { label: "Listing Analyzer", href: "/listing-analyzer", icon: BarChart },
