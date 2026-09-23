@@ -186,7 +186,7 @@ export default function RentalLiabilityWaiverPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             { label: "Vacation & short-term rentals", to: "/p/vacation-rental-waiver" },
-            { label: "Bounce house & party rentals", to: "/p/bounce-house-waiver" },
+            { label: "Bounce house & party rentals", to: "/waivers/bounce-house-rental-waivers" },
             { label: "Rental waiver software", to: "/rental-waiver-software" },
             { label: "Rental agreement templates", to: "/p/rental-agreement" },
             { label: "All waiver templates", to: "/waiver-templates" },

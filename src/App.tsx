@@ -30,6 +30,7 @@ import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
 import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
 import VacationRentalWaiverPage from "./pages/seo/VacationRentalWaiverPage";
 import RentalAgreementPage from "./pages/seo/RentalAgreementPage";
+import RentalLiabilityWaiverPage from "./pages/seo/RentalLiabilityWaiverPage";
 import BounceHouseWaiverPage from "./pages/seo/BounceHouseWaiverPage";
 import IndustriesHubPage from "./pages/seo/IndustriesHubPage";
 import WaiverTemplatesHubPage from "./pages/seo/WaiverTemplatesHubPage";
@@ -134,6 +135,7 @@ const App = () => (
             <Route path="/rental-waiver-software" element={<RentalWaiverSoftwarePage />} />
             <Route path="/p/vacation-rental-waiver" element={<VacationRentalWaiverPage />} />
             <Route path="/p/rental-agreement" element={<RentalAgreementPage />} />
+            <Route path="/p/rental-liability-waiver" element={<RentalLiabilityWaiverPage />} />
             <Route path="/waivers/bounce-house-rental-waivers" element={<BounceHouseWaiverPage />} />
             <Route path="/industries" element={<IndustriesHubPage />} />
             <Route path="/industries/:industrySlug/state/:stateSlug" element={<IndustryStateMatrixPage />} />
