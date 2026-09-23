@@ -140,7 +140,7 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
       </header>
 
       {/* Main content */}
-      <main className="md:ml-64 flex-1 flex flex-col min-h-screen">
+      <main className="md:ml-64 flex-1 flex flex-col min-h-screen min-w-0 overflow-x-hidden">
         <div className="flex-1 p-4 pt-16 pb-24 md:p-8 md:pt-8 md:pb-8">
           {children}
         </div>
@@ -218,7 +218,7 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
                   isActive ? "text-primary" : "text-muted-foreground active:text-foreground"
                 )}>
                 <item.icon className={cn("h-5 w-5 shrink-0", isActive && "stroke-[2.5px]")} />
-                <span className="leading-none">{item.label}</span>
+                <span className="leading-none">{item.label.replace(" Waivers", "")}</span>
               </Link>);
           })}
 

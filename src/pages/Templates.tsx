@@ -93,12 +93,12 @@ export default function Templates() {
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
             <h1 className="font-heading text-2xl font-bold">Templates</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage your waiver templates</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <QrCodeDialog templates={templates} orgId={profile?.org_id || ""} />
             <Button onClick={() => navigate("/templates/new")} className="gap-2">
               <Plus className="h-4 w-4" /> New Template
@@ -125,17 +125,17 @@ export default function Templates() {
             {templates.map((t) => (
               <Link key={t.id} to={`/templates/${t.id}`}>
                 <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
-                  <CardContent className="flex items-center justify-between py-4">
-                    <div className="flex items-center gap-4">
+                  <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                    <div className="flex items-center gap-4 min-w-0">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                         <FileText className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
-                        <p className="font-medium">{t.name}</p>
-                        <p className="text-sm text-muted-foreground">{t.description || "No description"}</p>
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{t.name}</p>
+                        <p className="text-sm text-muted-foreground truncate">{t.description || "No description"}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
