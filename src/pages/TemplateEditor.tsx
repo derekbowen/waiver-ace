@@ -741,6 +741,7 @@ export default function TemplateEditor() {
 
   // Extras
   const [requirePhoto, setRequirePhoto] = useState(false);
+  const [allowMinors, setAllowMinors] = useState(true);
   const [requireVideo, setRequireVideo] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [defaultExpirationDays, setDefaultExpirationDays] = useState<string>("");
@@ -764,7 +765,7 @@ export default function TemplateEditor() {
       try {
         const { data: template, error: templateError } = await supabase
           .from("templates")
-          .select("id, name, require_photo, require_video, video_url, default_expiration_days")
+          .select("id, name, require_photo, require_video, video_url, default_expiration_days, allow_minors")
           .eq("id", id)
           .eq("org_id", profile.org_id)
           .single();
@@ -785,6 +786,7 @@ export default function TemplateEditor() {
         setCustomContent(storedBody);
         setOriginalContent(storedBody);
         setRequirePhoto(template.require_photo === true);
+        setAllowMinors((template as any).allow_minors !== false);
         setRequireVideo(template.require_video === true);
         setVideoUrl(template.video_url || "");
         setDefaultExpirationDays(
@@ -870,6 +872,7 @@ export default function TemplateEditor() {
           name: templateName.trim(),
           description: getTemplateDescription() || null,
           require_photo: requirePhoto,
+          allow_minors: allowMinors,
           require_video: requireVideo,
           video_url: requireVideo && videoUrl.trim() ? videoUrl.trim() : null,
           default_expiration_days: defaultExpirationDays ? parseInt(defaultExpirationDays) : null,
@@ -1151,6 +1154,14 @@ export default function TemplateEditor() {
 
             <Card>
               <CardContent className="pt-6 space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="allow-minors" className="text-sm font-medium">Allow minors on this waiver</Label>
+                    <p className="text-xs text-muted-foreground">Turn off to hide the "Minors / dependents" section (e.g. adults-only activities)</p>
+                  </div>
+                  <Switch id="allow-minors" checked={allowMinors} onCheckedChange={setAllowMinors} />
+                </div>
+
                 <div className="flex items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <Label htmlFor="require-photo" className="text-sm font-medium">Require Selfie Photo (+1 credit)</Label>
