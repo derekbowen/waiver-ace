@@ -216,9 +216,7 @@ export default function SignedWaivers() {
         .box { border:1px solid #ddd; border-radius:8px; padding:16px; margin-top:8px; }
       </style></head><body>
       <h1>Signed liability waiver</h1>
-      <p class="muted">Record retained by ${escapeHtml(profile?.full_name ? "" : "")}Rental Waivers · printed ${escapeHtml(
-      format(new Date(), "PPpp")
-    )}</p>
+      <p class="muted">Rental Waivers record · printed ${escapeHtml(format(new Date(), "PPpp"))}</p>
       <table>${rows
         .map(([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(String(v))}</td></tr>`)
         .join("")}</table>
