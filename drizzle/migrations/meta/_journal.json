@@ -36,6 +36,13 @@
       "when": 1790196107210,
       "tag": "0004_template_allow_minors",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790201863488,
+      "tag": "0005_qr_codes_and_kiosk_email",
+      "breakpoints": true
     }
   ]
 }

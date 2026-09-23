@@ -911,6 +911,69 @@ export type Database = {
           },
         ]
       }
+      qr_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          credits_charged: number
+          id: string
+          is_active: boolean
+          label: string
+          last_scanned_at: string | null
+          location_note: string | null
+          org_id: string
+          scan_count: number
+          template_id: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          credits_charged?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          last_scanned_at?: string | null
+          location_note?: string | null
+          org_id: string
+          scan_count?: number
+          template_id: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          credits_charged?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          last_scanned_at?: string | null
+          location_note?: string | null
+          org_id?: string
+          scan_count?: number
+          template_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_codes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "qr_codes_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           completed_at: string | null

@@ -34,6 +34,10 @@ export default function SigningPage() {
   const [agreed, setAgreed] = useState(false);
   const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
   const [guardianAttested, setGuardianAttested] = useState(false);
+  const [guestEmail, setGuestEmail] = useState("");
+  const isKiosk =
+    envelope?.signer_email === "kiosk@placeholder.local" ||
+    envelope?.payload?.source === "kiosk";
   const addMinor = () => setMinors((m) => [...m, { name: "", age: "" }]);
   const removeMinor = (i: number) => setMinors((m) => m.filter((_, idx) => idx !== i));
   const updateMinor = (i: number, field: "name" | "age", value: string) =>
@@ -138,9 +142,28 @@ export default function SigningPage() {
     }
   };
 
+  // Short waivers fit on screen with nothing to scroll, so no scroll event ever
+  // fires — without this the signer could never unlock the signature fields.
+  useEffect(() => {
+    if (loading || !templateContent || scrolledToEnd) return;
+    const check = () => {
+      const el = contentRef.current;
+      if (el && el.scrollHeight <= el.clientHeight + 20) setScrolledToEnd(true);
+    };
+    check();
+    const t = setTimeout(check, 300);
+    return () => clearTimeout(t);
+  }, [loading, templateContent, scrolledToEnd]);
+
   const handleSign = async () => {
     if (!fullName.trim() || !initials.trim() || !agreed) {
       toast.error("Please complete all required fields");
+      return;
+    }
+    // QR / kiosk waivers have no email yet — the guest supplies their own so
+    // they receive their signed copy and the host gets a real contact record.
+    if (isKiosk && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail.trim())) {
+      toast.error("Please enter a valid email address so we can send your signed copy");
       return;
     }
     if (requirePhoto && !photoBlob) {
@@ -194,6 +217,7 @@ export default function SigningPage() {
           consent_text: consentText,
           consent_given_at: consentGivenAt,
           signed_at_utc: consentGivenAt,
+          signer_email: isKiosk ? guestEmail.trim().toLowerCase() : undefined,
           user_agent: navigator.userAgent,
           minors: cleanMinors,
           minor_names: cleanMinors.map((m) => (m.age ? `${m.name} (age ${m.age})` : m.name)).join(", "),
@@ -290,8 +314,9 @@ export default function SigningPage() {
           </div>
           <h1 className="font-heading text-2xl font-bold mb-2">Waiver Signed</h1>
           <p className="text-muted-foreground mb-4">
-            Thank you, {envelope.signer_name}. Your signed waiver has been recorded.
-            A confirmation will be sent to {envelope.signer_email}.
+            Thank you, {fullName.trim() || envelope.signer_name}. Your signed waiver has been recorded.
+            A confirmation will be sent to{" "}
+            {isKiosk ? guestEmail.trim().toLowerCase() : envelope.signer_email}.
           </p>
           <p className="text-xs text-muted-foreground font-mono">
             Envelope ID: {envelope.id}
@@ -379,7 +404,22 @@ export default function SigningPage() {
                   </div>
                 </div>
 
-                {envelope?.signer_email && (
+                {isKiosk ? (
+                  <div className="space-y-2">
+                    <Label>Email *</Label>
+                    <Input
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      placeholder="you@example.com"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      We'll email your signed copy here.
+                    </p>
+                  </div>
+                ) : envelope?.signer_email ? (
                   <div className="space-y-2">
                     <Label>Email</Label>
                     <Input value={String(envelope.signer_email)} readOnly disabled className="bg-muted" />
@@ -387,7 +427,7 @@ export default function SigningPage() {
                       Your signed copy will be sent here. Contact the host if this is wrong.
                     </p>
                   </div>
-                )}
+                ) : null}
 
 
 
