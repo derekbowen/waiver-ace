@@ -169,6 +169,15 @@ export default function QrCodes() {
     img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
   };
 
+  const printQrSign = () => {
+    const printingClass = "printing-qr-sign";
+    const cleanup = () => document.body.classList.remove(printingClass);
+
+    document.body.classList.add(printingClass);
+    window.addEventListener("afterprint", cleanup, { once: true });
+    window.print();
+  };
+
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
@@ -361,7 +370,7 @@ export default function QrCodes() {
                 </p>
               </div>
               <div className="flex gap-2 no-print">
-                <Button className="flex-1 gap-2" onClick={() => window.print()}>
+                <Button className="flex-1 gap-2" onClick={printQrSign}>
                   <Printer className="h-4 w-4" /> Print
                 </Button>
                 <Button

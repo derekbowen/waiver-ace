@@ -256,14 +256,14 @@
 
 /* Printable QR signs: hide the app chrome so only the sign is printed. */
 @media print {
-  body * {
+  body.printing-qr-sign * {
     visibility: hidden;
   }
-  #qr-print-area,
-  #qr-print-area * {
+  body.printing-qr-sign #qr-print-area,
+  body.printing-qr-sign #qr-print-area * {
     visibility: visible;
   }
-  #qr-print-area {
+  body.printing-qr-sign #qr-print-area {
     position: fixed;
     inset: 0;
     margin: auto;
@@ -273,7 +273,7 @@
     background: #fff !important;
     color: #000 !important;
   }
-  .no-print {
+  body.printing-qr-sign .no-print {
     display: none !important;
   }
 }
