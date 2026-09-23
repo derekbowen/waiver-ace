@@ -786,6 +786,7 @@ export default function TemplateEditor() {
         setCustomContent(storedBody);
         setOriginalContent(storedBody);
         setRequirePhoto(template.require_photo === true);
+        setAllowMinors((template as any).allow_minors !== false);
         setRequireVideo(template.require_video === true);
         setVideoUrl(template.video_url || "");
         setDefaultExpirationDays(

@@ -414,6 +414,7 @@ export default function GroupSigningPage() {
                   <p className="text-xs text-muted-foreground">For your records — we'll send you a copy if provided</p>
                 </div>
 
+                {envelope?.allow_minors !== false && (
                 <div className="space-y-3 rounded-lg border p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -490,6 +491,7 @@ export default function GroupSigningPage() {
                   )}
 
                 </div>
+                )}
 
                 <div className="space-y-2">
                   <Label>Signature</Label>

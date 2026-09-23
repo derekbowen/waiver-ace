@@ -391,6 +391,7 @@ export default function SigningPage() {
 
 
 
+                {envelope?.allow_minors !== false && (
                 <div className="space-y-3 rounded-lg border p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -443,6 +444,7 @@ export default function SigningPage() {
                     </div>
                   )}
                 </div>
+                )}
 
                 <div className="space-y-2">
                   <Label>Signature</Label>
