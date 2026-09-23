@@ -179,12 +179,8 @@ export default function VacationRentalWaiverPage() {
       <SeoFaq items={faqItems} />
 
       <SeoCta
-        title="Get Your Vacation Rental Waiver in Place Tonight"
-        description="Free template, digital signing, automatic delivery. 6¢ per waiver, no monthly fee — protect your property before the next check-in."
-        primaryLabel="Create Your Free Account"
-        primaryHref="/signup"
-        secondaryLabel="View the Free Template"
-        secondaryHref="/waiver-templates/vacation-rental-waiver-template"
+        headline="Get your vacation rental waiver in place tonight"
+        subtext="Free template, digital signing, automatic delivery. 6¢ per waiver, no monthly fee — protect your property before the next check-in."
       />
 
       <InternalLinks currentSlug="vacation-rental-waiver" />
