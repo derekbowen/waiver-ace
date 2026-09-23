@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { TemplatePreviewDialog, fillSampleValues } from "@/components/TemplatePreviewDialog";
 
 const defaultVariables = [
-  "customer_name", "booking_id", "listing_id", "date", "time",
+  "customer_name", "booking_id", "listing_id", "date", "rental_date", "time",
   "host_name", "address_redacted", "rules", "state", "minor_names",
 ];
 
