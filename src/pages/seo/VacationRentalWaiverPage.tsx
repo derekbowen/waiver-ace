@@ -7,6 +7,7 @@ import { InternalLinks } from "@/components/InternalLinks";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbSchema, faqSchema, howToSchema } from "@/lib/structured-data";
 import heroVideo from "@/assets/vacation-rental-hero.mp4.asset.json";
+import heroPoster from "@/assets/hero-lifestyle.jpg";
 
 const faqItems = [
   {
