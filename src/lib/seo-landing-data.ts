@@ -282,7 +282,7 @@ export const seoLandingPages: SeoLandingPage[] = [
       { question: "How many team members can I add?", answer: "Unlimited team members. Assign admin or host roles based on responsibilities." },
       { question: "Can property owners access waivers?", answer: "Yes — export signed waivers as PDFs or give owners limited dashboard access." },
       { question: "What about volume pricing?", answer: "Credit packages offer bulk discounts. 8,000 credits for $500 works out to about 6¢ per waiver." },
-      { question: "Is there an API?", answer: "Yes! Full REST API with documentation. Create envelopes, check status, and receive webhook notifications." },
+      { question: "Is there an API?", answer: "Yes! Full REST API with documentation. Send waivers, check status, and receive webhook notifications." },
     ],
     ctaHeadline: "Enterprise-grade waiver management",
     ctaSubtext: "Built for property management companies. Scale with confidence.",

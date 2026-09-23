@@ -35,7 +35,7 @@ import { useTheme } from "@/hooks/useTheme";
 const navItems = [
 { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 { label: "Templates", href: "/templates", icon: FileText },
-{ label: "Envelopes", href: "/envelopes", icon: Mail },
+{ label: "Sent Waivers", href: "/envelopes", icon: Mail },
 { label: "Signed Waivers", href: "/signed-waivers", icon: FileCheck },
 { label: "QR Codes", href: "/qr-codes", icon: QrCode },
 { label: "PhotoSell", href: "/photosell", icon: Sparkles },

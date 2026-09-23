@@ -115,7 +115,7 @@ export default function Analytics() {
           <>
             <div className="grid gap-4 md:grid-cols-4 mb-8">
               <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Total Envelopes</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Total Waivers</CardTitle></CardHeader>
                 <CardContent><div className="text-3xl font-heading font-bold">{envelopes.length}</div></CardContent>
               </Card>
               <Card>

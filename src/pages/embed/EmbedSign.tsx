@@ -25,7 +25,7 @@ interface ErrorInfo {
 const ERROR_MAP: Record<ErrorKind, Omit<ErrorInfo, "kind">> = {
   missing_token: {
     title: "No waiver specified",
-    message: "This embed is missing a ?token= parameter pointing to a waiver envelope.",
+    message: "This embed is missing a ?token= parameter pointing to a waiver.",
     icon: Link2Off,
     canRetry: false,
   },

@@ -54,7 +54,7 @@ export default function CompletionCertificate() {
   if (!envelope) {
     return (
       <DashboardLayout>
-        <p className="text-muted-foreground">Envelope not found</p>
+        <p className="text-muted-foreground">Waiver not found</p>
       </DashboardLayout>
     );
   }
@@ -73,7 +73,7 @@ export default function CompletionCertificate() {
             </Button>
             <div>
               <h1 className="font-heading text-2xl font-bold">Certificate of Completion</h1>
-              <p className="text-sm text-muted-foreground mt-1">Legal evidence bundle for envelope {id?.slice(0, 8)}...</p>
+              <p className="text-sm text-muted-foreground mt-1">Legal evidence bundle for waiver {id?.slice(0, 8)}...</p>
             </div>
           </div>
           <Button variant="outline" onClick={() => window.print()} className="gap-2 print:hidden">
@@ -84,7 +84,7 @@ export default function CompletionCertificate() {
         {!isCompleted && (
           <Card className="mb-6 border-warning/50 bg-warning/5">
             <CardContent className="pt-6">
-              <p className="text-sm">This envelope has not been signed yet. The certificate will be complete once the signer submits their signature.</p>
+              <p className="text-sm">This waiver has not been signed yet. The certificate will be complete once the signer submits their signature.</p>
             </CardContent>
           </Card>
         )}
@@ -108,7 +108,7 @@ export default function CompletionCertificate() {
 
             <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm">
               <div>
-                <p className="text-muted-foreground font-medium mb-1">Envelope ID</p>
+                <p className="text-muted-foreground font-medium mb-1">Waiver ID</p>
                 <p className="font-mono text-xs break-all">{envelope.id}</p>
               </div>
               <div>
@@ -225,7 +225,7 @@ export default function CompletionCertificate() {
                 <p className="font-mono text-xs break-all">{envelope.pdf_hash}</p>
               </div>
             ) : (
-              <p className="text-muted-foreground">PDF not yet generated. Download the PDF from the envelope detail page to generate the hash.</p>
+              <p className="text-muted-foreground">PDF not yet generated. Download the PDF from the waiver detail page to generate the hash.</p>
             )}
             {envelope.pdf_storage_key && (
               <div>

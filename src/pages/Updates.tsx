@@ -96,7 +96,7 @@ const updates: Update[] = [
     tags: [{ label: "Security", variant: "destructive" }],
     icon: Shield,
     highlights: [
-      "Scoped signer photo uploads to active envelopes",
+      "Scoped signer photo uploads to active waivers",
       "Team invite acceptance restricted to invited email",
       "Removed legacy open upload policies",
     ],
@@ -166,7 +166,7 @@ const updates: Update[] = [
     date: "January 28, 2026",
     title: "Webhooks & API Keys",
     description:
-      "Full developer toolkit: create API keys, configure webhook endpoints, and receive real-time event notifications for envelope status changes.",
+      "Full developer toolkit: create API keys, configure webhook endpoints, and receive real-time event notifications for waiver status changes.",
     tags: [{ label: "New Feature", variant: "default" }, { label: "Developer", variant: "outline" }],
     icon: Webhook,
   },
@@ -180,7 +180,7 @@ const updates: Update[] = [
     highlights: [
       "Unique signing session per participant",
       "QR code generation for any waiver",
-      "Group signature tracking in envelope detail",
+      "Group signature tracking in waiver details",
     ],
   },
   {

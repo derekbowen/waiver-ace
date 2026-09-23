@@ -146,7 +146,7 @@ Every save creates a new version. Previously sent waivers always reference the v
     content: `
 ## Manual Send
 
-From the dashboard, click **"New Envelope"**, select a template, enter the signer's name and email, fill in any template variables, and hit Send.
+From the dashboard, click **"Send a Waiver"**, select a template, enter the signer's name and email, fill in any template variables, and hit Send.
 
 The signer receives an email with a secure signing link. One credit is deducted per signer at send time.
 
