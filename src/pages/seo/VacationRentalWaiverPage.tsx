@@ -70,6 +70,7 @@ export default function VacationRentalWaiverPage() {
         <div className="absolute inset-0">
           <video
             src={heroVideo.url}
+            poster={heroPoster}
             autoPlay
             muted
             loop
