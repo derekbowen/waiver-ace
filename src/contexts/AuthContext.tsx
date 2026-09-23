@@ -17,7 +17,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  profile: { id: string; full_name: string | null; email: string | null; org_id: string | null } | null;
+  profile: { id: string; full_name: string | null; email: string | null; org_id: string | null; signup_source_path?: string | null } | null;
   roles: string[];
   wallet: WalletState;
   refreshWallet: () => Promise<void>;
@@ -96,10 +96,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, full_name, email, org_id")
+      .select("id, full_name, email, org_id, signup_source_path")
       .eq("user_id", userId)
       .single();
-    if (!error) setProfile(data);
+    if (!error) {
+      setProfile(data);
+      // Attribute the signup to the marketing page that first brought them in
+      import("@/lib/page-tracking").then(({ attributeSignupSource }) =>
+        attributeSignupSource(userId, (data as any)?.signup_source_path)
+      );
+    }
   };
 
   const fetchRoles = async (userId: string) => {

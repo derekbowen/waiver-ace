@@ -77,6 +77,10 @@ const AuditLog = lazy(() => import("./pages/AuditLog"));
 const ListingAnalyzer = lazy(() => import("./pages/ListingAnalyzer"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { trackPageView } from "@/lib/page-tracking";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -85,6 +89,15 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+/** Records a view whenever the visitor lands on a public marketing page. */
+const PageViewTracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
+  return null;
+};
 
 const LazyFallback = () => (
   <div className="flex min-h-screen items-center justify-center">
@@ -99,6 +112,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <PageViewTracker />
         <I18nProvider>
         <AuthProvider>
           <ErrorBoundary fallbackRoute="/dashboard">
