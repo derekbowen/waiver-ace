@@ -126,6 +126,7 @@ const App = () => (
             <Route path="/waiver-laws/:slug" element={<WaiverLawStatePage />} />
             <Route path="/compare" element={<CompareHubPage />} />
             <Route path="/pricing-info" element={<PricingPublicPage />} />
+            <Route path="/cheapest-waiver-software" element={<CheapestWaiverSoftwarePage />} />
             <Route path="/alternatives/:slug" element={<CompetitorAltPage />} />
             <Route path="/waivers/:slug" element={<SeoLanding />} />
             <Route path="/blog" element={<BlogHubPage />} />
