@@ -359,8 +359,9 @@ export const waiverTemplatePages: WaiverTemplatePage[] = [
 ];
 
 import { extraTemplatePages } from "./waiver-template-pages-extra";
+import { rentalTemplatePages } from "./waiver-template-pages-rentals";
 
-export const allWaiverTemplatePages: WaiverTemplatePage[] = [...waiverTemplatePages, ...extraTemplatePages];
+export const allWaiverTemplatePages: WaiverTemplatePage[] = [...waiverTemplatePages, ...extraTemplatePages, ...rentalTemplatePages];
 
 export function getWaiverTemplatePage(slug: string): WaiverTemplatePage | undefined {
   return allWaiverTemplatePages.find((p) => p.slug === slug);

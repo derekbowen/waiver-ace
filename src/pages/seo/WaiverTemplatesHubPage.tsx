@@ -27,6 +27,18 @@ const templates = [
   { name: "Go-Kart Track Waiver", slug: "go-kart-rental-waiver-template" },
   { name: "Zipline Tour Waiver", slug: "zipline-tour-waiver-template" },
   { name: "Fitness Class Waiver", slug: "fitness-class-waiver-template" },
+  { name: "Vacation Rental Waiver", slug: "vacation-rental-waiver-template" },
+  { name: "House Rental Waiver", slug: "house-rental-waiver-template" },
+  { name: "Airbnb / VRBO Waiver", slug: "airbnb-vrbo-waiver-template" },
+  { name: "Cabin Rental Waiver", slug: "cabin-rental-waiver-template" },
+  { name: "Beach House Waiver", slug: "beach-house-rental-waiver-template" },
+  { name: "Lake House Waiver", slug: "lake-house-rental-waiver-template" },
+  { name: "Condo Rental Waiver", slug: "condo-rental-waiver-template" },
+  { name: "Pool Rental Waiver", slug: "pool-rental-waiver-template" },
+  { name: "Hot Tub / Spa Waiver", slug: "hot-tub-waiver-template" },
+  { name: "Party & Event Rental Waiver", slug: "party-equipment-rental-waiver-template" },
+  { name: "Car Rental Waiver", slug: "car-rental-waiver-template" },
+  { name: "Golf Cart Rental Waiver", slug: "golf-cart-rental-waiver-template" },
 ];
 
 const requiredClauses = [
