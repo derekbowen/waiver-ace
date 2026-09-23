@@ -43,6 +43,7 @@ export default function IntegrationIndustryPage() {
           serviceSchema({
             name: `${p.name} waiver integration for ${i.name}`,
             description: platformIndustryDescription(p, i),
+            serviceType: "Digital liability waiver software integration",
             url,
           }),
         ]}
