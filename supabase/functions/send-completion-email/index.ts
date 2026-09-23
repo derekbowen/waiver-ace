@@ -287,7 +287,7 @@ serve(async (req) => {
         content: escapeHtml(fillTokens(customMessage)).replace(/\n/g, "<br>"),
       });
     }
-    if (customBtnLabel && /^https:\/\//i.test(customBtnUrl)) {
+    if (customBtnLabel && /^https?:\/\//i.test(customBtnUrl)) {
       customSections.push({
         type: "button",
         content: escapeHtml(fillTokens(customBtnLabel)),
