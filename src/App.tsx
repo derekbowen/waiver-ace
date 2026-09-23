@@ -35,6 +35,7 @@ import WaiverLawsHubPage from "./pages/seo/WaiverLawsHubPage";
 import CompareHubPage from "./pages/seo/CompareHubPage";
 import CompetitorAltPage from "./pages/seo/CompetitorAltPage";
 import PricingPublicPage from "./pages/seo/PricingPublicPage";
+import CheapestWaiverSoftwarePage from "./pages/seo/CheapestWaiverSoftwarePage";
 import BlogHubPage from "./pages/seo/BlogHubPage";
 import BlogArticlePage from "./pages/seo/BlogArticlePage";
 import ContractScannerPage from "./pages/seo/ContractScannerPage";
@@ -126,6 +127,7 @@ const App = () => (
             <Route path="/waiver-laws/:slug" element={<WaiverLawStatePage />} />
             <Route path="/compare" element={<CompareHubPage />} />
             <Route path="/pricing-info" element={<PricingPublicPage />} />
+            <Route path="/cheapest-waiver-software" element={<CheapestWaiverSoftwarePage />} />
             <Route path="/alternatives/:slug" element={<CompetitorAltPage />} />
             <Route path="/waivers/:slug" element={<SeoLanding />} />
             <Route path="/blog" element={<BlogHubPage />} />
