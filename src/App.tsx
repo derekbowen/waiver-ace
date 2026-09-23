@@ -27,6 +27,7 @@ import FindMyWaiver from "./pages/FindMyWaiver";
 import SeoLanding from "./pages/SeoLanding";
 import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
 import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
+import VacationRentalWaiverPage from "./pages/seo/VacationRentalWaiverPage";
 import IndustriesHubPage from "./pages/seo/IndustriesHubPage";
 import WaiverTemplatesHubPage from "./pages/seo/WaiverTemplatesHubPage";
 import WaiverLawsHubPage from "./pages/seo/WaiverLawsHubPage";
