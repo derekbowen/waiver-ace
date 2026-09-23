@@ -135,11 +135,11 @@ export default function NewEnvelope() {
         });
         if (emailErr) {
           console.error("Failed to send signing email:", emailErr);
-          toast.warning("Envelope created but email failed to send. You can resend from the detail page.");
+          toast.warning("Waiver created but email failed to send. You can resend from the detail page.");
         }
       }
 
-      toast.success(isGroupWaiver ? "Group waiver created! Share the link with your group." : "Envelope sent! The signer will receive an email shortly.");
+      toast.success(isGroupWaiver ? "Group waiver created! Share the link with your group." : "Waiver sent! The signer will receive an email shortly.");
       navigate(`/envelopes/${envelope.id}`);
     } catch (err: any) {
       toast.error(err.message);
@@ -156,7 +156,7 @@ export default function NewEnvelope() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="font-heading text-2xl font-bold">New Envelope</h1>
+            <h1 className="font-heading text-2xl font-bold">Send a Waiver</h1>
             <p className="text-sm text-muted-foreground mt-1">Send a waiver for signing</p>
           </div>
         </div>
@@ -268,7 +268,7 @@ export default function NewEnvelope() {
                       <li>You'll get a single shareable link (e.g. for a text message or booking confirmation)</li>
                       <li>Each person opens the link and signs with their own name and signature</li>
                       <li>No email addresses needed upfront — money keeps flowing at checkout</li>
-                      <li>You'll see all signatures on the envelope detail page</li>
+                      <li>You'll see all signatures on the waiver detail page</li>
                     </ul>
                   </div>
                 </div>

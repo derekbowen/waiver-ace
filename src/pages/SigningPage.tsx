@@ -233,7 +233,7 @@ export default function SigningPage() {
 
       const res = result as any;
       if (!res?.success) {
-        throw new Error(res?.error || "Failed to sign envelope");
+        throw new Error(res?.error || "Failed to sign waiver");
       }
 
       // Fire GTM event

@@ -309,7 +309,7 @@ const PLATFORMS: IntegrationPlatform[] = [
       { step: 4, title: "Enterprise reporting", description: "Signed, unsigned, and expired counts by property, brand, and date range." },
     ],
     faqExtra: [
-      { question: "Can agents resend a waiver from a call?", answer: "Yes. Any team member can resend the signing email from the envelope screen in RentalWaivers." },
+      { question: "Can agents resend a waiver from a call?", answer: "Yes. Any team member can resend the signing email from the waiver screen in RentalWaivers." },
       { question: "Do you support multiple brands under one account?", answer: "Yes — templates, branding, and reporting can be separated by brand." },
     ],
   },

@@ -198,7 +198,7 @@ export default function EnvelopeDetail() {
       .eq("id", id);
     if (error) toast.error(error.message);
     else {
-      toast.success("Envelope canceled");
+      toast.success("Waiver canceled");
       setEnvelope({ ...envelope, status: "canceled" });
       // Notify signer
       supabase.functions.invoke("send-envelope-notification", {
@@ -220,7 +220,7 @@ export default function EnvelopeDetail() {
   if (!envelope) {
     return (
       <DashboardLayout>
-        <p className="text-muted-foreground">Envelope not found</p>
+        <p className="text-muted-foreground">Waiver not found</p>
       </DashboardLayout>
     );
   }
@@ -234,7 +234,7 @@ export default function EnvelopeDetail() {
           </Button>
           <div className="flex-1">
             <div className="flex items-center gap-3">
-              <h1 className="font-heading text-2xl font-bold">Envelope</h1>
+              <h1 className="font-heading text-2xl font-bold">Waiver Details</h1>
               <StatusBadge status={envelope.status} />
             </div>
             <p className="text-sm text-muted-foreground mt-1 font-mono">{envelope.id}</p>

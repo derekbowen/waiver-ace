@@ -164,7 +164,7 @@ export default function BulkSend() {
     setResults(bulkResults);
     setSending(false);
     const successCount = bulkResults.filter((r) => r.success).length;
-    toast.success(`${successCount}/${emails.length} envelopes created`);
+    toast.success(`${successCount}/${emails.length} waivers sent`);
   };
 
   const emailCount = parseEmails().length;
