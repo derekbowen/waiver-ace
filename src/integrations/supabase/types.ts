@@ -737,6 +737,10 @@ export type Database = {
         Row: {
           brand_color: string | null
           brand_font: string | null
+          completion_email_button_label: string | null
+          completion_email_button_url: string | null
+          completion_email_message: string | null
+          completion_email_subject: string | null
           created_at: string
           email_sender_domain: string | null
           id: string
@@ -749,6 +753,10 @@ export type Database = {
         Insert: {
           brand_color?: string | null
           brand_font?: string | null
+          completion_email_button_label?: string | null
+          completion_email_button_url?: string | null
+          completion_email_message?: string | null
+          completion_email_subject?: string | null
           created_at?: string
           email_sender_domain?: string | null
           id?: string
@@ -761,6 +769,10 @@ export type Database = {
         Update: {
           brand_color?: string | null
           brand_font?: string | null
+          completion_email_button_label?: string | null
+          completion_email_button_url?: string | null
+          completion_email_message?: string | null
+          completion_email_subject?: string | null
           created_at?: string
           email_sender_domain?: string | null
           id?: string
