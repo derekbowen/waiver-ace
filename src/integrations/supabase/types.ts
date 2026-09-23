@@ -784,6 +784,27 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          referrer: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          referrer?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+        }
+        Relationships: []
+      }
       photo_jobs: {
         Row: {
           analysis_json: Json | null
@@ -854,6 +875,7 @@ export type Database = {
           id: string
           org_id: string | null
           referral_code: string | null
+          signup_source_path: string | null
           updated_at: string
           user_id: string
         }
@@ -864,6 +886,7 @@ export type Database = {
           id?: string
           org_id?: string | null
           referral_code?: string | null
+          signup_source_path?: string | null
           updated_at?: string
           user_id: string
         }
@@ -874,6 +897,7 @@ export type Database = {
           id?: string
           org_id?: string | null
           referral_code?: string | null
+          signup_source_path?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1366,6 +1390,14 @@ export type Database = {
       get_group_waiver_by_token: {
         Args: { p_group_token: string; p_user_agent?: string }
         Returns: Json
+      }
+      get_marketing_page_stats: {
+        Args: never
+        Returns: {
+          path: string
+          signups: number
+          views: number
+        }[]
       }
       get_signer_waivers_authenticated: {
         Args: never
