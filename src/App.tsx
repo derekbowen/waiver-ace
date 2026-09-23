@@ -27,6 +27,7 @@ import FindMyWaiver from "./pages/FindMyWaiver";
 import SeoLanding from "./pages/SeoLanding";
 import WaiverSoftwarePage from "./pages/seo/WaiverSoftwarePage";
 import RentalWaiverSoftwarePage from "./pages/seo/RentalWaiverSoftwarePage";
+import VacationRentalWaiverPage from "./pages/seo/VacationRentalWaiverPage";
 import IndustriesHubPage from "./pages/seo/IndustriesHubPage";
 import WaiverTemplatesHubPage from "./pages/seo/WaiverTemplatesHubPage";
 import WaiverLawsHubPage from "./pages/seo/WaiverLawsHubPage";
@@ -113,6 +114,7 @@ const App = () => (
             <Route path="/docs/:articleId" element={<DocsArticle />} />
             <Route path="/waiver-software" element={<WaiverSoftwarePage />} />
             <Route path="/rental-waiver-software" element={<RentalWaiverSoftwarePage />} />
+            <Route path="/p/vacation-rental-waiver" element={<VacationRentalWaiverPage />} />
             <Route path="/industries" element={<IndustriesHubPage />} />
             <Route path="/industries/:industrySlug/state/:stateSlug" element={<IndustryStateMatrixPage />} />
             <Route path="/industries/:slug" element={<IndustryDetailPage />} />
