@@ -10,10 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Mail, CheckCircle, Clock, Coins, AlertTriangle, MessageSquare, ReceiptText } from "lucide-react";
 import { toast } from "sonner";
 
+interface PageStat { path: string; views: number; signups: number }
+
 export default function Dashboard() {
-  const { profile, refreshWallet } = useAuth();
+  const { profile, roles, refreshWallet } = useAuth();
   const { credits, status, isPaused, isLow, isOverdraft, loading: walletLoading } = useWallet();
-  const [stats, setStats] = useState({ templates: 0, sent: 0, completed: 0, pending: 0 });
+  const [stats, setStats] = useState({ templates: 0, sent: 0, completed: 0, pending: 0, expired: 0 });
+  const [pageStats, setPageStats] = useState<PageStat[]>([]);
+  const isAdmin = roles.includes("admin");
 
   const fetchStats = useCallback(async () => {
     if (!profile?.org_id) return;
@@ -25,11 +29,20 @@ export default function Dashboard() {
     const envs = envelopes.data || [];
     setStats({
       templates: templates.count || 0,
-      sent: envs.filter((e: any) => e.status === "sent").length,
+      sent: envs.length,
       completed: envs.filter((e: any) => e.status === "completed" || e.status === "signed").length,
       pending: envs.filter((e: any) => ["sent", "viewed"].includes(e.status)).length,
+      expired: envs.filter((e: any) => e.status === "expired").length,
     });
   }, [profile?.org_id]);
+
+  // Owner-only: which marketing pages bring in signups
+  useEffect(() => {
+    if (!isAdmin) return;
+    supabase.rpc("get_marketing_page_stats").then(({ data, error }) => {
+      if (!error && data) setPageStats(data as PageStat[]);
+    });
+  }, [isAdmin]);
 
   useEffect(() => {
     fetchStats();
@@ -93,8 +106,9 @@ export default function Dashboard() {
   const statCards = [
     { label: "Templates", value: stats.templates, icon: FileText, color: "text-primary" },
     { label: "Sent", value: stats.sent, icon: Mail, color: "text-primary" },
-    { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-success" },
+    { label: "Signed", value: stats.completed, icon: CheckCircle, color: "text-success" },
     { label: "Pending", value: stats.pending, icon: Clock, color: "text-warning" },
+    { label: "Expired", value: stats.expired, icon: AlertTriangle, color: "text-destructive" },
   ];
 
   return (
