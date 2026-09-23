@@ -314,8 +314,9 @@ export default function SigningPage() {
           </div>
           <h1 className="font-heading text-2xl font-bold mb-2">Waiver Signed</h1>
           <p className="text-muted-foreground mb-4">
-            Thank you, {envelope.signer_name}. Your signed waiver has been recorded.
-            A confirmation will be sent to {envelope.signer_email}.
+            Thank you, {fullName.trim() || envelope.signer_name}. Your signed waiver has been recorded.
+            A confirmation will be sent to{" "}
+            {isKiosk ? guestEmail.trim().toLowerCase() : envelope.signer_email}.
           </p>
           <p className="text-xs text-muted-foreground font-mono">
             Envelope ID: {envelope.id}
