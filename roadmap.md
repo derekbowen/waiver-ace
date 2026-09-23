@@ -8,4 +8,4 @@
 
 ## Open
 - Confirm arrival in a real inbox on the live site: user should send one real waiver from www.rentalwaivers.com (Live backend is read-only from my tools) and check their inbox.
-- [ ] Draft copy-paste reply for customer: QR code at kayaks, minors section question, waiver copies/storage
+- [x] Drafted copy-paste reply for customer (QR code, minors section, waiver copies)
