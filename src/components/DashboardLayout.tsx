@@ -26,8 +26,8 @@ import {
   FolderOpen,
   ScrollText,
   BarChart,
-  Bot } from
-"lucide-react";
+  Bot,
+  QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
@@ -37,6 +37,7 @@ const navItems = [
 { label: "Templates", href: "/templates", icon: FileText },
 { label: "Envelopes", href: "/envelopes", icon: Mail },
 { label: "Signed Waivers", href: "/signed-waivers", icon: FileCheck },
+{ label: "QR Codes", href: "/qr-codes", icon: QrCode },
 { label: "PhotoSell", href: "/photosell", icon: Sparkles },
 { label: "Contracts", href: "/contract-scanner", icon: FileSearch },
 { label: "Listing Analyzer", href: "/listing-analyzer", icon: BarChart },

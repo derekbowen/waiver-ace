@@ -16,38 +16,47 @@ import { toast } from "sonner";
  */
 export default function KioskPage() {
   useNoindex();
-  const { templateId } = useParams();
+  // Two entry points: a raw template kiosk link, or a unique printed QR code.
+  const { templateId, code } = useParams();
   const navigate = useNavigate();
   const [templateName, setTemplateName] = useState("");
   const [orgName, setOrgName] = useState("");
+  const [locationNote, setLocationNote] = useState("");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
 
+  const identity = code ? { qr_code: code } : { template_id: templateId };
+
   // We need to look up the template + org via an edge function since this is a public page
   useEffect(() => {
-    if (!templateId) return;
+    if (!templateId && !code) return;
     // Use the public waiverflow-api to get template info
     supabase.functions
       .invoke("waiverflow-api", {
-        body: { action: "kiosk_info", template_id: templateId },
+        body: { action: "kiosk_info", ...identity },
       })
       .then(({ data, error: err }) => {
         if (err || !data?.template_name) {
-          setError("Template not found or not available for kiosk mode.");
+          setError(
+            data?.error ||
+              "This waiver link isn't available. Please ask the host for a new QR code."
+          );
         } else {
           setTemplateName(data.template_name);
           setOrgName(data.org_name || "");
+          setLocationNote(data.location_note || "");
         }
         setLoading(false);
       });
-  }, [templateId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [templateId, code]);
 
   const handleStart = async () => {
     setCreating(true);
     try {
       const { data, error: err } = await supabase.functions.invoke("waiverflow-api", {
-        body: { action: "kiosk_create", template_id: templateId },
+        body: { action: "kiosk_create", ...identity },
       });
 
       if (err || !data?.signing_token) {
@@ -61,6 +70,7 @@ export default function KioskPage() {
       setCreating(false);
     }
   };
+
 
   if (loading) {
     return (
@@ -90,6 +100,9 @@ export default function KioskPage() {
             <p className="text-sm text-muted-foreground mb-1">{orgName}</p>
           )}
           <CardTitle className="text-xl">{templateName}</CardTitle>
+          {locationNote && (
+            <p className="text-xs text-muted-foreground mt-1">{locationNote}</p>
+          )}
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground text-center">

@@ -244,7 +244,25 @@ serve(async (req: Request) => {
     try {
       const bodyClone = req.clone();
       const body = await bodyClone.json();
-      
+
+      // A QR sign carries a unique code. Resolve it to the template it was
+      // printed for, so every physical sign maps to exactly one waiver.
+      let qrRecord: any = null;
+      if (typeof body.qr_code === "string" && body.qr_code.length > 0) {
+        const { data: qr } = await supabase
+          .from("qr_codes")
+          .select("id, template_id, org_id, is_active, label, location_note, scan_count")
+          .eq("code", body.qr_code)
+          .maybeSingle();
+        if (!qr || !qr.is_active) {
+          return new Response(JSON.stringify({ error: "This QR code is no longer active." }), {
+            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        qrRecord = qr;
+        body.template_id = qr.template_id;
+      }
+
       if (body.action === "kiosk_info" && body.template_id) {
         const { data: template } = await supabase
           .from("templates")
@@ -252,6 +270,7 @@ serve(async (req: Request) => {
           .eq("id", body.template_id)
           .eq("is_active", true)
           .single();
+
 
         if (!template) {
           return new Response(JSON.stringify({ error: "Template not found" }), {
@@ -265,9 +284,18 @@ serve(async (req: Request) => {
           .eq("id", template.org_id)
           .single();
 
+        if (qrRecord) {
+          await supabase
+            .from("qr_codes")
+            .update({ scan_count: (qrRecord.scan_count ?? 0) + 1, last_scanned_at: new Date().toISOString() })
+            .eq("id", qrRecord.id);
+        }
+
         return new Response(JSON.stringify({
           template_name: template.name,
           org_name: org?.name || "",
+          qr_label: qrRecord?.label || null,
+          location_note: qrRecord?.location_note || null,
         }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -338,7 +366,12 @@ serve(async (req: Request) => {
             signer_name: "Kiosk Guest",
             status: "sent",
             credits_charged: kioskCost.total,
-            payload: { source: "kiosk" },
+            payload: {
+              source: "kiosk",
+              qr_code_id: qrRecord?.id ?? null,
+              qr_label: qrRecord?.label ?? null,
+              qr_location: qrRecord?.location_note ?? null,
+            },
           })
           .select("id, signing_token")
           .single();

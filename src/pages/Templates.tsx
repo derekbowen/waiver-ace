@@ -6,7 +6,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { QrCodeDialog } from "@/components/QrCodeDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, FileText, ChevronRight, Copy, Loader2, Pencil, History as HistoryIcon } from "lucide-react";
+import { Plus, FileText, ChevronRight, Copy, Loader2, Pencil, QrCode, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 
 interface Template {
@@ -162,6 +162,15 @@ export default function Templates() {
                         onClick={(e) => handleDuplicate(e, t)}
                       >
                         {duplicating === t.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Copy className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        title="Printable QR sign"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate("/qr-codes"); }}
+                      >
+                        <QrCode className="h-4 w-4" />
                       </Button>
                       <span className={`text-xs px-2 py-1 rounded-full ${t.is_active ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"}`}>
                         {t.is_active ? "Active" : "Inactive"}
