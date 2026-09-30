@@ -22,6 +22,7 @@ import Privacy from "./pages/Privacy";
 import Docs from "./pages/Docs";
 import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
+import CheckInPass from "./pages/CheckInPass";
 import Unsubscribe from "./pages/Unsubscribe";
 import Updates from "./pages/Updates";
 import FindMyWaiver from "./pages/FindMyWaiver";
