@@ -29,3 +29,6 @@ project_id = "llsgwfzoutdpgrgtcbif"
     verify_jwt = false
   [functions.waiverflow-api]
     verify_jwt = false
+
+[functions.apple-wallet-pass]
+verify_jwt = false
