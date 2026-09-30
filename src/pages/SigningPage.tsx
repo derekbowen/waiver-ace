@@ -326,6 +326,11 @@ export default function SigningPage() {
             A confirmation will be sent to{" "}
             {isKiosk ? guestEmail.trim().toLowerCase() : envelope.signer_email}.
           </p>
+          {passCode && (
+            <Button asChild className="mb-4 w-full">
+              <a href={`/pass/${passCode}`}>Get your check-in pass</a>
+            </Button>
+          )}
           <p className="text-xs text-muted-foreground font-mono">
             Envelope ID: {envelope.id}
           </p>
