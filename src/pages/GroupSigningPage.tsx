@@ -30,6 +30,7 @@ export default function GroupSigningPage() {
   const [initials, setInitials] = useState("");
   const [signerEmail, setSignerEmail] = useState("");
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
+  const [passCode, setPassCode] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
