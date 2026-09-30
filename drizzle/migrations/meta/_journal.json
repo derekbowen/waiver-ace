@@ -50,6 +50,13 @@
       "when": 1790806741559,
       "tag": "0006_create_check_in_passes",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790806900911,
+      "tag": "0007_refresh_check_in_pass_names",
+      "breakpoints": true
     }
   ]
 }
