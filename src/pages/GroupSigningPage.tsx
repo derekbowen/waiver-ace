@@ -325,6 +325,11 @@ export default function GroupSigningPage() {
               </ul>
             </div>
           )}
+          {passCode && (
+            <Button asChild className="mt-6 w-full">
+              <a href={`/pass/${passCode}`}>Get your check-in pass</a>
+            </Button>
+          )}
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.
           </p>
