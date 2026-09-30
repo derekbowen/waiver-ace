@@ -79,6 +79,7 @@ const CompletionEmailEditor = lazy(() => import("./pages/CompletionEmailEditor")
 const AdminCredits = lazy(() => import("./pages/AdminCredits"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const QrCodes = lazy(() => import("./pages/QrCodes"));
+const CheckIn = lazy(() => import("./pages/CheckIn"));
 const QrCodeWaiversPage = lazy(() => import("./pages/seo/QrCodeWaiversPage"));
 const ContractScanner = lazy(() => import("./pages/ContractScanner"));
 const Documents = lazy(() => import("./pages/Documents"));
