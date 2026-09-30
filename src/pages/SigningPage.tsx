@@ -255,6 +255,13 @@ export default function SigningPage() {
         });
       }
 
+      // Issue a check-in pass the guest can keep on their phone.
+      try {
+        const { data: passRes } = await supabase.rpc("issue_check_in_pass", { p_token: token! });
+        const pr = passRes as any;
+        if (pr?.pass_code) setPassCode(pr.pass_code);
+      } catch { /* pass is optional — never block signing */ }
+
       setSigned(true);
       toast.success("Waiver signed successfully!");
     } catch (err: any) {
