@@ -139,6 +139,7 @@ const App = () => (
             <Route path="/waiver/qr/:code" element={<KioskPage />} />
             <Route path="/qr-code-waivers" element={<QrCodeWaiversPage />} />
             <Route path="/my-waivers" element={<CustomerPortal />} />
+            <Route path="/pass/:code" element={<CheckInPass />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/docs" element={<Docs />} />
