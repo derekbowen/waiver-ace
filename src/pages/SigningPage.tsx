@@ -43,6 +43,7 @@ export default function SigningPage() {
   const updateMinor = (i: number, field: "name" | "age", value: string) =>
     setMinors((m) => m.map((row, idx) => (idx === i ? { ...row, [field]: value } : row)));
   const [submitting, setSubmitting] = useState(false);
+  const [passCode, setPassCode] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [accessError, setAccessError] = useState<string | null>(null);
