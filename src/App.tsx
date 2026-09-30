@@ -22,6 +22,7 @@ import Privacy from "./pages/Privacy";
 import Docs from "./pages/Docs";
 import DocsArticle from "./pages/DocsArticle";
 import CustomerPortal from "./pages/CustomerPortal";
+import CheckInPass from "./pages/CheckInPass";
 import Unsubscribe from "./pages/Unsubscribe";
 import Updates from "./pages/Updates";
 import FindMyWaiver from "./pages/FindMyWaiver";
@@ -78,6 +79,7 @@ const CompletionEmailEditor = lazy(() => import("./pages/CompletionEmailEditor")
 const AdminCredits = lazy(() => import("./pages/AdminCredits"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const QrCodes = lazy(() => import("./pages/QrCodes"));
+const CheckIn = lazy(() => import("./pages/CheckIn"));
 const QrCodeWaiversPage = lazy(() => import("./pages/seo/QrCodeWaiversPage"));
 const ContractScanner = lazy(() => import("./pages/ContractScanner"));
 const Documents = lazy(() => import("./pages/Documents"));
@@ -137,6 +139,7 @@ const App = () => (
             <Route path="/waiver/qr/:code" element={<KioskPage />} />
             <Route path="/qr-code-waivers" element={<QrCodeWaiversPage />} />
             <Route path="/my-waivers" element={<CustomerPortal />} />
+            <Route path="/pass/:code" element={<CheckInPass />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/docs" element={<Docs />} />
@@ -185,6 +188,7 @@ const App = () => (
             <Route path="/envelopes" element={<ProtectedRoute><Envelopes /></ProtectedRoute>} />
             <Route path="/signed-waivers" element={<ProtectedRoute><SignedWaivers /></ProtectedRoute>} />
             <Route path="/qr-codes" element={<ProtectedRoute><QrCodes /></ProtectedRoute>} />
+            <Route path="/check-in" element={<ProtectedRoute><CheckIn /></ProtectedRoute>} />
             <Route path="/envelopes/new" element={<ProtectedRoute><NewEnvelope /></ProtectedRoute>} />
             <Route path="/envelopes/:id" element={<ProtectedRoute><EnvelopeDetail /></ProtectedRoute>} />
             <Route path="/envelopes/:id/certificate" element={<ProtectedRoute><CompletionCertificate /></ProtectedRoute>} />

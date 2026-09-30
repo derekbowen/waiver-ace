@@ -30,6 +30,7 @@ export default function GroupSigningPage() {
   const [initials, setInitials] = useState("");
   const [signerEmail, setSignerEmail] = useState("");
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
+  const [passCode, setPassCode] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
@@ -242,6 +243,12 @@ export default function GroupSigningPage() {
       }).catch(() => {});
 
 
+      try {
+        const { data: passRes } = await supabase.rpc("issue_check_in_pass", { p_token: groupToken! });
+        const pr = passRes as any;
+        if (pr?.pass_code) setPassCode(pr.pass_code);
+      } catch { /* pass is optional — never block signing */ }
+
       setSigned(true);
       toast.success("Waiver signed successfully!");
     } catch (err: any) {
@@ -317,6 +324,11 @@ export default function GroupSigningPage() {
                 <li>{fullName} (you)</li>
               </ul>
             </div>
+          )}
+          {passCode && (
+            <Button asChild className="mt-6 w-full">
+              <a href={`/pass/${passCode}`}>Get your check-in pass</a>
+            </Button>
           )}
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.

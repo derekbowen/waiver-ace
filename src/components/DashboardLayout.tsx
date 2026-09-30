@@ -27,7 +27,8 @@ import {
   ScrollText,
   BarChart,
   Bot,
-  QrCode } from "lucide-react";
+  QrCode,
+  ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
@@ -38,6 +39,7 @@ const navItems = [
 { label: "Sent Waivers", href: "/envelopes", icon: Mail },
 { label: "Signed Waivers", href: "/signed-waivers", icon: FileCheck },
 { label: "QR Codes", href: "/qr-codes", icon: QrCode },
+{ label: "Check In", href: "/check-in", icon: ScanLine },
 { label: "PhotoSell", href: "/photosell", icon: Sparkles },
 { label: "Contracts", href: "/contract-scanner", icon: FileSearch },
 { label: "Listing Analyzer", href: "/listing-analyzer", icon: BarChart },
