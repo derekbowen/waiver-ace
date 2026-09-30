@@ -27,7 +27,8 @@ import {
   ScrollText,
   BarChart,
   Bot,
-  QrCode } from "lucide-react";
+  QrCode,
+  ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
