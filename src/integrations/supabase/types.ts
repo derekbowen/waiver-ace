@@ -105,6 +105,66 @@ export type Database = {
           },
         ]
       }
+      check_in_passes: {
+        Row: {
+          activity_name: string
+          check_in_count: number
+          checked_in_at: string | null
+          covered_names: string[]
+          created_at: string
+          envelope_id: string
+          guest_name: string
+          id: string
+          org_id: string
+          org_name: string
+          pass_code: string
+          valid_until: string | null
+        }
+        Insert: {
+          activity_name?: string
+          check_in_count?: number
+          checked_in_at?: string | null
+          covered_names?: string[]
+          created_at?: string
+          envelope_id: string
+          guest_name: string
+          id?: string
+          org_id: string
+          org_name?: string
+          pass_code: string
+          valid_until?: string | null
+        }
+        Update: {
+          activity_name?: string
+          check_in_count?: number
+          checked_in_at?: string | null
+          covered_names?: string[]
+          created_at?: string
+          envelope_id?: string
+          guest_name?: string
+          id?: string
+          org_id?: string
+          org_name?: string
+          pass_code?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "check_in_passes_envelope_id_fkey"
+            columns: ["envelope_id"]
+            isOneToOne: false
+            referencedRelation: "envelopes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "check_in_passes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contract_scans: {
         Row: {
           analysis_json: Json | null
@@ -1449,6 +1509,7 @@ export type Database = {
           template_name: string
         }[]
       }
+      get_check_in_pass: { Args: { p_code: string }; Returns: Json }
       get_envelope_by_token: {
         Args: { p_ip_address?: string; p_token: string; p_user_agent?: string }
         Returns: Json
@@ -1490,6 +1551,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      issue_check_in_pass: { Args: { p_token: string }; Returns: Json }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1540,6 +1602,7 @@ export type Database = {
         }
         Returns: Json
       }
+      verify_check_in_pass: { Args: { p_code: string }; Returns: Json }
       view_envelope: {
         Args: { p_token: string; p_user_agent?: string }
         Returns: undefined
