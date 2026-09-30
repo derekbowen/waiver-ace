@@ -149,6 +149,14 @@ export default function CheckInPass() {
               </p>
             </div>
           </div>
+          <Button asChild className="w-full">
+            <a
+              href={`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/apple-wallet-pass?code=${encodeURIComponent(pass.pass_code)}`}
+            >
+              <Smartphone className="mr-2 h-4 w-4" />
+              Add to Apple Wallet
+            </a>
+          </Button>
           <Button variant="outline" className="w-full" onClick={downloadPass}>
             <Download className="mr-2 h-4 w-4" />
             Save pass code as a photo
