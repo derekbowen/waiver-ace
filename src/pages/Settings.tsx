@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useI18n } from "@/i18n";
 import { Badge } from "@/components/ui/badge";
 import { DangerZone } from "@/components/DangerZone";
+import { getSignupPlatform } from "@/lib/platform";
+
 
 export default function Settings() {
   const { profile, user, wallet } = useAuth();
