@@ -23,8 +23,15 @@ serve(async (req) => {
     const user = authData.user;
     if (!user) throw new Error("Not authenticated");
 
-    const { name, retention_years, referral_code } = await req.json();
+    const { name, retention_years, referral_code, platform } = await req.json();
     if (!name?.trim()) throw new Error("Organization name is required");
+
+    // Platform-tiered welcome credits. Apple's in-app-purchase rules make
+    // giving away large credit balances inside the iOS app expensive, so the
+    // native app gets a smaller taste and the web keeps the full bonus.
+    const normalizedPlatform = platform === "ios" ? "ios" : platform === "android" ? "android" : "web";
+    const welcomeCredits = normalizedPlatform === "ios" ? 10 : 100;
+
 
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -63,14 +70,15 @@ serve(async (req) => {
       .insert({ user_id: user.id, role: "admin", org_id: org.id });
     if (roleErr) throw roleErr;
 
-    // Grant 250 free welcome credits
+    // Grant platform-tiered free welcome credits
     const { error: creditErr } = await adminClient.rpc("add_credits_internal", {
       p_org_id: org.id,
-      p_amount: 250,
+      p_amount: welcomeCredits,
       p_reference_id: `welcome_${org.id}`,
       p_type: "welcome_bonus",
-      p_notes: "Welcome bonus - 250 free credits on signup",
+      p_notes: `Welcome bonus - ${welcomeCredits} free credits on signup (${normalizedPlatform})`,
     });
+
     if (creditErr) {
       console.error("Failed to grant welcome credits:", creditErr);
     }

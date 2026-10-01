@@ -1285,9 +1285,12 @@ export type Database = {
           credits: number
           id: string
           org_id: string
+          storage_plan_renews_at: string | null
+          storage_subscription_active: boolean
           storage_used_bytes: number
           stripe_customer_id: string | null
           stripe_payment_method_id: string | null
+          stripe_subscription_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1298,9 +1301,12 @@ export type Database = {
           credits?: number
           id?: string
           org_id: string
+          storage_plan_renews_at?: string | null
+          storage_subscription_active?: boolean
           storage_used_bytes?: number
           stripe_customer_id?: string | null
           stripe_payment_method_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1311,9 +1317,12 @@ export type Database = {
           credits?: number
           id?: string
           org_id?: string
+          storage_plan_renews_at?: string | null
+          storage_subscription_active?: boolean
           storage_used_bytes?: number
           stripe_customer_id?: string | null
           stripe_payment_method_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string
         }
         Relationships: [

@@ -16,6 +16,10 @@ const PACKAGES: Record<string, { credits: number; price: number; label: string }
   pkg_8000: { credits: 8000, price: 50000, label: "8,000 Credits" },
 };
 
+// $5/month Unlimited Storage Vault
+const STORAGE_PRICE_ID = "price_1ULfUT9rOl37Kk1KVUTFPM9i";
+
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -33,11 +37,13 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
-    const { packageId, setupAutoRecharge } = await req.json();
-    if (!packageId) throw new Error("packageId is required");
+    const { packageId, setupAutoRecharge, plan } = await req.json();
+    const isStoragePlan = plan === "storage";
+    if (!isStoragePlan && !packageId) throw new Error("packageId is required");
 
-    const pkg = PACKAGES[packageId];
-    if (!pkg) throw new Error(`Invalid package: ${packageId}`);
+    const pkg = isStoragePlan ? null : PACKAGES[packageId];
+    if (!isStoragePlan && !pkg) throw new Error(`Invalid package: ${packageId}`);
+
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
 
@@ -75,32 +81,48 @@ serve(async (req) => {
     // for post-payment redirect URLs (open-redirect / phishing prevention).
     const origin = Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
 
-    const sessionParams: any = {
-      customer: customerId,
-      line_items: [{
-        price_data: {
-          currency: "usd",
-          product_data: { name: pkg.label },
-          unit_amount: pkg.price,
-        },
-        quantity: 1,
-      }],
-      mode: "payment",
-      metadata: {
-        package_id: packageId,
-        org_id: profile.org_id,
-        credits: String(pkg.credits),
-      },
-      success_url: `${origin}/dashboard?checkout=success`,
-      cancel_url: `${origin}/pricing?checkout=canceled`,
-    };
+    const sessionParams: any = isStoragePlan
+      ? {
+          customer: customerId,
+          line_items: [{ price: STORAGE_PRICE_ID, quantity: 1 }],
+          mode: "subscription",
+          metadata: {
+            plan: "storage",
+            org_id: profile.org_id,
+          },
+          subscription_data: {
+            metadata: { plan: "storage", org_id: profile.org_id },
+          },
+          success_url: `${origin}/pricing?storage=success`,
+          cancel_url: `${origin}/pricing?storage=canceled`,
+        }
+      : {
+          customer: customerId,
+          line_items: [{
+            price_data: {
+              currency: "usd",
+              product_data: { name: pkg!.label },
+              unit_amount: pkg!.price,
+            },
+            quantity: 1,
+          }],
+          mode: "payment",
+          metadata: {
+            package_id: packageId,
+            org_id: profile.org_id,
+            credits: String(pkg!.credits),
+          },
+          success_url: `${origin}/dashboard?checkout=success`,
+          cancel_url: `${origin}/pricing?checkout=canceled`,
+        };
 
     // If setting up auto-recharge, collect payment method for future use
-    if (setupAutoRecharge) {
+    if (!isStoragePlan && setupAutoRecharge) {
       sessionParams.payment_intent_data = {
         setup_future_usage: "off_session",
       };
     }
+
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 

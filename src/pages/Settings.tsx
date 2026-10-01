@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useI18n } from "@/i18n";
 import { Badge } from "@/components/ui/badge";
 import { DangerZone } from "@/components/DangerZone";
+import { getSignupPlatform } from "@/lib/platform";
+
 
 export default function Settings() {
   const { profile, user, wallet } = useAuth();
@@ -83,8 +85,14 @@ export default function Settings() {
         // Use Edge Function to bypass RLS for org setup
         const storedRef = sessionStorage.getItem("referral_code");
         const { data, error } = await supabase.functions.invoke("setup-org", {
-          body: { name: orgName, retention_years: retentionYears, referral_code: storedRef || undefined },
+          body: {
+            name: orgName,
+            retention_years: retentionYears,
+            referral_code: storedRef || undefined,
+            platform: getSignupPlatform(),
+          },
         });
+
         if (error) throw error;
         if (data?.error) throw new Error(data.error);
 

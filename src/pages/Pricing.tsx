@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,16 +10,37 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { CheckCircle, Loader2, Coins, AlertTriangle, Zap, ShieldCheck } from "lucide-react";
+import { CheckCircle, Loader2, Coins, AlertTriangle, Zap, ShieldCheck, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { CREDIT_PACKAGES, getCreditStatus, type PackageId } from "@/lib/credit-packages";
 import { CreditTransactionHistory } from "@/components/CreditTransactionHistory";
+import { isNativeIOS } from "@/lib/platform";
 
 export default function Pricing() {
   const { user, wallet, refreshWallet, profile } = useAuth();
   const navigate = useNavigate();
   const [loadingPkg, setLoadingPkg] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [storageLoading, setStorageLoading] = useState(false);
+  const [storageActive, setStorageActive] = useState(false);
+  const [storageRenewsAt, setStorageRenewsAt] = useState<string | null>(null);
+  const iosApp = isNativeIOS();
+
+  const checkStorageSubscription = useCallback(async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase.functions.invoke("check-subscription");
+      if (error) throw error;
+      setStorageActive(!!data?.subscribed);
+      setStorageRenewsAt(data?.renews_at ?? null);
+    } catch {
+      // Non-fatal: leave the plan showing as inactive.
+    }
+  }, [user]);
+
+  useEffect(() => {
+    checkStorageSubscription();
+  }, [checkStorageSubscription]);
 
   const handleCheckout = async (packageId: string) => {
     if (!user) {
@@ -42,6 +63,39 @@ export default function Pricing() {
       setLoadingPkg(null);
     }
   };
+
+  const handleStorageCheckout = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setStorageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { plan: "storage" },
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error("Checkout could not be started. Please try again.");
+      window.location.href = data.url;
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+      setStorageLoading(false);
+    }
+  };
+
+  const handleManageStorage = async () => {
+    setStorageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (!data?.url) throw new Error("Could not open billing management.");
+      window.location.href = data.url;
+    } catch (err: any) {
+      toast.error(err.message || "Failed to open billing management");
+      setStorageLoading(false);
+    }
+  };
+
 
   const handleAutoRechargeToggle = async (enabled: boolean) => {
     if (!profile?.org_id) return;
@@ -158,20 +212,74 @@ export default function Pricing() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button
-                  className="w-full"
-                  variant={pkg.popular ? "default" : "outline"}
-                  onClick={() => handleCheckout(pkg.id)}
-                  disabled={!!loadingPkg}
-                  size="sm"
-                >
-                  {loadingPkg === pkg.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Buy Credits
-                </Button>
+                {iosApp ? (
+                  <p className="text-xs text-muted-foreground text-center w-full">
+                    Add credits at rentalwaivers.com
+                  </p>
+                ) : (
+                  <Button
+                    className="w-full"
+                    variant={pkg.popular ? "default" : "outline"}
+                    onClick={() => handleCheckout(pkg.id)}
+                    disabled={!!loadingPkg}
+                    size="sm"
+                  >
+                    {loadingPkg === pkg.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                    Buy Credits
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
         </div>
+
+        {/* Unlimited Storage Vault */}
+        <Card className="mb-8 border-primary/30">
+          <CardHeader>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <CardTitle className="font-heading text-lg flex items-center gap-2">
+                  <Archive className="h-5 w-5 text-primary" />
+                  Unlimited Storage Vault
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  Every signed waiver includes 12 months of storage for free. Keep your full history forever for $5/month.
+                </CardDescription>
+              </div>
+              {storageActive && <Badge className="shrink-0">Active</Badge>}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ul className="grid gap-2 sm:grid-cols-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Keep every waiver, no expiration</li>
+              <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Search your whole history</li>
+              <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Unlimited PDF downloads</li>
+              <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Cancel anytime</li>
+            </ul>
+            {storageActive && storageRenewsAt && (
+              <p className="text-xs text-muted-foreground mt-4">
+                Renews on {new Date(storageRenewsAt).toLocaleDateString()}
+              </p>
+            )}
+          </CardContent>
+          <CardFooter className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+            <span className="text-2xl font-bold">$5<span className="text-sm font-normal text-muted-foreground">/month</span></span>
+            {iosApp ? (
+              <p className="text-xs text-muted-foreground">Manage your storage plan at rentalwaivers.com</p>
+            ) : (
+              <Button
+                onClick={storageActive ? handleManageStorage : handleStorageCheckout}
+                disabled={storageLoading}
+                variant={storageActive ? "outline" : "default"}
+                className="w-full sm:w-auto"
+              >
+                {storageLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                {storageActive ? "Manage plan" : "Start Unlimited Storage"}
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
+
 
         {/* Auto-recharge */}
         {user && profile?.org_id && (
