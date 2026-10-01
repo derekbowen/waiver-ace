@@ -212,20 +212,74 @@ export default function Pricing() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button
-                  className="w-full"
-                  variant={pkg.popular ? "default" : "outline"}
-                  onClick={() => handleCheckout(pkg.id)}
-                  disabled={!!loadingPkg}
-                  size="sm"
-                >
-                  {loadingPkg === pkg.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Buy Credits
-                </Button>
+                {iosApp ? (
+                  <p className="text-xs text-muted-foreground text-center w-full">
+                    Add credits at rentalwaivers.com
+                  </p>
+                ) : (
+                  <Button
+                    className="w-full"
+                    variant={pkg.popular ? "default" : "outline"}
+                    onClick={() => handleCheckout(pkg.id)}
+                    disabled={!!loadingPkg}
+                    size="sm"
+                  >
+                    {loadingPkg === pkg.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                    Buy Credits
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
         </div>
+
+        {/* Unlimited Storage Vault */}
+        <Card className="mb-8 border-primary/30">
+          <CardHeader>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <CardTitle className="font-heading text-lg flex items-center gap-2">
+                  <Archive className="h-5 w-5 text-primary" />
+                  Unlimited Storage Vault
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  Every signed waiver includes 12 months of storage for free. Keep your full history forever for $5/month.
+                </CardDescription>
+              </div>
+              {storageActive && <Badge className="shrink-0">Active</Badge>}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ul className="grid gap-2 sm:grid-cols-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Keep every waiver, no expiration</li>
+              <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Search your whole history</li>
+              <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Unlimited PDF downloads</li>
+              <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Cancel anytime</li>
+            </ul>
+            {storageActive && storageRenewsAt && (
+              <p className="text-xs text-muted-foreground mt-4">
+                Renews on {new Date(storageRenewsAt).toLocaleDateString()}
+              </p>
+            )}
+          </CardContent>
+          <CardFooter className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+            <span className="text-2xl font-bold">$5<span className="text-sm font-normal text-muted-foreground">/month</span></span>
+            {iosApp ? (
+              <p className="text-xs text-muted-foreground">Manage your storage plan at rentalwaivers.com</p>
+            ) : (
+              <Button
+                onClick={storageActive ? handleManageStorage : handleStorageCheckout}
+                disabled={storageLoading}
+                variant={storageActive ? "outline" : "default"}
+                className="w-full sm:w-auto"
+              >
+                {storageLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                {storageActive ? "Manage plan" : "Start Unlimited Storage"}
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
+
 
         {/* Auto-recharge */}
         {user && profile?.org_id && (
