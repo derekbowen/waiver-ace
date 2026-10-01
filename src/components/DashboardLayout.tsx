@@ -28,7 +28,8 @@ import {
   BarChart,
   Bot,
   QrCode,
-  ScanLine } from "lucide-react";
+  ScanLine,
+  Tablet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
@@ -40,6 +41,7 @@ const navItems = [
 { label: "Signed Waivers", href: "/signed-waivers", icon: FileCheck },
 { label: "QR Codes", href: "/qr-codes", icon: QrCode },
 { label: "Check In", href: "/check-in", icon: ScanLine },
+{ label: "Front Desk", href: "/front-desk", icon: Tablet },
 { label: "PhotoSell", href: "/photosell", icon: Sparkles },
 { label: "Contracts", href: "/contract-scanner", icon: FileSearch },
 { label: "Listing Analyzer", href: "/listing-analyzer", icon: BarChart },

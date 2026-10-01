@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNoindex } from "@/hooks/useNoindex";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Loader2, ClipboardSignature } from "lucide-react";
 import { toast } from "sonner";
 
 /**
- * Kiosk page: guests scan a QR code, enter their name/email,
- * and a group envelope is auto-created for signing on the spot.
- * Works without authentication — uses the template ID from the URL.
+ * Kiosk page: guests scan a QR code (or use a front-desk tablet) and a waiver
+ * is auto-created for signing on the spot. Works without authentication.
+ * `?frontdesk=1` = shared tablet mode: big tap target, returns here after signing.
  */
 export default function KioskPage() {
   useNoindex();
-  // Two entry points: a raw template kiosk link, or a unique printed QR code.
   const { templateId, code } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const frontDesk = searchParams.get("frontdesk") === "1";
   const [templateName, setTemplateName] = useState("");
   const [orgName, setOrgName] = useState("");
   const [locationNote, setLocationNote] = useState("");
@@ -28,20 +28,13 @@ export default function KioskPage() {
 
   const identity = code ? { qr_code: code } : { template_id: templateId };
 
-  // We need to look up the template + org via an edge function since this is a public page
   useEffect(() => {
     if (!templateId && !code) return;
-    // Use the public waiverflow-api to get template info
     supabase.functions
-      .invoke("waiverflow-api", {
-        body: { action: "kiosk_info", ...identity },
-      })
+      .invoke("waiverflow-api", { body: { action: "kiosk_info", ...identity } })
       .then(({ data, error: err }) => {
         if (err || !data?.template_name) {
-          setError(
-            data?.error ||
-              "This waiver link isn't available. Please ask the host for a new QR code."
-          );
+          setError(data?.error || "This waiver link isn't available. Please ask the host for a new QR code.");
         } else {
           setTemplateName(data.template_name);
           setOrgName(data.org_name || "");
@@ -58,19 +51,14 @@ export default function KioskPage() {
       const { data, error: err } = await supabase.functions.invoke("waiverflow-api", {
         body: { action: "kiosk_create", ...identity },
       });
-
-      if (err || !data?.signing_token) {
-        throw new Error(data?.error || "Failed to create waiver");
-      }
-
-      // Navigate to the signing page
-      navigate(`/sign/${data.signing_token}`);
+      if (err || !data?.signing_token) throw new Error(data?.error || "Failed to create waiver");
+      const back = frontDesk ? `?frontdesk=${encodeURIComponent(location.pathname + location.search)}` : "";
+      navigate(`/sign/${data.signing_token}${back}`);
     } catch (err: any) {
       toast.error(err.message);
       setCreating(false);
     }
   };
-
 
   if (loading) {
     return (
@@ -92,33 +80,42 @@ export default function KioskPage() {
     );
   }
 
+  if (frontDesk) {
+    return (
+      <button
+        type="button"
+        onClick={handleStart}
+        disabled={creating}
+        className="min-h-screen w-full flex flex-col items-center justify-center bg-background px-8 text-center select-none"
+      >
+        {orgName && <p className="text-lg text-muted-foreground mb-3">{orgName}</p>}
+        <h1 className="font-heading text-4xl md:text-5xl font-bold mb-3">Welcome!</h1>
+        <p className="text-xl text-muted-foreground mb-12 max-w-xl">
+          Please sign the <span className="font-semibold text-foreground">{templateName}</span> before you begin.
+        </p>
+        <span className="inline-flex items-center gap-3 rounded-2xl bg-primary px-12 py-6 text-2xl font-semibold text-primary-foreground shadow-lg">
+          {creating ? <Loader2 className="h-7 w-7 animate-spin" /> : <ClipboardSignature className="h-7 w-7" />}
+          {creating ? "Preparing..." : "Tap to start"}
+        </span>
+        {locationNote && <p className="mt-10 text-sm text-muted-foreground">{locationNote}</p>}
+      </button>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
-          {orgName && (
-            <p className="text-sm text-muted-foreground mb-1">{orgName}</p>
-          )}
+          {orgName && <p className="text-sm text-muted-foreground mb-1">{orgName}</p>}
           <CardTitle className="text-xl">{templateName}</CardTitle>
-          {locationNote && (
-            <p className="text-xs text-muted-foreground mt-1">{locationNote}</p>
-          )}
+          {locationNote && <p className="text-xs text-muted-foreground mt-1">{locationNote}</p>}
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground text-center">
             Please tap the button below to read and sign the waiver.
           </p>
-          <Button
-            onClick={handleStart}
-            disabled={creating}
-            className="w-full gap-2"
-            size="lg"
-          >
-            {creating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <ClipboardSignature className="h-4 w-4" />
-            )}
+          <Button onClick={handleStart} disabled={creating} className="w-full gap-2" size="lg">
+            {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <ClipboardSignature className="h-4 w-4" />}
             {creating ? "Preparing..." : "Start Signing"}
           </Button>
           <p className="text-xs text-center text-muted-foreground">

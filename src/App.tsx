@@ -80,6 +80,7 @@ const AdminCredits = lazy(() => import("./pages/AdminCredits"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const QrCodes = lazy(() => import("./pages/QrCodes"));
 const CheckIn = lazy(() => import("./pages/CheckIn"));
+const FrontDesk = lazy(() => import("./pages/FrontDesk"));
 const QrCodeWaiversPage = lazy(() => import("./pages/seo/QrCodeWaiversPage"));
 const ContractScanner = lazy(() => import("./pages/ContractScanner"));
 const Documents = lazy(() => import("./pages/Documents"));
@@ -189,6 +190,7 @@ const App = () => (
             <Route path="/signed-waivers" element={<ProtectedRoute><SignedWaivers /></ProtectedRoute>} />
             <Route path="/qr-codes" element={<ProtectedRoute><QrCodes /></ProtectedRoute>} />
             <Route path="/check-in" element={<ProtectedRoute><CheckIn /></ProtectedRoute>} />
+            <Route path="/front-desk" element={<ProtectedRoute><FrontDesk /></ProtectedRoute>} />
             <Route path="/envelopes/new" element={<ProtectedRoute><NewEnvelope /></ProtectedRoute>} />
             <Route path="/envelopes/:id" element={<ProtectedRoute><EnvelopeDetail /></ProtectedRoute>} />
             <Route path="/envelopes/:id/certificate" element={<ProtectedRoute><CompletionCertificate /></ProtectedRoute>} />
