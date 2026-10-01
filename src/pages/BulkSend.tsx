@@ -190,7 +190,7 @@ export default function BulkSend() {
               <div>
                 <p className="text-sm font-medium">Waiver collection paused</p>
                 <p className="text-sm text-muted-foreground">
-                  <BuyCreditsLink /> to resume sending waivers.
+                  <BuyCreditsLink>Add credits to resume sending waivers.</BuyCreditsLink>
                 </p>
               </div>
             </CardContent>

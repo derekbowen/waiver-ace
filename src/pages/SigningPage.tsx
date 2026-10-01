@@ -379,7 +379,7 @@ export default function SigningPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-10">
+      <header className="border-b bg-card sticky top-0 z-10 safe-top">
         <div className="container flex h-14 items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded bg-primary">
             <FileText className="h-3.5 w-3.5 text-primary-foreground" />

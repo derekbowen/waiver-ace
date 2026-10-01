@@ -277,3 +277,17 @@
     display: none !important;
   }
 }
+
+/* Safe areas (notch / home bar) — works in Safari, installed web app and the iOS app */
+@layer utilities {
+  .safe-top { padding-top: env(safe-area-inset-top, 0px); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+body {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+/* Minimum 44px tap targets on touch screens (Apple HIG) */
+@media (pointer: coarse) {
+  .tap-target { min-height: 44px; min-width: 44px; }
+}
