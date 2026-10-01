@@ -107,6 +107,8 @@ serve(async (req) => {
       if (envelopeIds.length > 0) {
         await admin.from("group_signatures").delete().in("envelope_id", envelopeIds);
         await admin.from("envelope_events").delete().in("envelope_id", envelopeIds);
+        await admin.from("check_in_passes").delete().in("envelope_id", envelopeIds);
+        await admin.from("webhook_deliveries").delete().in("envelope_id", envelopeIds);
       }
 
       // Webhook deliveries → endpoints
@@ -132,6 +134,9 @@ serve(async (req) => {
       // Org-scoped tables
       const orgScoped = [
         "documents",
+        "check_in_passes",
+        "qr_codes",
+        "agent_keys",
         "contract_scans",
         "listing_analyses",
         "photo_jobs",
@@ -156,7 +161,14 @@ serve(async (req) => {
       await admin.from("profiles").update({ org_id: null }).eq("org_id", orgId);
 
       // Finally the org itself
-      await admin.from("organizations").delete().eq("id", orgId);
+      const { error: orgDelErr } = await admin.from("organizations").delete().eq("id", orgId);
+      if (orgDelErr) {
+        console.error("Org delete failed:", orgDelErr.message);
+        return new Response(
+          JSON.stringify({ error: "Could not fully delete your business data. Please contact support." }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
 
       summary.org_deleted = true;
     } else if (orgId) {

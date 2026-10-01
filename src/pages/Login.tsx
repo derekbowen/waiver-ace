@@ -210,6 +210,11 @@ export default function Login() {
             {isSignUp ? "Sign in" : "Sign up"}
           </button>
         </p>
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          By continuing you agree to our{" "}
+          <a href="/terms" className="underline">Terms of Service</a> and{" "}
+          <a href="/privacy" className="underline">Privacy Policy</a>.
+        </p>
       </div>
     </div>
   );

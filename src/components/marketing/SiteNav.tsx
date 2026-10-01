@@ -9,7 +9,7 @@ export function SiteNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-hairline bg-surface/95 backdrop-blur">
+    <header className="safe-top sticky top-0 z-40 border-b border-hairline bg-surface/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-content items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
         <Logo />
 

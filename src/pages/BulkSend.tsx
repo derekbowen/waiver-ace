@@ -1,3 +1,4 @@
+import { BuyCreditsLink } from "@/components/BuyCreditsLink";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -189,7 +190,7 @@ export default function BulkSend() {
               <div>
                 <p className="text-sm font-medium">Waiver collection paused</p>
                 <p className="text-sm text-muted-foreground">
-                  <a href="/pricing" className="text-primary underline">Add credits</a> to resume sending waivers.
+                  <BuyCreditsLink>Add credits to resume sending waivers.</BuyCreditsLink>
                 </p>
               </div>
             </CardContent>

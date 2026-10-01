@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, RotateCcw, AlertCircle } from "lucide-react";
+import { openCameraStream, stopCameraStream, captureFrame } from "@/lib/camera";
 
 interface PhotoCaptureProps {
   onPhoto: (blob: Blob | null) => void;
@@ -17,7 +18,7 @@ export function PhotoCapture({ onPhoto, required = false }: PhotoCaptureProps) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const stopStream = useCallback(() => {
-    streamRef.current?.getTracks().forEach((t) => t.stop());
+    stopCameraStream(streamRef.current);
     streamRef.current = null;
   }, []);
 
@@ -30,9 +31,7 @@ export function PhotoCapture({ onPhoto, required = false }: PhotoCaptureProps) {
 
   const startCamera = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
-      });
+      const stream = await openCameraStream("user");
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -45,30 +44,17 @@ export function PhotoCapture({ onPhoto, required = false }: PhotoCaptureProps) {
     }
   }, []);
 
-  const capture = useCallback(() => {
+  const capture = useCallback(async () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    ctx.drawImage(video, 0, 0);
+    const blob = await captureFrame(video, canvas, 0.8);
     stopStream();
-
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) return;
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
-        setPreviewUrl(URL.createObjectURL(blob));
-        onPhoto(blob);
-        setState("captured");
-      },
-      "image/jpeg",
-      0.8
-    );
+    if (!blob) return;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(URL.createObjectURL(blob));
+    onPhoto(blob);
+    setState("captured");
   }, [stopStream, onPhoto, previewUrl]);
 
   const retake = useCallback(() => {

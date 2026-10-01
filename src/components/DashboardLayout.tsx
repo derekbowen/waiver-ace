@@ -129,7 +129,7 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
       </aside>
 
       {/* ── Mobile Header ── */}
-      <header className="fixed top-0 inset-x-0 z-40 md:hidden h-12 flex items-center justify-between border-b bg-card px-4 gpu-fixed">
+      <header className="fixed top-0 inset-x-0 z-40 md:hidden flex items-center justify-between border-b bg-card px-4 gpu-fixed" style={{ paddingTop: "env(safe-area-inset-top, 0px)", height: "calc(3rem + env(safe-area-inset-top, 0px))" }}>
         <div className="flex items-center gap-2 min-w-0">
           <img src={logo} alt="Rental Waivers" className="h-6 w-6 shrink-0" />
           <span className="font-heading text-base font-bold tracking-tight truncate">
@@ -145,11 +145,11 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
 
       {/* Main content */}
       <main className="md:ml-64 flex-1 flex flex-col min-h-screen min-w-0 overflow-x-hidden">
-        <div className="flex-1 p-4 pt-16 pb-24 md:p-8 md:pt-8 md:pb-8">
+        <div className="flex-1 p-4 pt-[calc(4rem+env(safe-area-inset-top,0px))] pb-[calc(6rem+env(safe-area-inset-bottom,0px))] md:p-8 md:pt-8 md:pb-8">
           {children}
         </div>
         <div className="hidden md:block text-center py-4 text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} Rental Waivers &mdash; a product of 10,000 Solutions LLC
+          &copy; {new Date().getFullYear()} Rental Waivers &mdash; a product of 10,000 Solutions LLC &middot; <Link to="/privacy" className="underline hover:text-foreground">Privacy Policy</Link> &middot; <Link to="/terms" className="underline hover:text-foreground">Terms of Service</Link>
         </div>
       </main>
 
@@ -158,7 +158,7 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
         <div className="fixed inset-0 z-50 md:hidden" onClick={() => setMoreOpen(false)}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
           <div
-            className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-card pb-8 animate-in slide-in-from-bottom duration-200"
+            className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-card pb-[calc(2rem+env(safe-area-inset-bottom,0px))] max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-200"
             onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-center pt-3 pb-2">
               <div className="h-1 w-10 rounded-full bg-muted-foreground/30" />
@@ -187,6 +187,10 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
                   </Link>);
               })}
             </nav>
+            <div className="mx-4 mt-2 flex gap-4 px-2 text-sm text-muted-foreground">
+              <Link to="/privacy" onClick={() => setMoreOpen(false)} className="py-3 underline">Privacy Policy</Link>
+              <Link to="/terms" onClick={() => setMoreOpen(false)} className="py-3 underline">Terms of Service</Link>
+            </div>
             <div className="mx-4 mt-4 pt-4 border-t">
               <div className="px-2 mb-3">
                 <p className="text-sm font-medium truncate">{profile?.full_name || profile?.email || "User"}</p>
