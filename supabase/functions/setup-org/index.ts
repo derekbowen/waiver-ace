@@ -23,8 +23,15 @@ serve(async (req) => {
     const user = authData.user;
     if (!user) throw new Error("Not authenticated");
 
-    const { name, retention_years, referral_code } = await req.json();
+    const { name, retention_years, referral_code, platform } = await req.json();
     if (!name?.trim()) throw new Error("Organization name is required");
+
+    // Platform-tiered welcome credits. Apple's in-app-purchase rules make
+    // giving away large credit balances inside the iOS app expensive, so the
+    // native app gets a smaller taste and the web keeps the full bonus.
+    const normalizedPlatform = platform === "ios" ? "ios" : platform === "android" ? "android" : "web";
+    const welcomeCredits = normalizedPlatform === "ios" ? 10 : 100;
+
 
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
