@@ -380,10 +380,14 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/pricing"}>
-                  <CreditCard className="h-4 w-4" />
-                  Buy Credits
-                </Button>
+                {isNativeIOS() ? (
+                  <p className="text-sm text-muted-foreground">{IOS_CREDITS_MESSAGE}</p>
+                ) : (
+                  <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/pricing"}>
+                    <CreditCard className="h-4 w-4" />
+                    Buy Credits
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}

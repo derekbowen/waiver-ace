@@ -1,3 +1,4 @@
+import { BuyCreditsLink } from "@/components/BuyCreditsLink";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -170,7 +171,7 @@ export default function NewEnvelope() {
                   <p className="text-sm font-medium">Waiver collection is paused</p>
                   <p className="text-sm text-muted-foreground">
                     Your credit balance has been exhausted.{" "}
-                    <a href="/pricing" className="text-primary underline">Add credits</a> to continue sending waivers.
+                    <BuyCreditsLink /> to continue sending waivers.
                   </p>
                 </div>
               </CardContent>
@@ -185,7 +186,7 @@ export default function NewEnvelope() {
                   <p className="text-sm font-medium">{credits} credits remaining</p>
                   <p className="text-sm text-muted-foreground">
                     {isOverdraft ? "You're in overdraft. " : "Running low. "}
-                    <a href="/pricing" className="text-primary underline">Add credits</a> to keep sending.
+                    <BuyCreditsLink /> to keep sending.
                   </p>
                 </div>
               </CardContent>

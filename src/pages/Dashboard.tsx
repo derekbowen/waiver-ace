@@ -146,7 +146,7 @@ export default function Dashboard() {
                   {isPaused
                     ? "You've reached the overdraft limit. Add credits to resume sending waivers."
                     : `You have ${credits} credits remaining.`}{" "}
-                  <Link to="/pricing" className="text-primary underline">Add credits</Link>
+                  <BuyCreditsLink />
                 </p>
               </div>
             </CardContent>
@@ -169,7 +169,7 @@ export default function Dashboard() {
                   <Badge variant={status === "healthy" ? "default" : status === "paused" ? "destructive" : "secondary"} className="text-[10px]">
                     {status === "healthy" ? "Healthy" : status === "low" ? "Low" : status === "overdraft" ? "Overdraft" : "Paused"}
                   </Badge>
-                  <Link to="/pricing" className="text-xs text-primary hover:underline">Add more</Link>
+                  <span className="text-xs"><BuyCreditsLink className="text-primary hover:underline">Add more</BuyCreditsLink></span>
                 </div>
               </CardContent>
             </Card>
