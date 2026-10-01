@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNoindex } from "@/hooks/useNoindex";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,9 +14,40 @@ import { PhotoCapture } from "@/components/PhotoCapture";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { getRecognizedSigner, rememberSigner } from "@/lib/signer-recognition";
 
+function FrontDeskDone({ name, returnTo }: { name: string; returnTo: string }) {
+  const navigate = useNavigate();
+  const [seconds, setSeconds] = useState(8);
+  useEffect(() => {
+    if (seconds <= 0) { navigate(returnTo, { replace: true }); return; }
+    const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [seconds, navigate, returnTo]);
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background px-6">
+      <div className="text-center animate-fade-in max-w-lg">
+        <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-success/10">
+          <CheckCircle className="h-12 w-12 text-success" />
+        </div>
+        <h1 className="font-heading text-4xl font-bold mb-3">All set{name ? `, ${name.split(" ")[0]}` : ""}!</h1>
+        <p className="text-lg text-muted-foreground mb-8">
+          Your waiver is signed and a copy is on its way to your email. Please hand the tablet back to staff.
+        </p>
+        <Button size="lg" className="h-14 px-10 text-lg" onClick={() => navigate(returnTo, { replace: true })}>
+          Next guest
+        </Button>
+        <p className="mt-4 text-sm text-muted-foreground">Resetting for the next guest in {seconds}s</p>
+      </div>
+    </div>
+  );
+}
+
 export default function SigningPage() {
   useNoindex();
   const { token } = useParams();
+  const [searchParams] = useSearchParams();
+  const rawReturn = searchParams.get("frontdesk");
+  // Only allow internal kiosk paths as a return target.
+  const frontDeskReturn = rawReturn && rawReturn.startsWith("/waiver/") ? rawReturn : null;
   const [envelope, setEnvelope] = useState<any>(null);
   const [recognizedSigner] = useState(() => getRecognizedSigner());
   const [templateContent, setTemplateContent] = useState("");
@@ -248,7 +279,8 @@ export default function SigningPage() {
 
 
       // Remember this signer for the next visit (any device, any business).
-      if (envelope?.signer_email) {
+      // Never remember signers on a shared front-desk tablet.
+      if (envelope?.signer_email && !frontDeskReturn) {
         rememberSigner({
           name: fullName.trim(),
           email: String(envelope.signer_email),
@@ -313,6 +345,10 @@ export default function SigningPage() {
     );
   }
 
+  if (signed && frontDeskReturn) {
+    return <FrontDeskDone name={fullName.trim() || envelope.signer_name} returnTo={frontDeskReturn} />;
+  }
+
   if (signed) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -332,7 +368,7 @@ export default function SigningPage() {
             </Button>
           )}
           <p className="text-xs text-muted-foreground font-mono">
-            Envelope ID: {envelope.id}
+            Waiver ID: {envelope.id}
           </p>
         </div>
       </div>
