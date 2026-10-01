@@ -16,6 +16,10 @@ const PACKAGES: Record<string, { credits: number; price: number; label: string }
   pkg_8000: { credits: 8000, price: 50000, label: "8,000 Credits" },
 };
 
+// $5/month Unlimited Storage Vault
+const STORAGE_PRICE_ID = "price_1ULfUT9rOl37Kk1KVUTFPM9i";
+
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
