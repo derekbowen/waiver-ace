@@ -44,21 +44,25 @@ export default function CheckInPass() {
   const verifyUrl = `${window.location.origin}/check-in?code=${encodeURIComponent(code || "")}`;
 
   const downloadPass = () => {
-    const card = document.getElementById("pass-card");
-    if (!card) return;
-    const svg = card.querySelector("svg");
+    const svg = document.getElementById("pass-qr-svg");
     if (!svg) return;
     const serialized = new XMLSerializer().serializeToString(svg);
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = 640;
-      canvas.height = 640;
+      canvas.height = 720;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, 640, 640);
+      ctx.fillRect(0, 0, 640, 720);
       ctx.drawImage(img, 40, 40, 560, 560);
+      if (pass?.pass_code) {
+        ctx.fillStyle = "#000000";
+        ctx.font = "bold 48px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(pass.pass_code, 320, 672);
+      }
       const link = document.createElement("a");
       link.download = `check-in-pass-${pass?.pass_code || "code"}.png`;
       link.href = canvas.toDataURL("image/png");
@@ -133,7 +137,7 @@ export default function CheckInPass() {
           )}
 
           <div className="rounded-2xl bg-background p-4 text-center">
-            <QRCodeSVG value={verifyUrl} size={200} level="M" includeMargin={false} className="mx-auto" />
+            <QRCodeSVG id="pass-qr-svg" value={verifyUrl} size={200} level="M" includeMargin={false} className="mx-auto" />
             <p className="mt-3 font-mono text-sm tracking-widest text-foreground">{pass.pass_code}</p>
           </div>
         </div>
