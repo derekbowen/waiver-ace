@@ -81,32 +81,48 @@ serve(async (req) => {
     // for post-payment redirect URLs (open-redirect / phishing prevention).
     const origin = Deno.env.get("SITE_URL") || "https://rentalwaivers.com";
 
-    const sessionParams: any = {
-      customer: customerId,
-      line_items: [{
-        price_data: {
-          currency: "usd",
-          product_data: { name: pkg.label },
-          unit_amount: pkg.price,
-        },
-        quantity: 1,
-      }],
-      mode: "payment",
-      metadata: {
-        package_id: packageId,
-        org_id: profile.org_id,
-        credits: String(pkg.credits),
-      },
-      success_url: `${origin}/dashboard?checkout=success`,
-      cancel_url: `${origin}/pricing?checkout=canceled`,
-    };
+    const sessionParams: any = isStoragePlan
+      ? {
+          customer: customerId,
+          line_items: [{ price: STORAGE_PRICE_ID, quantity: 1 }],
+          mode: "subscription",
+          metadata: {
+            plan: "storage",
+            org_id: profile.org_id,
+          },
+          subscription_data: {
+            metadata: { plan: "storage", org_id: profile.org_id },
+          },
+          success_url: `${origin}/pricing?storage=success`,
+          cancel_url: `${origin}/pricing?storage=canceled`,
+        }
+      : {
+          customer: customerId,
+          line_items: [{
+            price_data: {
+              currency: "usd",
+              product_data: { name: pkg!.label },
+              unit_amount: pkg!.price,
+            },
+            quantity: 1,
+          }],
+          mode: "payment",
+          metadata: {
+            package_id: packageId,
+            org_id: profile.org_id,
+            credits: String(pkg!.credits),
+          },
+          success_url: `${origin}/dashboard?checkout=success`,
+          cancel_url: `${origin}/pricing?checkout=canceled`,
+        };
 
     // If setting up auto-recharge, collect payment method for future use
-    if (setupAutoRecharge) {
+    if (!isStoragePlan && setupAutoRecharge) {
       sessionParams.payment_intent_data = {
         setup_future_usage: "off_session",
       };
     }
+
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 
