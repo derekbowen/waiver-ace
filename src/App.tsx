@@ -33,6 +33,7 @@ import VacationRentalWaiverPage from "./pages/seo/VacationRentalWaiverPage";
 import RentalAgreementPage from "./pages/seo/RentalAgreementPage";
 import RentalLiabilityWaiverPage from "./pages/seo/RentalLiabilityWaiverPage";
 import FreeWaiverGeneratorPage from "./pages/seo/FreeWaiverGeneratorPage";
+import IosAppPage from "./pages/seo/IosAppPage";
 import IntegrationsHubPage from "./pages/seo/IntegrationsHubPage";
 import IntegrationDetailPage from "./pages/seo/IntegrationDetailPage";
 import IntegrationIndustryPage from "./pages/seo/IntegrationIndustryPage";
@@ -151,6 +152,7 @@ const App = () => (
             <Route path="/p/rental-agreement" element={<RentalAgreementPage />} />
             <Route path="/p/rental-liability-waiver" element={<RentalLiabilityWaiverPage />} />
             <Route path="/free-waiver-generator" element={<FreeWaiverGeneratorPage />} />
+            <Route path="/ios-app" element={<IosAppPage />} />
             <Route path="/free-liability-waiver" element={<FreeWaiverGeneratorPage />} />
             <Route path="/free-waiver-template" element={<FreeWaiverGeneratorPage />} />
             <Route path="/integrations" element={<IntegrationsHubPage />} />
