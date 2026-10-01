@@ -118,6 +118,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
             <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4 text-foreground">Resources</h3>
             <ul className="space-y-2.5 text-sm">
               <li><Link to="/free-waiver-generator" className="text-muted-foreground hover:text-foreground transition-colors">Free Waiver Generator</Link></li>
+              <li><Link to="/ios-app" className="text-muted-foreground hover:text-foreground transition-colors">iOS &amp; iPad App</Link></li>
               <li><Link to="/waiver-software" className="text-muted-foreground hover:text-foreground transition-colors">Waiver Software</Link></li>
               <li><Link to="/rental-waiver-software" className="text-muted-foreground hover:text-foreground transition-colors">Rental Waiver Software</Link></li>
               <li><Link to="/waiver-templates" className="text-muted-foreground hover:text-foreground transition-colors">Waiver Templates</Link></li>
