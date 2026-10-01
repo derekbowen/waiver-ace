@@ -1,3 +1,4 @@
+import { BuyCreditsLink } from "@/components/BuyCreditsLink";
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";

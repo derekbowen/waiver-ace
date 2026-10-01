@@ -1,3 +1,5 @@
+import { isNativeIOS } from "@/lib/platform";
+import { IOS_CREDITS_MESSAGE } from "@/components/BuyCreditsLink";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
