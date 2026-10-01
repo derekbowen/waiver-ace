@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,16 +10,37 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { CheckCircle, Loader2, Coins, AlertTriangle, Zap, ShieldCheck } from "lucide-react";
+import { CheckCircle, Loader2, Coins, AlertTriangle, Zap, ShieldCheck, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { CREDIT_PACKAGES, getCreditStatus, type PackageId } from "@/lib/credit-packages";
 import { CreditTransactionHistory } from "@/components/CreditTransactionHistory";
+import { isNativeIOS } from "@/lib/platform";
 
 export default function Pricing() {
   const { user, wallet, refreshWallet, profile } = useAuth();
   const navigate = useNavigate();
   const [loadingPkg, setLoadingPkg] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [storageLoading, setStorageLoading] = useState(false);
+  const [storageActive, setStorageActive] = useState(false);
+  const [storageRenewsAt, setStorageRenewsAt] = useState<string | null>(null);
+  const iosApp = isNativeIOS();
+
+  const checkStorageSubscription = useCallback(async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase.functions.invoke("check-subscription");
+      if (error) throw error;
+      setStorageActive(!!data?.subscribed);
+      setStorageRenewsAt(data?.renews_at ?? null);
+    } catch {
+      // Non-fatal: leave the plan showing as inactive.
+    }
+  }, [user]);
+
+  useEffect(() => {
+    checkStorageSubscription();
+  }, [checkStorageSubscription]);
 
   const handleCheckout = async (packageId: string) => {
     if (!user) {
@@ -42,6 +63,39 @@ export default function Pricing() {
       setLoadingPkg(null);
     }
   };
+
+  const handleStorageCheckout = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setStorageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { plan: "storage" },
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error("Checkout could not be started. Please try again.");
+      window.location.href = data.url;
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+      setStorageLoading(false);
+    }
+  };
+
+  const handleManageStorage = async () => {
+    setStorageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (!data?.url) throw new Error("Could not open billing management.");
+      window.location.href = data.url;
+    } catch (err: any) {
+      toast.error(err.message || "Failed to open billing management");
+      setStorageLoading(false);
+    }
+  };
+
 
   const handleAutoRechargeToggle = async (enabled: boolean) => {
     if (!profile?.org_id) return;
