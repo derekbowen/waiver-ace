@@ -64,6 +64,13 @@
       "when": 1790806946570,
       "tag": "0008_fix_pass_code_generation",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790842826272,
+      "tag": "0009_drop_legacy_signer_photos_upload_policy",
+      "breakpoints": true
     }
   ]
 }
