@@ -1473,6 +1473,7 @@ export type Database = {
         Args: { p_key: string; p_scope: string }
         Returns: number
       }
+      can_upload_signer_photo: { Args: { _folder: string }; Returns: boolean }
       cleanup_envelope_rate_limits: { Args: never; Returns: undefined }
       deduct_credit:
         | {
