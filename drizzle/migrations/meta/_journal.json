@@ -78,6 +78,13 @@
       "when": 1790843847766,
       "tag": "0010_add_storage_subscription_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791177811771,
+      "tag": "0011_drop_open_signer_photos_insert_policy",
+      "breakpoints": true
     }
   ]
 }
