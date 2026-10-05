@@ -92,6 +92,13 @@
       "when": 1791241545690,
       "tag": "0012_signer_photo_upload_definer_check",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791241758552,
+      "tag": "0013_grant_travis_100_credits",
+      "breakpoints": true
     }
   ]
 }
