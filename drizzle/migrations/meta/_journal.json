@@ -85,6 +85,13 @@
       "when": 1791177811771,
       "tag": "0011_drop_open_signer_photos_insert_policy",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791241545690,
+      "tag": "0012_signer_photo_upload_definer_check",
+      "breakpoints": true
     }
   ]
 }
