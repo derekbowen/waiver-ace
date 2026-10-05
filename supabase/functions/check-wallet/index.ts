@@ -98,6 +98,37 @@ serve(async (req) => {
       }
     }
 
+    // Notify the customer about any bonus credits granted by our team.
+    // Claim rows atomically (set notified_at) so each grant emails only once.
+    try {
+      const { data: grants } = await supabaseClient
+        .from("credit_transactions")
+        .update({ notified_at: new Date().toISOString() })
+        .eq("org_id", profile.org_id)
+        .in("type", ["admin_grant", "bonus"])
+        .is("notified_at", null)
+        .gt("credits_delta", 0)
+        .select("id, credits_delta, notes");
+      if (grants && grants.length > 0 && user.email) {
+        const total = grants.reduce((s: number, g: any) => s + (g.credits_delta || 0), 0);
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-transactional-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          },
+          body: JSON.stringify({
+            templateName: "bonus-credits",
+            recipientEmail: user.email,
+            idempotencyKey: `bonus-${grants.map((g: any) => g.id).sort().join("-")}`,
+            templateData: { creditsAdded: total, newBalance: balance, note: grants[0]?.notes || "" },
+          }),
+        });
+      }
+    } catch (bonusErr) {
+      console.error("Non-fatal: bonus credits email failed:", bonusErr);
+    }
+
     return new Response(JSON.stringify({
       credits: balance,
       status,
