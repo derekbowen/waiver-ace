@@ -170,6 +170,10 @@ export default function GroupSigningPage() {
       toast.error("Please complete all required fields");
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signerEmail.trim())) {
+      toast.error("Please enter a valid email so we can send your copy");
+      return;
+    }
     if (requirePhoto && !photoBlob) {
       toast.error("Please take a photo before signing");
       return;
@@ -341,7 +345,8 @@ export default function GroupSigningPage() {
     );
   }
 
-  const canSubmit = agreed && fullName && initials && signatureDataUrl && (!requirePhoto || !!photoBlob);
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signerEmail.trim());
+  const canSubmit = agreed && fullName && initials && emailValid && signatureDataUrl && (!requirePhoto || !!photoBlob);
 
   return (
     <div className="min-h-screen bg-background">
@@ -421,9 +426,18 @@ export default function GroupSigningPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Email (optional)</Label>
-                  <Input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="john@example.com" />
-                  <p className="text-xs text-muted-foreground">For your records — we'll send you a copy if provided</p>
+                  <Label>Email *</Label>
+                  <Input
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    value={signerEmail}
+                    onChange={(e) => setSignerEmail(e.target.value)}
+                    placeholder="john@example.com"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    We'll email your signed copy and any check-in instructions from the host here.
+                  </p>
                 </div>
 
                 {envelope?.allow_minors !== false && (
