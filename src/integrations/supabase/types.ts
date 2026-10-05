@@ -263,6 +263,7 @@ export type Database = {
           credits_delta: number
           id: string
           notes: string | null
+          notified_at: string | null
           org_id: string
           reference_id: string | null
           type: string
@@ -273,6 +274,7 @@ export type Database = {
           credits_delta: number
           id?: string
           notes?: string | null
+          notified_at?: string | null
           org_id: string
           reference_id?: string | null
           type: string
@@ -283,6 +285,7 @@ export type Database = {
           credits_delta?: number
           id?: string
           notes?: string | null
+          notified_at?: string | null
           org_id?: string
           reference_id?: string | null
           type?: string
