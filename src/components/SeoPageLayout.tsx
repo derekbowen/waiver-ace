@@ -48,8 +48,10 @@ export function SeoPageLayout({ metaTitle, metaDescription, canonicalPath, noind
     };
     setMeta("og:title", metaTitle);
     setMeta("og:description", metaDescription);
+    setMeta("og:url", `https://www.rentalwaivers.com${effectiveCanonicalPath}`);
     setMeta("twitter:title", metaTitle);
     setMeta("twitter:description", metaDescription);
+    setMeta("twitter:url", `https://www.rentalwaivers.com${effectiveCanonicalPath}`);
 
     const baseUrl = `https://www.rentalwaivers.com${effectiveCanonicalPath}`;
     const params = new URLSearchParams(location.search);

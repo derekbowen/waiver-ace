@@ -38,7 +38,7 @@ export function Hero() {
             id="hero-heading"
             className="mt-5 max-w-xl font-display text-[2.4rem] font-bold leading-[1.03] tracking-tight text-ink sm:text-[3.25rem] lg:text-[3.75rem]">
 
-            Collect every guest waiver before check-in.
+            Digital waiver software that collects every guest signature before check-in.
           </h1>
 
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
