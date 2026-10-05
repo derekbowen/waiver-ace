@@ -1,8 +1,15 @@
 import { Footer } from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { usePageMeta } from "@/lib/use-page-meta";
 
 export default function Privacy() {
+  usePageMeta(
+    "Privacy Policy | Rental Waivers",
+    "How Rental Waivers collects, uses, and protects your data — signer information, e-signature audit trails, payment records, and marketplace integration data.",
+    "/privacy"
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <div className="container max-w-3xl flex-1 py-16">
