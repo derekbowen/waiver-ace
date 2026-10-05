@@ -1,8 +1,15 @@
 import { Footer } from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { usePageMeta } from "@/lib/use-page-meta";
 
 export default function Terms() {
+  usePageMeta(
+    "Terms of Service | Rental Waivers",
+    "The terms that govern use of Rental Waivers, the digital waiver software for rental businesses — accounts, credit-based billing, e-signature validity, and acceptable use.",
+    "/terms"
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <div className="container max-w-3xl flex-1 py-16">
