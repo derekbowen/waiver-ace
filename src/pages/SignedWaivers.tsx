@@ -77,7 +77,8 @@ export default function SignedWaivers() {
         "id, signer_name, signer_email, status, booking_id, listing_id, created_at, signed_at, is_group_waiver, signature_data, payload, pdf_storage_key"
       )
       .eq("org_id", profile.org_id)
-      .in("status", ["signed", "completed"])
+      // Group waivers stay open for more guests, so include them regardless of status
+      .or("status.in.(signed,completed),is_group_waiver.eq.true")
       .order("signed_at", { ascending: false, nullsFirst: false });
 
     if (error) {
