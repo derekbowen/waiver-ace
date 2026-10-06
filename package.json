@@ -14,9 +14,10 @@
     "audit:sitemap": "node scripts/audit-sitemaps.mjs"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.2",
     "@capacitor/camera": "^8.0.2",
-    "@capacitor/cli": "^8.3.0",
-    "@capacitor/core": "^8.3.0",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
     "@capacitor/haptics": "^8.0.2",
     "@capacitor/ios": "^8.3.0",
     "@capacitor/push-notifications": "^8.0.3",

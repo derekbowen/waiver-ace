@@ -4,10 +4,6 @@ const config: CapacitorConfig = {
   appId: 'com.rentalwaivers.app',
   appName: 'Rental Waivers',
   webDir: 'dist',
-  server: {
-    url: 'https://www.rentalwaivers.com',
-    cleartext: false,
-  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
