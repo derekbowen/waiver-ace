@@ -14,6 +14,8 @@ import { lazy, Suspense } from "react";
 // Public / SEO pages — static imports so crawlers index them
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import SigningPage from "./pages/SigningPage";
 import GroupSigningPage from "./pages/GroupSigningPage";
 import NotFound from "./pages/NotFound";
@@ -134,6 +136,8 @@ const App = () => (
             {/* Public / SEO — statically loaded for crawlers */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="/sign/:token" element={<SigningPage />} />
             <Route path="/waiver/:groupToken" element={<GroupSigningPage />} />
