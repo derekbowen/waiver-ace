@@ -146,6 +146,7 @@ serve(async (req) => {
     });
     const signedDateTime = new Date().toLocaleString("en-US", {
       year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit",
+      timeZone: "UTC", timeZoneName: "short",
     });
 
     // --- Auto-generate PDF and store it ---
@@ -372,7 +373,7 @@ serve(async (req) => {
           },
           {
             type: 'text',
-            content: `${isGroup ? "A guest in a group waiver" : `<strong>${signerName}</strong>`} just signed <strong>${templateName}</strong>${envelope.booking_id ? ` for booking <strong>${envelope.booking_id}</strong>` : ""}.`,
+            content: `<strong>${escapeHtml(signerName)}</strong>${isGroup ? " (group waiver)" : ""} just signed <strong>${templateName}</strong>${envelope.booking_id ? ` for booking <strong>${envelope.booking_id}</strong>` : ""}.`,
           },
           {
             type: 'table',
@@ -381,7 +382,7 @@ serve(async (req) => {
               { label: 'Signer', value: signerName },
               ...(signerEmail && signerEmail !== "group@placeholder.local" ? [{ label: 'Email', value: signerEmail }] : []),
               { label: 'Type', value: isGroup ? 'Group Waiver' : 'Individual' },
-              { label: 'Date', value: signedDateTime },
+              { label: 'Signed at', value: signedDateTime },
               ...(envelope.booking_id ? [{ label: 'Booking', value: envelope.booking_id }] : []),
             ],
           },
@@ -397,7 +398,7 @@ serve(async (req) => {
       emails.push(
         sendEmail({
           to: adminEmails,
-          subject: `Waiver Signed by ${signerName} — ${templateName}${envelope.booking_id ? ` (Booking ${envelope.booking_id})` : ""}`,
+          subject: `${isGroup ? 'Group waiver signed' : 'Waiver signed'} by ${signerName} — ${templateName}${envelope.booking_id ? ` (Booking ${envelope.booking_id})` : ""}`,
           html: adminHtml,
         })
       );
