@@ -1,0 +1,2 @@
+ALTER TABLE public.credit_transactions ADD COLUMN IF NOT EXISTS notified_at timestamptz;
+UPDATE public.credit_transactions SET notified_at = now() WHERE type IN ('admin_grant','bonus') AND notified_at IS NULL;

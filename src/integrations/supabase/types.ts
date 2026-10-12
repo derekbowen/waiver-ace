@@ -263,6 +263,7 @@ export type Database = {
           credits_delta: number
           id: string
           notes: string | null
+          notified_at: string | null
           org_id: string
           reference_id: string | null
           type: string
@@ -273,6 +274,7 @@ export type Database = {
           credits_delta: number
           id?: string
           notes?: string | null
+          notified_at?: string | null
           org_id: string
           reference_id?: string | null
           type: string
@@ -283,6 +285,7 @@ export type Database = {
           credits_delta?: number
           id?: string
           notes?: string | null
+          notified_at?: string | null
           org_id?: string
           reference_id?: string | null
           type?: string
@@ -1473,6 +1476,7 @@ export type Database = {
         Args: { p_key: string; p_scope: string }
         Returns: number
       }
+      can_upload_signer_photo: { Args: { _folder: string }; Returns: boolean }
       cleanup_envelope_rate_limits: { Args: never; Returns: undefined }
       deduct_credit:
         | {
