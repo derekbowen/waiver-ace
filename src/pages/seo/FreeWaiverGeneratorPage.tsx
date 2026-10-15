@@ -43,10 +43,10 @@ const FAQ_ITEMS = [
   {
     question: "Is the waiver generator really free?",
     answer:
-      "Yes. Generating and downloading a waiver costs nothing and requires no account or credit card. You only pay if you also want people to sign it electronically through RentalWaivers — and even then, your first 250 signatures are free.",
+      "Yes. Generating and downloading a waiver costs nothing and requires no account or credit card. You only pay if you also want people to sign it electronically through RentalWaivers — and even then, your first 100 signatures are free.",
   },
   {
-    question: "What does it cost after the 250 free signatures?",
+    question: "What does it cost after the 100 free signatures?",
     answer:
       "6¢ per signed waiver, bought as credits. There is no monthly subscription, no contract, and no minimum. If you collect nothing this month, you pay nothing this month.",
   },
@@ -140,7 +140,7 @@ export default function FreeWaiverGeneratorPage() {
   return (
     <SeoPageLayout
       metaTitle="Free Liability Waiver Generator — Build a Custom Waiver in 60 Seconds"
-      metaDescription="Generate a free custom liability waiver for apartments, HOAs, rentals, and activity businesses. No account, no credit card. Then collect signatures for 6¢ each — 250 free, no monthly fee."
+      metaDescription="Generate a free custom liability waiver for apartments, HOAs, rentals, and activity businesses. No account, no credit card. Then collect signatures for 6¢ each — 100 free, no monthly fee."
       canonicalPath="/free-waiver-generator"
     >
       <JsonLd
@@ -158,7 +158,7 @@ export default function FreeWaiverGeneratorPage() {
               { name: "Describe your business", text: "Pick your business or community type, your state, and what people will be doing." },
               { name: "Generate the waiver", text: "The generator drafts a full waiver with the specific risks, rules, and guardian language your situation needs." },
               { name: "Review and edit", text: "Copy or download the text and have an attorney in your state review it." },
-              { name: "Collect signatures", text: "Paste it into RentalWaivers and send it out. Your first 250 signatures are free, then 6¢ each." },
+              { name: "Collect signatures", text: "Paste it into RentalWaivers and send it out. Your first 100 signatures are free, then 6¢ each." },
             ],
           }),
         ]}
@@ -168,7 +168,7 @@ export default function FreeWaiverGeneratorPage() {
         badge="Free · No account required"
         h1="Free Liability Waiver Generator"
         subtitle="A custom waiver for your apartments, rentals, or activities — written in about a minute"
-        description="Tell us what you rent out or who uses your amenities and we'll draft a complete liability waiver with the specific risks, rules, and guardian consent language your situation calls for. Download it free. When you're ready to collect real signatures, your first 250 are free and everything after that is 6¢ — no monthly subscription, ever."
+        description="Tell us what you rent out or who uses your amenities and we'll draft a complete liability waiver with the specific risks, rules, and guardian consent language your situation calls for. Download it free. When you're ready to collect real signatures, your first 100 are free and everything after that is 6¢ — no monthly subscription, ever."
       />
 
       <SeoSection title="Build Your Waiver">
@@ -296,7 +296,7 @@ export default function FreeWaiverGeneratorPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           {[
             { h: "$0", p: "To generate, edit and download your waiver. No account, no card, no email required." },
-            { h: "250 free", p: "Signatures included when you create an account — enough for most small properties to run for months." },
+            { h: "100 free", p: "Signatures included when you create an account — enough for most small properties to run for months." },
             { h: "6¢ each", p: "After that. Credits only, no monthly fee, no contract. A slow month costs you nothing." },
           ].map((x) => (
             <Card key={x.h}>
@@ -348,7 +348,7 @@ export default function FreeWaiverGeneratorPage() {
 
       <SeoCta
         headline="Generated your waiver? Start collecting signatures free"
-        subtext="250 signatures on the house, then 6¢ each. No monthly fee, no contract, cancel nothing."
+        subtext="100 signatures on the house, then 6¢ each. No monthly fee, no contract, cancel nothing."
       />
     </SeoPageLayout>
   );

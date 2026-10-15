@@ -41,7 +41,7 @@ export const KB_ARTICLES: KbArticle[] = [
     content: `
 ## Getting Started
 
-Get up and running with Rental Waivers in under 5 minutes. Every new organization gets **250 free credits** so you can test the full flow before purchasing.
+Get up and running with Rental Waivers in under 5 minutes. Every new organization gets **100 free credits** so you can test the full flow before purchasing.
 
 ### Step 1 — Create your account
 Sign up at rentalwaivers.com with your email. Verify your email to unlock all features.
@@ -55,7 +55,7 @@ Pick a preset (pool, vacation rental, equipment, or event) or start from scratch
 ### Step 4 — Send your first waiver
 Enter a signer's email, fill in the template variables, and hit Send. The signer receives an email with a signing link. You'll see the status update in real time on your dashboard.
 
-> **250 free credits:** Every new organization starts with 250 complimentary credits. Each credit covers one signer on one envelope. Credits also power AI tools like the Contract Scanner (10 credits), Listing Analyzer (40 credits), and PhotoSell (5 credits).
+> **100 free credits:** Every new organization starts with 100 complimentary credits. Each credit covers one signer on one envelope. Credits also power AI tools like the Contract Scanner (10 credits), Listing Analyzer (40 credits), and PhotoSell (5 credits).
     `,
   },
   {

@@ -94,7 +94,7 @@ export default function IntegrationStatePage() {
 
       <SeoCta
         headline={`Get every ${s.state} booking signed before check-in`}
-        subtext={`Connect ${p.name} in about 15 minutes. 250 free signatures, then 6¢ each with no monthly fee.`}
+        subtext={`Connect ${p.name} in about 15 minutes. 100 free signatures, then 6¢ each with no monthly fee.`}
       />
 
       <SeoSection title={`${p.name} Waivers in Other States`} muted>

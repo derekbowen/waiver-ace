@@ -52,7 +52,7 @@ export function PricingSection() {
               Start free
             </LinkButton>
             <p className="mt-3 text-center text-xs text-ink-muted">
-              Start with 250 free signatures. No credit card required.
+              Start with 100 free signatures. No credit card required.
             </p>
           </div>
 

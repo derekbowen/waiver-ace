@@ -71,7 +71,7 @@ export function platformIndustryFaq(p: IntegrationPlatform, i: IndustryPage) {
     },
     {
       question: `What does it cost on top of ${p.name}?`,
-      answer: `6¢ per signed waiver, no monthly fee, and your first 250 signatures are free. If you have a slow season, you pay nothing during it — unlike subscription waiver tools at $18–$260 a month.`,
+      answer: `6¢ per signed waiver, no monthly fee, and your first 100 signatures are free. If you have a slow season, you pay nothing during it — unlike subscription waiver tools at $18–$260 a month.`,
     },
     {
       question: `Can minors in the party be covered?`,
@@ -114,7 +114,7 @@ export function platformStateFaq(p: IntegrationPlatform, s: StateWaiverLawPage) 
     },
     {
       question: `What does it cost?`,
-      answer: `6¢ per signed waiver with no monthly fee, plus 250 free signatures to start. Works alongside your existing ${p.name} plan.`,
+      answer: `6¢ per signed waiver with no monthly fee, plus 100 free signatures to start. Works alongside your existing ${p.name} plan.`,
     },
   ];
 }

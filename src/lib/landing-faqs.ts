@@ -33,7 +33,7 @@ export const LANDING_FAQS = [
   {
     question: "How fast can I get started?",
     answer:
-      "Most hosts send their first waiver in under 5 minutes. Pick a pre-built template, customize it, and share the link. Every new account starts with 250 free credits — no credit card required.",
+      "Most hosts send their first waiver in under 5 minutes. Pick a pre-built template, customize it, and share the link. Every new account starts with 100 free credits — no credit card required.",
   },
   {
     question: "What is a rental waiver?",

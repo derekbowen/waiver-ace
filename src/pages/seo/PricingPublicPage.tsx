@@ -49,7 +49,7 @@ export default function PricingPublicPage() {
             </Card>
           ))}
         </div>
-        <p className="text-center text-xs text-muted-foreground mt-6">Credits never expire · 250 free credits on signup · No credit card required</p>
+        <p className="text-center text-xs text-muted-foreground mt-6">Credits never expire · 100 free credits on signup · No credit card required</p>
       </section>
 
       <SeoSection title="How Credits Work" muted>
@@ -79,8 +79,8 @@ export default function PricingPublicPage() {
             <div className="flex gap-3 items-start">
               <Shield className="h-5 w-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-semibold mb-1">250 Free Welcome Credits</h3>
-                <p className="text-sm text-muted-foreground">Every new account starts with 250 free credits. Test the entire platform before spending a dollar.</p>
+                <h3 className="font-semibold mb-1">100 Free Welcome Credits</h3>
+                <p className="text-sm text-muted-foreground">Every new account starts with 100 free credits. Test the entire platform before spending a dollar.</p>
               </div>
             </div>
           </div>
@@ -137,24 +137,24 @@ export default function PricingPublicPage() {
             ["Low-volume months", "Same price as peak", "Pay only for what you use"],
             ["Scaling up", "Jump to next tier ($$$)", "Just buy more credits"],
             ["Commitment", "Monthly/annual contracts", "No contracts, ever"],
-            ["Getting started", "Credit card required", "250 free credits, no card"],
+            ["Getting started", "Credit card required", "100 free credits, no card"],
             ["Cancellation", "Fees or data loss risk", "Nothing to cancel"],
           ]}
         />
       </SeoSection>
 
       <SeoFaq items={[
-        { question: "Do I need a credit card to sign up?", answer: "No. Create your account and receive 250 free credits immediately. No credit card, no commitment. You only pay when you need more credits." },
+        { question: "Do I need a credit card to sign up?", answer: "No. Create your account and receive 100 free credits immediately. No credit card, no commitment. You only pay when you need more credits." },
         { question: "Do credits expire?", answer: "No. Credits never expire. Buy them when you need them and use them at your own pace." },
         { question: "What counts as a credit?", answer: "One credit is used when a waiver is signed by a customer. Creating templates, sending waivers, viewing your dashboard, and all other features are free." },
         { question: "Can I get a refund on unused credits?", answer: "Credits are non-refundable but never expire. We recommend starting with a smaller package and scaling up as needed." },
-        { question: "Is there a free trial?", answer: "Better than a trial — every new account gets 250 free credits with full platform access. Use them to test everything before purchasing." },
+        { question: "Is there a free trial?", answer: "Better than a trial — every new account gets 100 free credits with full platform access. Use them to test everything before purchasing." },
         { question: "Do you offer enterprise pricing?", answer: "For organizations processing 10,000+ waivers per month, contact us for volume pricing. We can create custom credit packages for high-volume operators." },
         { question: "How does auto-recharge work?", answer: "Set a credit threshold (e.g., 10 credits) and choose a package to auto-purchase when your balance drops below that threshold. Your saved payment method is charged automatically so you never run out during peak season." },
       ]} />
 
       <SeoCta
-        headline="Start free — 250 credits on us"
+        headline="Start free — 100 credits on us"
         subtext="No credit card. No monthly fee. No contracts. Just waivers that work."
       />
           <InternalLinks />

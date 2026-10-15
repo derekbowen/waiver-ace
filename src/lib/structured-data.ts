@@ -32,7 +32,7 @@ export function softwareApplicationSchema() {
       "@type": "Offer",
       price: "0.06",
       priceCurrency: "USD",
-      description: "Pay per signed waiver. No monthly fee. 250 free credits on signup.",
+      description: "Pay per signed waiver. No monthly fee. 100 free credits on signup.",
     },
     // No aggregateRating: Google requires ratings to come from reviews that are
     // actually displayed on the page. Fabricated ratings risk a manual action.

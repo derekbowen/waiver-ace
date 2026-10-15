@@ -34,7 +34,7 @@ export default function IntegrationDetailPage() {
     },
     {
       question: `What does the ${p.name} integration cost?`,
-      answer: `Nothing extra. You pay 6¢ per signed waiver with no monthly fee, and the first 250 signatures are free.`,
+      answer: `Nothing extra. You pay 6¢ per signed waiver with no monthly fee, and the first 100 signatures are free.`,
     },
     ...p.faqExtra,
   ];
@@ -155,7 +155,7 @@ export default function IntegrationDetailPage() {
 
       <SeoCta
         headline={`Connect ${p.name} and stop chasing signatures`}
-        subtext="250 free signatures, then 6¢ each. No monthly fee, no setup cost."
+        subtext="100 free signatures, then 6¢ each. No monthly fee, no setup cost."
       />
 
       <div className="container max-w-5xl pb-8">

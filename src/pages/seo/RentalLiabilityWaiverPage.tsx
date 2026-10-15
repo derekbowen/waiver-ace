@@ -34,7 +34,7 @@ const faqItems = [
   {
     question: "How much does rental waiver software cost?",
     answer:
-      "Most platforms charge $18 to $260 per month whether or not you rent anything. RentalWaivers charges 6 cents per signed waiver with no monthly fee, and your first 250 signatures are free.",
+      "Most platforms charge $18 to $260 per month whether or not you rent anything. RentalWaivers charges 6 cents per signed waiver with no monthly fee, and your first 100 signatures are free.",
   },
   {
     question: "What kinds of rental businesses use this waiver?",
@@ -209,13 +209,13 @@ export default function RentalLiabilityWaiverPage() {
           <p>
             Upload the template, send a link when a booking is confirmed, or post a QR code at your counter. Renters
             read, add their party and minors, and sign on their phone — no app, no printing.{" "}
-            <strong className="text-foreground">Your first 250 signatures are free, and there is never a monthly fee.</strong>
+            <strong className="text-foreground">Your first 100 signatures are free, and there is never a monthly fee.</strong>
           </p>
           <div className="grid grid-cols-3 gap-4 text-center">
             {[
               { value: "6¢", label: "Per signed waiver" },
               { value: "$0", label: "Monthly fee, ever" },
-              { value: "250", label: "Free signatures to start" },
+              { value: "100", label: "Free signatures to start" },
             ].map((s) => (
               <div key={s.label}>
                 <p className="font-heading text-2xl md:text-3xl font-bold text-foreground">{s.value}</p>
@@ -233,7 +233,7 @@ export default function RentalLiabilityWaiverPage() {
 
       <SeoCta
         headline="Get your rental liability waiver signed before the next rental"
-        subtext="Free PDF template, or digital signing at 6¢ per waiver with no monthly fee and 250 free signatures."
+        subtext="Free PDF template, or digital signing at 6¢ per waiver with no monthly fee and 100 free signatures."
       />
 
       <InternalLinks currentSlug="rental-liability-waiver" />

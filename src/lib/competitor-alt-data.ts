@@ -64,7 +64,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { title: "Multi-Location Support", description: "Managing multiple rental locations? One dashboard for all of them. Separate templates per location, unified reporting." },
     ],
     migrationSteps: [
-      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account in 30 seconds. No credit card required. You get 250 free credits to test everything." },
+      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account in 30 seconds. No credit card required. You get 100 free credits to test everything." },
       { step: 2, title: "Create your waiver template", description: "Copy your existing waiver language into our editor, or start from one of our rental-specific templates. Takes under 10 minutes." },
       { step: 3, title: "Update your QR codes or links", description: "Replace your Smartwaiver QR code or email link with your new RentalWaivers signing URL. Print one new QR code and you're done." },
       { step: 4, title: "Start collecting waivers", description: "Your next customer signs on RentalWaivers. Old Smartwaiver records stay in Smartwaiver — new waivers go to your new, cheaper system." },
@@ -78,7 +78,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { question: "Do I lose any features by switching?", answer: "RentalWaivers matches Smartwaiver's core feature set and adds rental-specific capabilities. The only thing you 'lose' is the monthly bill." },
     ],
     ctaHeadline: "Stop overpaying for waivers you don't use",
-    ctaSubtext: "250 free credits. No credit card. No monthly fee. See why seasonal rental businesses are switching from Smartwaiver.",
+    ctaSubtext: "100 free credits. No credit card. No monthly fee. See why seasonal rental businesses are switching from Smartwaiver.",
   },
   {
     slug: "waiverforever-alternative",
@@ -124,7 +124,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { title: "Group Waivers for Families", description: "One link, multiple signers. Perfect for family kayak trips, group ATV rides, or party boat rentals." },
     ],
     migrationSteps: [
-      { step: 1, title: "Create your free account", description: "Sign up in 30 seconds. Get 250 free credits — no credit card needed." },
+      { step: 1, title: "Create your free account", description: "Sign up in 30 seconds. Get 100 free credits — no credit card needed." },
       { step: 2, title: "Build your waiver template", description: "Use our rental-specific templates or paste in your existing waiver language." },
       { step: 3, title: "Swap your signing links", description: "Replace WaiverForever links/QR codes with your new RentalWaivers URL." },
       { step: 4, title: "Cancel WaiverForever", description: "Once you're live on RentalWaivers, cancel your WaiverForever subscription. Your old records remain in WaiverForever." },
@@ -137,7 +137,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { question: "How long does switching take?", answer: "Under 20 minutes. Create template → update QR code → done." },
     ],
     ctaHeadline: "Ditch the monthly subscription",
-    ctaSubtext: "250 free credits. No credit card. No monthly commitment. Built for rental businesses that hate paying for idle months.",
+    ctaSubtext: "100 free credits. No credit card. No monthly commitment. Built for rental businesses that hate paying for idle months.",
   },
   {
     slug: "waiverfile-alternative",
@@ -182,7 +182,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { title: "Booking Platform Integration", description: "API and webhook support to auto-send waivers when customers book through FareHarbor, Checkfront, or any other platform." },
     ],
     migrationSteps: [
-      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account. 250 free credits, no credit card." },
+      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account. 100 free credits, no credit card." },
       { step: 2, title: "Choose a rental template", description: "Pick from our library of 50+ rental-specific templates, or create your own." },
       { step: 3, title: "Set up QR code check-in", description: "Generate your QR code and print it for your rental counter or check-in area." },
       { step: 4, title: "Go live", description: "Start collecting waivers with RentalWaivers. Cancel WaiverFile when ready." },
@@ -190,12 +190,12 @@ export const competitorAltPages: CompetitorAltPage[] = [
     faqItems: [
       { question: "What features does RentalWaivers have that WaiverFile doesn't?", answer: "QR code signing, group waivers, API access, multi-location support, rental-specific templates, and pay-per-use pricing with free seasonal pausing." },
       { question: "Is RentalWaivers harder to set up?", answer: "No — it's faster. Choose a rental template, customize it, generate your QR code, and you're live in under 10 minutes." },
-      { question: "Can I try it before switching?", answer: "Absolutely. Sign up free and get 250 credits to test everything. No credit card, no commitment." },
+      { question: "Can I try it before switching?", answer: "Absolutely. Sign up free and get 100 credits to test everything. No credit card, no commitment." },
       { question: "What happens to my WaiverFile data?", answer: "Your existing signed waivers remain in WaiverFile. New waivers are collected in RentalWaivers. No migration needed." },
       { question: "When is WaiverFile the better choice?", answer: "If you're a non-rental small business (salon, gym, studio) that needs a simple, generic waiver tool, WaiverFile is fine. For rental businesses, RentalWaivers is purpose-built." },
     ],
     ctaHeadline: "Switch to waiver software built for rentals",
-    ctaSubtext: "250 free credits. Rental-specific templates. QR code check-in. No monthly fees.",
+    ctaSubtext: "100 free credits. Rental-specific templates. QR code check-in. No monthly fees.",
   },
   {
     slug: "waiversign-alternative",
@@ -240,7 +240,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { title: "QR Code Check-In", description: "Display at your counter, dock, or trailhead. Customers scan and sign on their own phone." },
     ],
     migrationSteps: [
-      { step: 1, title: "Sign up free", description: "Create your account in 30 seconds. 250 free credits to test with." },
+      { step: 1, title: "Sign up free", description: "Create your account in 30 seconds. 100 free credits to test with." },
       { step: 2, title: "Build or choose a template", description: "Use our rental template library or create your own in under 10 minutes." },
       { step: 3, title: "Replace your WaiverSign links", description: "Update QR codes and email links to point to your new RentalWaivers signing URL." },
       { step: 4, title: "Cancel WaiverSign", description: "Once live on RentalWaivers, cancel your WaiverSign subscription." },
@@ -253,7 +253,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { question: "How fast is the switch?", answer: "Under 20 minutes. Template setup + new QR code = done." },
     ],
     ctaHeadline: "Pricing that fits your rental business",
-    ctaSubtext: "250 free credits. Flexible packs. No monthly fees. No rigid tiers.",
+    ctaSubtext: "100 free credits. Flexible packs. No monthly fees. No rigid tiers.",
   },
   {
     slug: "jotform-waiver-alternative",
@@ -298,7 +298,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { title: "Rental Templates", description: "Start with a pre-built template for your rental type. Includes assumption of risk, release of liability, and equipment damage clauses." },
     ],
     migrationSteps: [
-      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account. 250 free credits, no credit card." },
+      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account. 100 free credits, no credit card." },
       { step: 2, title: "Build a real waiver", description: "Use our waiver editor to create a proper liability waiver with legally compliant signature capture." },
       { step: 3, title: "Set up QR code check-in", description: "Generate a QR code for your rental counter. No Jotform form embedding needed." },
       { step: 4, title: "Retire your Jotform hack", description: "Once live, deactivate your Jotform waiver form and downgrade your plan." },
@@ -306,12 +306,12 @@ export const competitorAltPages: CompetitorAltPage[] = [
     faqItems: [
       { question: "Why can't I just use Jotform for waivers?", answer: "You can — but Jotform wasn't designed for liability waivers. It lacks legally compliant signatures, audit trails, IP logging, and tamper-proof storage. If a waiver is ever challenged in court, Jotform submissions may not hold up." },
       { question: "Is RentalWaivers harder to set up than Jotform?", answer: "No. For waivers specifically, it's faster. Choose a template, customize it, generate a QR code — live in 10 minutes. No drag-and-drop form building needed." },
-      { question: "What about Jotform's free plan?", answer: "Jotform's free plan limits you to 100 submissions/month with branding. RentalWaivers' pay-per-use model gives you 250 free credits to start, then 6¢ per waiver with no branding." },
+      { question: "What about Jotform's free plan?", answer: "Jotform's free plan limits you to 100 submissions/month with branding. RentalWaivers' pay-per-use model gives you 100 free credits to start, then 6¢ per waiver with no branding." },
       { question: "When should I keep using Jotform?", answer: "Jotform is great for surveys, contact forms, registration forms, and complex form logic. For liability waivers that need legal compliance, use a purpose-built tool." },
       { question: "Are RentalWaivers waivers more legally defensible?", answer: "Yes. Every waiver captures IP address, device info, timestamps, and stores signed documents as tamper-proof PDFs — meeting the E-SIGN Act requirements for electronic signatures." },
     ],
     ctaHeadline: "Stop hacking forms — use real waiver software",
-    ctaSubtext: "Purpose-built for rental businesses. 250 free credits. Legally compliant signatures.",
+    ctaSubtext: "Purpose-built for rental businesses. 100 free credits. Legally compliant signatures.",
   },
   {
     slug: "docusign-waiver-alternative",
@@ -356,7 +356,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { title: "Pay Only When Used", description: "Credits, not subscriptions. A kayak shop running May-September pays for 5 months of waivers — not 12 months of DocuSign." },
     ],
     migrationSteps: [
-      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account. 250 free credits, no credit card required." },
+      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account. 100 free credits, no credit card required." },
       { step: 2, title: "Create your waiver", description: "Start from a rental template or paste your existing waiver language. Under 10 minutes." },
       { step: 3, title: "Print your QR code", description: "Generate and print a QR code for your rental counter. Customers scan to sign." },
       { step: 4, title: "Cancel DocuSign", description: "Once live, cancel your DocuSign subscription. Keep your DocuSign account for actual contracts if needed." },
@@ -366,10 +366,10 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { question: "Is RentalWaivers less secure than DocuSign?", answer: "No. RentalWaivers captures IP addresses, device info, timestamps, and stores documents as tamper-proof PDFs with SHA-256 verification. For waivers, it meets the same legal standards." },
       { question: "Can walk-in customers sign without an email?", answer: "Yes! With QR code signing, customers scan and sign on their phone without providing an email or creating any account. DocuSign requires an email to send an envelope." },
       { question: "How much cheaper is RentalWaivers?", answer: "A rental business using 200 waivers over a 5-month season: DocuSign = $75–$200 ($15–$40/mo × 5). RentalWaivers = $16 (200 credits). That's up to 92% savings." },
-      { question: "What about DocuSign's free plan?", answer: "DocuSign's free tier limits you to 3 signature requests. A single busy day at a rental shop can exceed that. RentalWaivers gives you 250 free credits to start." },
+      { question: "What about DocuSign's free plan?", answer: "DocuSign's free tier limits you to 3 signature requests. A single busy day at a rental shop can exceed that. RentalWaivers gives you 100 free credits to start." },
     ],
     ctaHeadline: "The right tool for the right job",
-    ctaSubtext: "DocuSign is for contracts. RentalWaivers is for waivers. 250 free credits, no subscription.",
+    ctaSubtext: "DocuSign is for contracts. RentalWaivers is for waivers. 100 free credits, no subscription.",
   },
   {
     slug: "pandadoc-waiver-alternative",
@@ -414,7 +414,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { title: "Seasonal-Friendly Pricing", description: "Credits don't expire. Use them in May or November — zero monthly overhead." },
     ],
     migrationSteps: [
-      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account. 250 free credits, no credit card." },
+      { step: 1, title: "Sign up free", description: "Create your RentalWaivers account. 100 free credits, no credit card." },
       { step: 2, title: "Build your waiver", description: "Use a rental template or paste your existing waiver text." },
       { step: 3, title: "Deploy QR codes", description: "Print QR codes for each rental location or counter." },
       { step: 4, title: "Keep PandaDoc for sales docs", description: "Use PandaDoc for what it's good at (proposals, contracts) and RentalWaivers for waivers." },
@@ -427,7 +427,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { question: "Are RentalWaivers waivers legally compliant?", answer: "Yes. Full E-SIGN Act compliance with IP logging, timestamps, device capture, and tamper-proof PDF storage." },
     ],
     ctaHeadline: "Use the right tool for waivers",
-    ctaSubtext: "PandaDoc for sales. RentalWaivers for liability waivers. 250 free credits, no monthly fee.",
+    ctaSubtext: "PandaDoc for sales. RentalWaivers for liability waivers. 100 free credits, no monthly fee.",
   },
   {
     slug: "wherewolf-alternative",
@@ -472,7 +472,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
       { title: "Perfect for Independent Ops", description: "You don't need a 50-location enterprise platform. You need reliable waiver collection at a fair price." },
     ],
     migrationSteps: [
-      { step: 1, title: "Sign up free", description: "No sales call needed. Create your account and get 250 free credits in 30 seconds." },
+      { step: 1, title: "Sign up free", description: "No sales call needed. Create your account and get 100 free credits in 30 seconds." },
       { step: 2, title: "Create your waiver", description: "Build from a rental template or bring your existing waiver language." },
       { step: 3, title: "Set up check-in", description: "Generate QR codes for your locations. Done." },
       { step: 4, title: "Notify Wherewolf", description: "When your Wherewolf contract ends, you're already set up and running on RentalWaivers." },
@@ -480,11 +480,11 @@ export const competitorAltPages: CompetitorAltPage[] = [
     faqItems: [
       { question: "Is RentalWaivers as feature-rich as Wherewolf?", answer: "For waiver collection, yes. QR signing, group waivers, kiosk mode, audit trails, multi-location — all included. Wherewolf adds CRM and marketing features that most independent rental operators don't need." },
       { question: "When is Wherewolf the better choice?", answer: "Large multi-location activity operators (20+ locations) who need enterprise support, CRM integration, and guest marketing automation. If you're an independent or small chain, RentalWaivers is better value." },
-      { question: "Can I try before I buy?", answer: "Yes — 250 free credits, no credit card, no sales call. Unlike Wherewolf, you can evaluate the entire platform on your own." },
+      { question: "Can I try before I buy?", answer: "Yes — 100 free credits, no credit card, no sales call. Unlike Wherewolf, you can evaluate the entire platform on your own." },
       { question: "Do I need to wait for my Wherewolf contract to end?", answer: "You can set up RentalWaivers alongside Wherewolf and run both in parallel. When your contract ends, you're ready to cut over." },
       { question: "How much will I save?", answer: "Without knowing Wherewolf's exact pricing (they don't publish it), customers who switch report saving 40-70% on waiver costs alone, excluding the time saved by self-serve setup." },
     ],
     ctaHeadline: "Enterprise features, indie pricing",
-    ctaSubtext: "No sales calls. No enterprise quotes. No minimum commitment. 250 free credits to start.",
+    ctaSubtext: "No sales calls. No enterprise quotes. No minimum commitment. 100 free credits to start.",
   },
 ];
