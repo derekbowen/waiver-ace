@@ -246,8 +246,8 @@ export const rentalTemplatePages: WaiverTemplatePage[] = [
   {
     slug: "pool-rental-waiver-template",
     name: "Pool Rental Waiver",
-    metaTitle: "Free Swimming Pool Rental Waiver Template — Hourly Pool Host Liability",
-    metaDescription: "Free pool rental waiver template for hosts renting pools by the hour. Covers drowning risk, supervision, diving rules, and guest injury. Sign digitally before every swim.",
+    metaTitle: "Pool Rental Waiver Template (Free) — For Hourly Pool Hosts",
+    metaDescription: "Free pool rental waiver for hosts renting by the hour. Covers drowning risk, kids, diving and guest injuries. Guests sign on their phone before they swim.",
     h1: "Swimming Pool Rental Waiver Template",
     intro: "Renting your pool by the hour or for parties puts swimmers on your property — and drowning is one of the highest-severity liability exposures a homeowner can face. This pool rental waiver template covers supervision requirements, diving prohibitions, and swim-at-your-own-risk acknowledgment for every guest.",
     risks: ["Drowning and near-drowning incidents", "Diving injuries in shallow water", "Slip and falls on wet decks", "Unsupervised children in the pool area", "Alcohol-related incidents", "Injuries from pool equipment, slides, and toys"],

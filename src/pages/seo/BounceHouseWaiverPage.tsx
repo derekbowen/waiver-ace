@@ -41,8 +41,8 @@ export default function BounceHouseWaiverPage() {
 
   return (
     <SeoPageLayout
-      metaTitle="Bounce House Rental Waiver & Liability Waiver | RentalWaivers"
-      metaDescription="Free bounce house rental waiver with digital signing. Protect your inflatable business with a bounce house liability waiver parents sign before the party — 6¢ per waiver, no monthly fee."
+      metaTitle="Bounce House Waiver — Free Template, Parents Sign by Phone"
+      metaDescription="Free bounce house waiver parents sign on their phone before the party. Covers kids, weather and safety rules. 100 free credits, then 6¢ per waiver. No monthly fee."
       canonicalPath="/waivers/bounce-house-rental-waivers"
     >
       <JsonLd

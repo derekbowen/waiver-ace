@@ -53,8 +53,8 @@ export default function RentalLiabilityWaiverPage() {
 
   return (
     <SeoPageLayout
-      metaTitle="Rental Liability Waiver — Free Template (PDF) & Digital Signing | RentalWaivers"
-      metaDescription="Free rental liability waiver template in PDF, plus digital signing for any rental business. Renters sign on their phone in 60 seconds. 6¢ per waiver, no monthly fee."
+      metaTitle="Rental Liability Waiver: Free PDF Template + Online Signing"
+      metaDescription="Get a free rental liability waiver template (PDF), or let renters sign online from any phone. What to include, sample clauses, and 6¢ signing. No monthly fee."
       canonicalPath="/p/rental-liability-waiver"
     >
       <JsonLd
