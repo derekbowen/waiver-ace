@@ -54,8 +54,8 @@ const requiredClauses = [
 export default function WaiverTemplatesHubPage() {
   return (
     <SeoPageLayout
-      metaTitle="Free Rental Waiver Templates — Download or Sign Digitally | RentalWaivers"
-      metaDescription="Download free, legally-reviewed waiver templates for rental businesses. Kayak, boat, ATV, bike, jet ski, equipment, and more. Customize and go digital in minutes."
+      metaTitle="Free Waiver Templates for Rentals — Kayak, Boat, ATV & More"
+      metaDescription="Free liability waiver templates for rental businesses: kayak, boat, ATV, bike, jet ski, pool and equipment. Download the PDF or collect signatures online."
       canonicalPath="/waiver-templates"
     >
       <SeoHero
