@@ -151,6 +151,7 @@ export const Footer = React.forwardRef<HTMLElement>(function Footer(_, ref) {
             <ul className="space-y-2.5 text-sm">
               <li><Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link></li>
               <li><Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link></li>
+              <li><button type="button" onClick={() => import("@/lib/google-ads").then(m => m.openCookieSettings())} className="text-muted-foreground hover:text-foreground transition-colors">Cookie settings</button></li>
               <li>
                 <a href="https://10000solutions.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1">
                   10,000 Solutions LLC <ExternalLink className="h-3 w-3" />

@@ -95,6 +95,7 @@ const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { trackPageView } from "@/lib/page-tracking";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -128,6 +129,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <PageViewTracker />
+        <CookieConsentBanner />
         <I18nProvider>
         <AuthProvider>
           <ErrorBoundary fallbackRoute="/dashboard">
