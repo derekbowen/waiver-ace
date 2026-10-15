@@ -1,10 +1,5 @@
 // GTM / dataLayer conversion tracking events
 
-declare global {
-  interface Window {
-    dataLayer: Record<string, unknown>[];
-  }
-}
 
 function push(event: string, data?: Record<string, unknown>) {
   window.dataLayer = window.dataLayer || [];
