@@ -160,13 +160,13 @@ export default function CompareHubPage() {
       <SeoFaq items={[
         { question: "Why should I switch from Smartwaiver?", answer: "If you're a seasonal rental business paying $49+/month year-round, switching to RentalWaivers' pay-per-waiver model could save you 50-90% annually. You only pay when waivers are signed — $0 during your off-season." },
         { question: "Is it hard to switch waiver providers?", answer: "No. Create your waiver template in RentalWaivers (under 10 minutes), update your QR codes or email links, and you're live. There's no data migration needed — new waivers are collected in the new system." },
-        { question: "Can I try RentalWaivers before committing?", answer: "Yes. Sign up free and receive 250 welcome credits — no credit card required. Test the entire platform before spending a dollar." },
+        { question: "Can I try RentalWaivers before committing?", answer: "Yes. Sign up free and receive 100 welcome credits — no credit card required. Test the entire platform before spending a dollar." },
         { question: "What if I need more features than RentalWaivers offers?", answer: "We're honest about our focus: rental businesses. If you need advanced form logic, complex contract workflows, or enterprise-scale operations, one of our competitors may be a better fit. We'd rather you choose the right tool than the wrong one." },
         { question: "How does pay-per-waiver pricing work?", answer: "Buy credits in bulk (200 for $20 up to 8,000 for $500). One credit is used each time a waiver is signed. Credits never expire. No monthly fees, no contracts." },
       ]} />
 
       <SeoCta
-        headline="Try RentalWaivers free — 250 credits on us"
+        headline="Try RentalWaivers free — 100 credits on us"
         subtext="No credit card. No monthly fee. No commitment. See why rental businesses are switching."
       />
           <InternalLinks />

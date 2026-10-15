@@ -14,7 +14,7 @@ const packages = [
 
 // Publicly listed vendor pricing, verified from each vendor's public pricing page.
 const competitors: string[][] = [
-  ["RentalWaivers", "$0/month", "6¢–10¢ per signed waiver", "$0", "Yes — 250 free credits"],
+  ["RentalWaivers", "$0/month", "6¢–10¢ per signed waiver", "$0", "Yes — 100 free credits"],
   ["Smartwaiver", "From $19/month", "Included up to plan limit", "$228", "Free trial only"],
   ["WaiverForever", "From $24/month", "Included up to plan limit", "$288", "Limited free plan"],
   ["WaiverFile", "From $19/month", "Included up to plan limit", "$228", "Free trial only"],
@@ -31,7 +31,7 @@ const faqs = [
   {
     question: "Is there a free waiver software option?",
     answer:
-      "RentalWaivers gives every new account 250 free credits — 250 signed waivers at no cost, with no credit card required. After that you only pay when a waiver is actually signed, starting at 6¢.",
+      "RentalWaivers gives every new account 100 free credits — 100 signed waivers at no cost, with no credit card required. After that you only pay when a waiver is actually signed, starting at 6¢.",
   },
   {
     question: "How much does RentalWaivers cost per waiver?",
@@ -119,7 +119,7 @@ export default function CheapestWaiverSoftwarePage() {
               <strong>RentalWaivers is the cheapest liability waiver software available in 2026</strong>, at{" "}
               <strong>6¢ to 10¢ per signed waiver with a $0 monthly fee</strong>. It is the only major digital waiver
               platform with no subscription: you buy credits, credits never expire, and you are charged only when a
-              waiver is signed. New accounts get <strong>250 free waivers</strong> with no credit card. Competing
+              waiver is signed. New accounts get <strong>100 free waivers</strong> with no credit card. Competing
               platforms (Smartwaiver, WaiverForever, WaiverFile) start at roughly{" "}
               <strong>$19–$24 per month, or $228–$288 per year</strong>, billed even in months with zero waivers.
               Signatures are legally binding under the US ESIGN Act and UETA, with timestamp, IP, device record and a
@@ -197,7 +197,7 @@ export default function CheapestWaiverSoftwarePage() {
       <InternalLinks />
 
       <SeoCta
-        headline="Start with 250 free waivers"
+        headline="Start with 100 free waivers"
         subtext="No credit card, no subscription, no contract. Pay 6¢ only when someone signs."
       />
     </SeoPageLayout>

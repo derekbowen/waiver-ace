@@ -184,7 +184,7 @@ export default function RentalAgreementPage() {
             {[
               { value: "6¢", label: "Per signed document" },
               { value: "$0", label: "Monthly fee, ever" },
-              { value: "250", label: "Free signatures to start" },
+              { value: "100", label: "Free signatures to start" },
             ].map((s) => (
               <div key={s.label}>
                 <p className="font-heading text-2xl md:text-3xl font-bold text-foreground">{s.value}</p>
@@ -203,7 +203,7 @@ export default function RentalAgreementPage() {
 
       <SeoCta
         headline="Get your rental agreement signed before the next check-in"
-        subtext="Upload your agreement, pair it with a waiver, and automate signing at booking. 6¢ per signature, no monthly fee, 250 free credits to start."
+        subtext="Upload your agreement, pair it with a waiver, and automate signing at booking. 6¢ per signature, no monthly fee, 100 free credits to start."
       />
 
       <InternalLinks currentSlug="rental-agreement" />
