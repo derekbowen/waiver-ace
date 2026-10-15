@@ -190,7 +190,7 @@ export const competitorAltPages: CompetitorAltPage[] = [
     faqItems: [
       { question: "What features does RentalWaivers have that WaiverFile doesn't?", answer: "QR code signing, group waivers, API access, multi-location support, rental-specific templates, and pay-per-use pricing with free seasonal pausing." },
       { question: "Is RentalWaivers harder to set up?", answer: "No — it's faster. Choose a rental template, customize it, generate your QR code, and you're live in under 10 minutes." },
-      { question: "Can I try it before switching?", answer: "Absolutely. Sign up free and get 250 credits to test everything. No credit card, no commitment." },
+      { question: "Can I try it before switching?", answer: "Absolutely. Sign up free and get 100 credits to test everything. No credit card, no commitment." },
       { question: "What happens to my WaiverFile data?", answer: "Your existing signed waivers remain in WaiverFile. New waivers are collected in RentalWaivers. No migration needed." },
       { question: "When is WaiverFile the better choice?", answer: "If you're a non-rental small business (salon, gym, studio) that needs a simple, generic waiver tool, WaiverFile is fine. For rental businesses, RentalWaivers is purpose-built." },
     ],
