@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { buildEmail, sendEmail } from "../_shared/email-builder.ts";
 
 // This function should be invoked via a cron job (e.g., Supabase pg_cron or external scheduler)
