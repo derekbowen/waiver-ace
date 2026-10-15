@@ -42,7 +42,7 @@ export default function BounceHouseWaiverPage() {
   return (
     <SeoPageLayout
       metaTitle="Bounce House Waiver — Free Template, Parents Sign by Phone"
-      metaDescription="Free bounce house waiver parents sign on their phone before the party. Covers kids, weather and safety rules. 100 free credits, then 6¢ per waiver. No monthly fee."
+      metaDescription="Free bounce house waiver parents sign by phone before the party. Covers kids, weather and safety rules. 100 free credits, then 6¢ a waiver. No monthly fee."
       canonicalPath="/waivers/bounce-house-rental-waivers"
     >
       <JsonLd

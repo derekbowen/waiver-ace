@@ -55,7 +55,7 @@ export default function WaiverTemplatesHubPage() {
   return (
     <SeoPageLayout
       metaTitle="Free Waiver Templates for Rentals — Kayak, Boat, ATV & More"
-      metaDescription="Free liability waiver templates for 30+ rental types: kayak, boat, ATV, bike, jet ski, pool and equipment. Download the PDF or collect signatures online."
+      metaDescription="Free liability waiver templates for rental businesses: kayak, boat, ATV, bike, jet ski, pool and equipment. Download the PDF or collect signatures online."
       canonicalPath="/waiver-templates"
     >
       <SeoHero
