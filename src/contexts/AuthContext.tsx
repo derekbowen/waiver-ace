@@ -105,6 +105,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       import("@/lib/page-tracking").then(({ attributeSignupSource }) =>
         attributeSignupSource(userId, (data as any)?.signup_source_path)
       );
+      // Count brand-new accounts as a Google Ads signup (once, consent-aware)
+      supabase.auth.getSession().then(({ data: s }) => {
+        const createdAt = s.session?.user?.created_at;
+        import("@/lib/google-ads").then(({ reportSignupConversion }) =>
+          reportSignupConversion(userId, createdAt)
+        );
+      });
     }
   };
 
