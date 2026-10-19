@@ -318,18 +318,72 @@ var account_summary_default = defineTool5({
   }
 });
 
+// src/lib/mcp/tools/create-template.ts
+import { defineTool as defineTool6, ToolError as ToolError3 } from "npm:@lovable.dev/mcp-js@3.0.1";
+import { z as z5 } from "npm:zod@^3.25.76";
+var create_template_default = defineTool6({
+  name: "create_template",
+  title: "Create a waiver template",
+  description: "Create a new waiver template from the full waiver text. Placeholders like {{signer_name}} or {{business_name}} are filled in when sent. Free \u2014 no credits used. Returns the template id for send_waiver.",
+  inputSchema: {
+    name: z5.string().trim().min(1).max(200).describe("Template name, e.g. 'Kayak Rental Waiver'."),
+    body: z5.string().trim().min(20).describe("Full waiver text the guest reads and signs."),
+    description: z5.string().trim().optional().describe("Short internal description."),
+    require_photo: z5.boolean().optional().describe("Require a signer photo (+1 credit per waiver)."),
+    allow_minors: z5.boolean().optional().describe("Let signers add minors/dependents (default false)."),
+    default_expiration_days: z5.number().int().min(1).max(365).optional().describe("Default days before an unsigned waiver expires.")
+  },
+  annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
+  handler: async (args, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    const supabase = supabaseForUser(ctx);
+    const orgId = await requireOrgId(supabase, ctx.getUserId());
+    const { data: template, error } = await supabase.from("templates").insert({
+      org_id: orgId,
+      name: args.name,
+      description: args.description ?? null,
+      require_photo: args.require_photo ?? false,
+      allow_minors: args.allow_minors ?? false,
+      require_video: false,
+      default_expiration_days: args.default_expiration_days ?? null,
+      created_by: ctx.getUserId()
+    }).select("id").single();
+    if (error || !template) throw new ToolError3(error?.message ?? "Could not create template");
+    const templateId = String(template.id);
+    const variables = [...new Set([...args.body.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]))];
+    const { error: vErr } = await supabase.from("template_versions").insert({
+      template_id: templateId,
+      version: 1,
+      content: { body: args.body },
+      variables,
+      is_current: true
+    });
+    if (vErr) {
+      await supabase.from("templates").delete().eq("id", templateId);
+      throw new ToolError3(vErr.message);
+    }
+    const result = { id: templateId, name: args.name, variables };
+    return {
+      content: [{ type: "text", text: `Template "${args.name}" created. id: ${templateId}` }],
+      structuredContent: { template: result }
+    };
+  }
+});
+
 // src/lib/mcp/index.ts
 var projectRef = "sibwbzhpyiwmhigskgtr";
 var mcp_default = defineMcp({
   name: "rental-waivers",
   title: "Rental waivers",
   version: "0.1.0",
-  instructions: "Tools for Rental Waivers, a digital liability waiver platform. Use `account_summary` for credits and waiver counts, `list_templates` to find a template id, `send_waiver` to email a waiver to a guest, and `list_waivers` / `get_waiver` to check signing status.",
+  instructions: "Tools for Rental Waivers, a digital liability waiver platform. Use `account_summary` for credits and waiver counts, `list_templates` to find a template id, `create_template` to write a new waiver template, `send_waiver` to email a waiver to a guest, and `list_waivers` / `get_waiver` to check signing status.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"
   }),
-  tools: [account_summary_default, list_templates_default, send_waiver_default, list_waivers_default, get_waiver_default]
+  tools: [account_summary_default, list_templates_default, create_template_default, send_waiver_default, list_waivers_default, get_waiver_default]
 });
 
 // lovable-mcp-supabase-entry.ts
