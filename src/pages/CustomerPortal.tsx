@@ -240,7 +240,7 @@ export default function CustomerPortal() {
   }
 
   const needsAction = waivers.filter((w) => w.status === "sent" || w.status === "viewed").length;
-  const allGood = waivers.length > 0 && needsAction === 0 && waivers.some((w) => w.status === "completed" || w.status === "signed");
+  const allGood = waivers.length > 0 && needsAction === 0 && !waivers.some((w) => w.status === "expired" || w.status === "canceled") && waivers.some((w) => w.status === "completed" || w.status === "signed");
   const isAuthenticated = !!authedEmail;
   const isTokenVerified = !!(tokenParam && emailParam);
   const canSignFromHere = isAuthenticated || isTokenVerified;

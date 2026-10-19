@@ -32,6 +32,8 @@ export default function GroupSigningPage() {
   const [signerEmail, setSignerEmail] = useState("");
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [passCode, setPassCode] = useState<string | null>(null);
+  // Signers who were already on the list before this guest signed (avoids double-counting after live refresh).
+  const [othersAtSign, setOthersAtSign] = useState<any[]>([]);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
@@ -225,6 +227,8 @@ export default function GroupSigningPage() {
         photoStorageKey = path;
       }
 
+      setPassCode(null);
+      const priorSignatures = signatures;
       const { data: result, error } = await supabase.rpc("sign_group_waiver", {
         p_group_token: groupToken!,
         p_signer_name: fullName.trim(),
@@ -265,6 +269,7 @@ export default function GroupSigningPage() {
         if (pr?.pass_code) setPassCode(pr.pass_code);
       } catch { /* pass is optional — never block signing */ }
 
+      setOthersAtSign(priorSignatures);
       setSigned(true);
       toast.success("Waiver signed successfully!");
     } catch (err: any) {
@@ -328,13 +333,13 @@ export default function GroupSigningPage() {
           <p className="text-muted-foreground mb-4">
             Thank you, {fullName}. Your signed waiver has been recorded.
           </p>
-          {signatures.length > 0 && (
+          {othersAtSign.length > 0 && (
             <div className="text-left mt-6 rounded-lg border p-4">
               <p className="text-sm font-medium mb-2 flex items-center gap-2">
-                <Users className="h-4 w-4" /> {signatures.length + 1} {signatures.length + 1 === 1 ? "person has" : "people have"} signed
+                <Users className="h-4 w-4" /> {othersAtSign.length + 1} people have signed
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
-                {signatures.map((s) => (
+                {othersAtSign.map((s) => (
                   <li key={s.id}>{s.signer_name}</li>
                 ))}
                 <li>{fullName} (you)</li>
@@ -349,7 +354,7 @@ export default function GroupSigningPage() {
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setMinors([]); setGuardianAttested(false); setScrolledToEnd(false); setVideoWatched(false); }}>
+          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setPassCode(null); setOthersAtSign([]); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setMinors([]); setGuardianAttested(false); setScrolledToEnd(false); setVideoWatched(false); }}>
             Next Person — Sign Another
           </Button>
         </div>
