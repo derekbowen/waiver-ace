@@ -3,6 +3,8 @@ import { useNoindex } from "@/hooks/useNoindex";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { isNativeApp } from "@/lib/platform";
+import { appOrigin, startNativeOAuth } from "@/lib/native-auth";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +33,9 @@ export default function Login() {
   // Preserve a same-origin return path (used by the OAuth consent flow).
   const rawNext = searchParams.get("next");
   const nextPath = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : null;
-  const returnUrl = nextPath ? window.location.origin + nextPath : window.location.origin;
+  // appOrigin() === window.location.origin on the web. In the native app it is the live
+  // website, so links inside emails (sign-up confirmation) open a real page.
+  const returnUrl = nextPath ? appOrigin() + nextPath : appOrigin();
 
   // Already signed in (e.g. returning from Google/Apple): skip the form.
   const { user, loading: authLoading } = useAuth();
@@ -51,6 +55,12 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
+      if (isNativeApp()) {
+        // Native app: system browser + deep-link return (see src/lib/native-auth.ts).
+        const { error: nativeError } = await startNativeOAuth("google", nextPath);
+        if (nativeError) throw nativeError;
+        return;
+      }
       const { error } = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: returnUrl,
       });
@@ -66,6 +76,11 @@ export default function Login() {
   const handleAppleSignIn = async () => {
     setAppleLoading(true);
     try {
+      if (isNativeApp()) {
+        const { error: nativeError } = await startNativeOAuth("apple", nextPath);
+        if (nativeError) throw nativeError;
+        return;
+      }
       const { error } = await lovable.auth.signInWithOAuth("apple", {
         redirect_uri: returnUrl,
       });
@@ -84,7 +99,7 @@ export default function Login() {
       const { error } = await supabase.auth.resend({
         type: "signup",
         email,
-        options: { emailRedirectTo: window.location.origin },
+        options: { emailRedirectTo: appOrigin() },
       });
       if (error) throw error;
       toast.success("Confirmation email sent! Check your inbox.");

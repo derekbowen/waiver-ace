@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Mail } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { toast } from "sonner";
+import { appOrigin } from "@/lib/native-auth";
 
 const ForgotPassword = () => {
   useNoindex();
@@ -19,7 +20,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${appOrigin()}/reset-password`,
     });
     setLoading(false);
     if (error) {

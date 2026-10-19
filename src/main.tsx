@@ -3,6 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { registerServiceWorker } from "./lib/register-sw";
 import { isNativeApp } from "./lib/platform";
+import { registerNativeAuthListener } from "./lib/native-auth";
 
 registerServiceWorker();
 
@@ -31,5 +32,8 @@ window.addEventListener("unhandledrejection", (event) => {
 if (isNativeApp() && (window.location.pathname === "/" || window.location.pathname === "/index.html")) {
   window.history.replaceState(null, "", "/app");
 }
+
+// Native app only: receive the Google/Apple sign-in return link (no-op on the website).
+registerNativeAuthListener();
 
 createRoot(document.getElementById("root")!).render(<App />);
