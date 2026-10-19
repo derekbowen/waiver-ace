@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Rental Waivers',
   webDir: 'dist',
   server: {
-    url: 'https://www.rentalwaivers.com',
+    url: 'https://www.rentalwaivers.com/app',
     cleartext: false,
   },
   plugins: {
