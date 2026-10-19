@@ -108,7 +108,7 @@ export default function QrCodeWaiversPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="text-base">
-              <Link to="/signup">
+              <Link to="/login?mode=signup">
                 Get Your QR Code — 100 Free Credits <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -240,7 +240,7 @@ export default function QrCodeWaiversPage() {
         </p>
         <div className="mt-6">
           <Button asChild size="lg">
-            <Link to="/signup">
+            <Link to="/login?mode=signup">
               Start Free <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

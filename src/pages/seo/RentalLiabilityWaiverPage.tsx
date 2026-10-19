@@ -34,7 +34,7 @@ const faqItems = [
   {
     question: "How much does rental waiver software cost?",
     answer:
-      "Most platforms charge $18 to $260 per month whether or not you rent anything. RentalWaivers charges 6 cents per signed waiver with no monthly fee, and your first 100 signatures are free.",
+      "Many waiver platforms charge a monthly subscription whether or not you rent anything that month. RentalWaivers has no monthly fee: you pay per signed waiver, from 6 cents each, and your first 100 signatures are free.",
   },
   {
     question: "What kinds of rental businesses use this waiver?",
@@ -53,8 +53,8 @@ export default function RentalLiabilityWaiverPage() {
 
   return (
     <SeoPageLayout
-      metaTitle="Rental Liability Waiver: Free PDF Template + Online Signing"
-      metaDescription="Get a free rental liability waiver template (PDF), or let renters sign online from any phone. What to include, sample clauses, and 6¢ signing. No monthly fee."
+      metaTitle="Rental Liability Waiver Template (Free PDF) + Sample Clauses"
+      metaDescription="Free rental liability waiver PDF with all 9 key clauses, plus sample release wording. Or have renters sign on their phone. 100 free, no monthly fee."
       canonicalPath="/p/rental-liability-waiver"
     >
       <JsonLd
@@ -111,7 +111,7 @@ export default function RentalLiabilityWaiverPage() {
               variant="outline"
               className="text-base bg-white/10 border-white/30 text-white hover:bg-white/20"
             >
-              <Link to="/signup">
+              <Link to="/login?mode=signup">
                 Send Waivers Digitally <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -159,6 +159,30 @@ export default function RentalLiabilityWaiverPage() {
               <Download className="mr-2 h-4 w-4" /> Download the free rental liability waiver (PDF)
             </a>
           </Button>
+        </div>
+      </SeoSection>
+
+      <SeoSection title="Sample Rental Liability Waiver Wording">
+        <div className="space-y-4 text-sm text-muted-foreground max-w-3xl">
+          <p>
+            Below is example wording for the two most important clauses. Replace the bracketed parts with your own
+            business, equipment and hazards. Specific wording holds up better than generic wording.
+          </p>
+          <blockquote className="border-l-4 border-primary pl-4 text-foreground">
+            <strong>Assumption of risk.</strong> I understand that using [the rented property or equipment] involves
+            risks, including [list specific hazards, such as falls, water, moving parts or weather], and I voluntarily
+            accept these risks for myself and every member of my party.
+          </blockquote>
+          <blockquote className="border-l-4 border-primary pl-4 text-foreground">
+            <strong>Release of liability.</strong> To the fullest extent allowed by [state] law, I release [business
+            name], its owners and staff from claims for injury, loss or damage arising from ordinary negligence during
+            my rental period.
+          </blockquote>
+          <p>
+            This is sample language, not legal advice. Waivers generally do not cover gross negligence, and some states
+            limit them further. Have an attorney licensed in your state review your final version, and keep your
+            insurance in place: a waiver does not replace it.
+          </p>
         </div>
       </SeoSection>
 
