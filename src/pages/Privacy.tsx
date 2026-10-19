@@ -71,7 +71,7 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">8. Your Rights &amp; Account Deletion</h2>
+            <h2 id="delete-account" className="scroll-mt-24 font-heading text-lg font-semibold text-foreground mb-3">8. Your Rights &amp; Account Deletion</h2>
             <p>Depending on your jurisdiction, you may have the right to access, correct, delete, or export your personal data. Contact us to exercise these rights.</p>
             <p className="mt-3"><strong>Deleting your account.</strong> You can permanently delete your account and all associated data at any time from Settings &rarr; Danger Zone inside the app or on the website. Deletion is immediate and cannot be undone. You may also request deletion by emailing us.</p>
           </section>
