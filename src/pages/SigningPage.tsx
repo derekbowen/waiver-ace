@@ -68,8 +68,9 @@ export default function SigningPage() {
       customer_name: fullName.trim(),
       date: templateSource.date,
       rental_date: templateSource.date,
+      minor_names: minors.map((m) => m.name.trim()).filter(Boolean).join(", ") || "None",
     });
-  }, [templateSource, fullName]);
+  }, [templateSource, fullName, minors]);
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
@@ -210,6 +211,10 @@ export default function SigningPage() {
       .filter((m) => m.name.length > 0);
     if (minors.some((m) => !m.name.trim())) {
       toast.error("Please enter a name for each minor, or remove the empty row");
+      return;
+    }
+    if (cleanMinors.some((m) => m.age && (!/^\d{1,2}$/.test(m.age) || Number(m.age) > 17))) {
+      toast.error("Each minor's age must be a number from 0 to 17");
       return;
     }
     if (cleanMinors.length > 0 && !guardianAttested) {
@@ -422,13 +427,7 @@ export default function SigningPage() {
                 onScroll={handleScroll}
                 className="max-h-[400px] overflow-y-auto p-6 text-sm leading-relaxed whitespace-pre-wrap"
               >
-                {templateContent.replace(
-                  /\{\{minor_names\}\}/g,
-                  minors
-                    .map((m) => m.name.trim())
-                    .filter(Boolean)
-                    .join(", ") || "None",
-                )}
+                {templateContent}
                 <div
                   aria-hidden
                   style={{ height: 1 }}
@@ -534,7 +533,7 @@ export default function SigningPage() {
                           />
                           <Input
                             value={m.age}
-                            onChange={(e) => updateMinor(i, "age", e.target.value)}
+                            onChange={(e) => updateMinor(i, "age", e.target.value.replace(/\D/g, ""))}
                             placeholder="Age"
                             inputMode="numeric"
                             maxLength={2}
