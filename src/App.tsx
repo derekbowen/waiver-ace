@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import SupportChatWidget from "@/components/SupportChatWidget";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -71,7 +71,6 @@ const NewEnvelope = lazy(() => import("./pages/NewEnvelope"));
 const Settings = lazy(() => import("./pages/Settings"));
 const ApiKeys = lazy(() => import("./pages/ApiKeys"));
 const AgentKeys = lazy(() => import("./pages/AgentKeys"));
-const PhotoSell = lazy(() => import("./pages/PhotoSell"));
 const Webhooks = lazy(() => import("./pages/Webhooks"));
 const TeamMembers = lazy(() => import("./pages/TeamMembers"));
 const Analytics = lazy(() => import("./pages/Analytics"));
@@ -213,7 +212,7 @@ const App = () => (
             <Route path="/settings/completion-email" element={<ProtectedRoute><CompletionEmailEditor /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/envelopes/bulk" element={<ProtectedRoute><BulkSend /></ProtectedRoute>} />
-            <Route path="/photosell" element={<ProtectedRoute><PhotoSell /></ProtectedRoute>} />
+            <Route path="/photosell" element={<Navigate to="/dashboard" replace />} />
             <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
             <Route path="/contract-scanner" element={<ProtectedRoute><ContractScanner /></ProtectedRoute>} />
             <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />

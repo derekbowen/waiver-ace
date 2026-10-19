@@ -26,7 +26,7 @@ export const KB_CATEGORIES: KbCategory[] = [
   { id: "api", label: "API Reference", icon: "Code", description: "REST API endpoints, authentication, and examples", color: "bg-cyan-500/10 text-cyan-600" },
   { id: "webhooks", label: "Webhooks", icon: "Webhook", description: "Real-time event notifications with HMAC signatures", color: "bg-rose-500/10 text-rose-600" },
   { id: "team", label: "Team & Roles", icon: "Users", description: "Invite members, assign roles, manage access", color: "bg-amber-500/10 text-amber-600" },
-  { id: "tools", label: "AI Tools", icon: "Sparkles", description: "Contract Scanner, Listing Analyzer, Document Storage, and PhotoSell", color: "bg-pink-500/10 text-pink-600" },
+  { id: "tools", label: "AI Tools", icon: "Sparkles", description: "Contract Scanner, Listing Analyzer, and Document Storage", color: "bg-pink-500/10 text-pink-600" },
   { id: "legal", label: "Legal & Compliance", icon: "Scale", description: "E-SIGN Act, UETA, audit trails, enforceability", color: "bg-emerald-500/10 text-emerald-600" },
 ];
 
@@ -55,7 +55,7 @@ Pick a preset (pool, vacation rental, equipment, or event) or start from scratch
 ### Step 4 — Send your first waiver
 Enter a signer's email, fill in the template variables, and hit Send. The signer receives an email with a signing link. You'll see the status update in real time on your dashboard.
 
-> **100 free credits:** Every new organization starts with 100 complimentary credits. Each credit covers one signer on one envelope. Credits also power AI tools like the Contract Scanner (10 credits), Listing Analyzer (40 credits), and PhotoSell (5 credits).
+> **100 free credits:** Every new organization starts with 100 complimentary credits. Each credit covers one signer on one envelope. Credits also power AI tools like the Contract Scanner (10 credits) and Listing Analyzer (40 credits).
     `,
   },
   {
@@ -384,7 +384,6 @@ Any platform that can make HTTP requests or fire webhooks can integrate with Ren
 | Group waiver (per signer) | 1 credit |
 | Contract Scanner | 10 credits |
 | Listing Analyzer | 40 credits |
-| PhotoSell enhancement | 5 credits |
 | Document upload | 2 credits |
 
 ### Credit Packages
@@ -753,36 +752,6 @@ A secure vault for your rental documents — contracts, insurance certificates, 
 Signed waivers are automatically stored as tamper-proof PDFs with SHA-256 hashing. These are stored separately and don't count against your upload quota.
 
 > **Tip:** Use Document Storage to keep insurance certificates alongside your waivers for complete legal protection.
-    `,
-  },
-  {
-    id: "photo-enhance",
-    title: "PhotoSell (AI Photo Enhancement)",
-    description: "Enhance your rental listing photos with AI-powered improvements.",
-    category: "tools",
-    icon: "Camera",
-    content: `
-## PhotoSell — AI Photo Enhancement
-
-Upload a photo of your rental property and get AI-powered enhancements to make your listing stand out.
-
-### How to use it
-1. Go to **PhotoSell** from the sidebar
-2. Upload a property photo (JPEG, PNG, or WebP)
-3. Click **"Enhance Photo"** — costs **5 credits**
-4. View the before/after comparison
-5. Download the enhanced version
-
-### What the AI does
-- **Sky replacement** — Overcast sky? AI replaces it with a vibrant blue sky
-- **Color boosting** — Enhances colors to make the space look inviting
-- **Quality analysis** — Rates your photo's composition, lighting, and appeal
-- **Brightness & contrast** — Balances lighting for a professional look
-
-### Tips for best results
-- Use well-lit photos taken during daytime
-- Include the full space in the frame
-- Original photos work better than already-edited ones
     `,
   },
   {
