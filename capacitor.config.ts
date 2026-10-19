@@ -1,13 +1,11 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
+// Bundled mode: the app ships the built files from `dist` inside the native
+// package. No remote server URL — website publishes never change the app.
 const config: CapacitorConfig = {
   appId: 'com.rentalwaivers.app',
   appName: 'Rental Waivers',
   webDir: 'dist',
-  server: {
-    url: 'https://www.rentalwaivers.com/app',
-    cleartext: false,
-  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
