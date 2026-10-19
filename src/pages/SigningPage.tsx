@@ -169,7 +169,7 @@ export default function SigningPage() {
   const handleScroll = () => {
     if (!contentRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
-    if (scrollTop + clientHeight >= scrollHeight - 20) {
+    if (scrollTop + clientHeight >= scrollHeight - 60) {
       setScrolledToEnd(true);
     }
   };
@@ -426,11 +426,36 @@ export default function SigningPage() {
                     .filter(Boolean)
                     .join(", ") || "None",
                 )}
+                <div
+                  aria-hidden
+                  style={{ height: 1 }}
+                  ref={(node) => {
+                    if (!node || scrolledToEnd || typeof IntersectionObserver === "undefined") return;
+                    const io = new IntersectionObserver(
+                      (entries) => {
+                        if (entries.some((e) => e.isIntersecting)) {
+                          setScrolledToEnd(true);
+                          io.disconnect();
+                        }
+                      },
+                      { root: contentRef.current, threshold: 0 },
+                    );
+                    io.observe(node);
+                  }}
+                />
               </div>
               {!scrolledToEnd && (
-                <div className="border-t px-6 py-3 text-center text-xs text-muted-foreground bg-accent/50">
-                  ↓ Scroll to the end to continue
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = contentRef.current;
+                    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+                    setScrolledToEnd(true);
+                  }}
+                  className="w-full min-h-[44px] border-t px-6 py-3 text-center text-xs text-muted-foreground bg-accent/50"
+                >
+                  ↓ Scroll to the end to continue (tap to jump)
+                </button>
               )}
             </CardContent>
           </Card>
