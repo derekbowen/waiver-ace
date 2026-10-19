@@ -24,11 +24,12 @@ export default function Privacy() {
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">1. Information We Collect</h2>
             <p>We collect information you provide directly, such as your name, email address, and organization details when you create an account. We also collect signer information (name, initials, email, electronic signature, consent records, IP address, device/browser information, and timestamps) when documents are signed. Additional data we collect includes:</p>
             <ul className="list-disc pl-6 mt-2 space-y-1">
-              <li><strong>Signer photos and minors:</strong> Signers may submit a photo; a business may require it. Adults signing for minors may provide each minor’s name and age and a guardian attestation.</li>
-              <li><strong>Check-in records:</strong> We process pass codes linked to signed waivers and record check-in activity.</li>
+              <li><strong>Minors and check-in records:</strong> Adults may provide minors’ names, ages, and guardian attestations. We process pass codes linked to signed waivers and record check-in activity.</li>
               <li><strong>Wallet and credit data:</strong> Credit purchase history, transaction records, payment method identifiers (stored securely via Stripe), auto-recharge preferences, and credit balance information.</li>
               <li><strong>Marketplace integration data:</strong> When you connect a marketplace (e.g., ShareTribe), we receive customer information from booking webhooks including customer names, email addresses, booking IDs, listing details, and booking dates as transmitted by the marketplace platform.</li>
               <li><strong>Customer portal lookups:</strong> When customers use the /my-waivers portal, we process the email address they enter to look up their waiver status. We do not store portal access logs beyond standard server logs.</li>
+              <li><strong>Signer photos (optional):</strong> If an operator enables photo verification, signers are asked to take a selfie during signing. Photos are captured only after the signer explicitly consents, are stored securely, and are used solely to verify the signer's identity for that waiver. We do not use photos for advertising, profiling, or biometric identification, and we never sell them.</li>
+              <li><strong>Check-in passes:</strong> Signed waivers may generate a digital check-in pass that can be saved to Apple Wallet or Google Wallet. Saving a pass is optional and initiated by the signer.</li>
             </ul>
           </section>
 
@@ -46,7 +47,8 @@ export default function Privacy() {
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">4. Data Sharing</h2>
             <p>We do not sell your personal information. We may share data with:</p>
             <ul className="list-disc pl-6 mt-2 space-y-1">
-              <li><strong>Stripe:</strong> Payment processing for credit purchases and auto-recharge. Stripe receives payment card details directly; we store only Stripe customer IDs and payment method identifiers.</li>
+              <li><strong>Stripe:</strong> Payment processing for credit purchases and auto-recharge on our website. Stripe receives payment card details directly; we store only Stripe customer IDs and payment method identifiers. Purchases are not offered inside the iOS or Android apps.</li>
+              <li><strong>Apple and Google:</strong> If you choose to save a check-in pass to Apple Wallet or Google Wallet, the pass details are delivered to your device through those services.</li>
               <li><strong>Resend:</strong> Email delivery service for sending waiver signing requests and notifications.</li>
               <li><strong>Connected marketplaces:</strong> If you use our marketplace integration, waiver status information may be returned to the marketplace via our status API when they query using their API key.</li>
               <li>As required by law or to protect our rights.</li>
@@ -66,20 +68,14 @@ export default function Privacy() {
 
           <section>
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">7. Data Retention for Credits</h2>
-            <p>Credit transaction history (purchases, deductions, adjustments) is retained indefinitely for accounting, audit, and dispute resolution purposes. Wallet balances are maintained as long as your organization account is active.</p>
+            <p>Credit transaction history (purchases, deductions, adjustments) is retained for accounting, audit, and dispute resolution while the organization exists. When the last member deletes the organization, the account-deletion process attempts to remove these records. Wallet balances are maintained as long as your organization account is active.</p>
           </section>
-
-          <section>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">8. Your Rights</h2>
-            <p>Depending on your jurisdiction, you may have the right to access, correct, delete, or export your personal data. Contact us to exercise these rights.</p>
-          </section>
-
 
           <section id="delete-account">
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">Delete your Rental Waivers account and data</h2>
             <p>You can request deletion without installing the app. Email <a href="mailto:hello@rentalwaivers.com?subject=Delete%20my%20Rental%20Waivers%20account" className="text-primary underline">hello@rentalwaivers.com</a> from your account email with the subject “Delete my Rental Waivers account.” Include the account email and business name. We may verify your identity before processing your request; never send your password.</p>
             <p className="mt-3">You can also sign in on the website or in the app, open Settings → Danger Zone → Delete my account, type DELETE MY ACCOUNT, and confirm.</p>
-            <p className="mt-3">Deletion removes your login and profile. If you are the last member of your organization, deletion also removes the organization and its associated waiver, signature, audit, template, check-in, integration, and wallet records. If other members remain, shared organization records remain available to them. Unused credits are forfeited.</p>
+            <p className="mt-3">Account deletion removes your login and profile. For the last member of an organization, the deletion process also attempts to remove the organization and its associated waiver, signature, audit, template, check-in, integration, credit transaction, and wallet records. Shared organization records remain available when other members remain. Unused credits are forfeited. Contact us to request confirmation of removal of uploaded photos and documents or to report any incomplete deletion.</p>
             <p className="mt-3">If you signed a waiver as a guest without creating an account, contact the rental business or email us with the email you used to sign and the business name to request deletion of your signer data. Waiver retention follows the organization’s retention settings; credit transaction retention is described above. We will explain any records that must be retained and the applicable retention period when responding to your request.</p>
           </section>
 
