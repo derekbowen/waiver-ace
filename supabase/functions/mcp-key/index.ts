@@ -2,7 +2,10 @@
 // (Settings -> Agent access). Accepts a static `Authorization: Bearer rwa_...`
 // header, which is what most MCP clients support in their config.
 import { createClient } from "npm:@supabase/supabase-js@2.49.1";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 const headers = {
   ...corsHeaders,
@@ -154,6 +157,58 @@ const TOOLS: Tool[] = [
         signing_url: pending ? `${APP_ORIGIN}/waiver/${data.signing_token}` : null,
         events: events ?? [],
       };
+    },
+  },
+  {
+    name: "create_template",
+    title: "Create a waiver template",
+    description:
+      "Create a new waiver template from the full waiver text. Placeholders like {{signer_name}} are filled in when sent. Free — no credits used. Returns the template id for send_waiver.",
+    access: "full",
+    inputSchema: objectSchema(
+      {
+        name: { type: "string", description: "Template name, e.g. 'Kayak Rental Waiver'." },
+        body: { type: "string", description: "Full waiver text the guest reads and signs." },
+        description: { type: "string", description: "Short internal description." },
+        require_photo: { type: "boolean", description: "Require a signer photo (+1 credit per waiver)." },
+        allow_minors: { type: "boolean", description: "Let signers add minors/dependents (default false)." },
+        default_expiration_days: { type: "number", description: "Default days before an unsigned waiver expires." },
+      },
+      ["name", "body"],
+    ),
+    handler: async (args, agent) => {
+      const name = String(args.name ?? "").trim().slice(0, 200);
+      const body = String(args.body ?? "").trim();
+      if (!name) throw new Error("name is required");
+      if (body.length < 20) throw new Error("body must contain the full waiver text");
+      const days = args.default_expiration_days ? Math.min(Math.max(Math.round(Number(args.default_expiration_days)), 1), 365) : null;
+      const { data: template, error } = await admin
+        .from("templates")
+        .insert({
+          org_id: agent.org_id,
+          name,
+          description: args.description ? String(args.description) : null,
+          require_photo: Boolean(args.require_photo),
+          allow_minors: Boolean(args.allow_minors),
+          require_video: false,
+          default_expiration_days: days,
+        })
+        .select("id")
+        .single();
+      if (error || !template) throw new Error(error?.message ?? "Could not create template");
+      const variables = [...new Set([...body.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]))];
+      const { error: vErr } = await admin.from("template_versions").insert({
+        template_id: template.id,
+        version: 1,
+        content: { body },
+        variables,
+        is_current: true,
+      });
+      if (vErr) {
+        await admin.from("templates").delete().eq("id", template.id);
+        throw new Error(vErr.message);
+      }
+      return { id: template.id, name, variables };
     },
   },
   {

@@ -33,6 +33,7 @@ export default function Terms() {
           <section>
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">3. User Accounts</h2>
             <p>You must provide accurate information when creating an account. You are responsible for maintaining the security of your account credentials and for all activity under your account.</p>
+            <p className="mt-3"><strong>Account deletion.</strong> You may permanently delete your account and all associated data at any time from Settings &rarr; Danger Zone in the app or on the website, or by contacting us. Deletion is immediate and irreversible.</p>
           </section>
 
           <section>
