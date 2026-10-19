@@ -85,7 +85,15 @@ export default function SignedWaivers() {
       toast.error("Could not load signed waivers");
       setWaivers([]);
     } else {
-      setWaivers((data as SignedWaiver[]) || []);
+      let rows = (data as SignedWaiver[]) || [];
+      // Only list group waivers that have at least one real signature.
+      const groupIds = rows.filter((w) => w.is_group_waiver && !["signed", "completed"].includes(w.status)).map((w) => w.id);
+      if (groupIds.length) {
+        const { data: sigs } = await supabase.from("group_signatures").select("envelope_id").in("envelope_id", groupIds);
+        const signedGroups = new Set((sigs || []).map((g: any) => g.envelope_id));
+        rows = rows.filter((w) => !groupIds.includes(w.id) || signedGroups.has(w.id));
+      }
+      setWaivers(rows);
     }
     setLoading(false);
   }, [profile?.org_id]);
@@ -442,7 +450,7 @@ export default function SignedWaivers() {
                       className="max-h-28 object-contain"
                     />
                   ) : (
-                    <p className="font-medium">{selectedSig.full_name || selected.signer_name || "—"}</p>
+                    <p className="font-medium">{selectedSig.full_name || (selected.is_group_waiver ? "See group signers below" : "Not signed")}</p>
                   )}
                   {selectedSig.consent_text && (
                     <p className="mt-3 text-xs text-muted-foreground">{selectedSig.consent_text}</p>

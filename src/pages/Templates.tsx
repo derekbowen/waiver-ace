@@ -62,6 +62,13 @@ export default function Templates() {
           name: `${t.name} (Copy)`,
           description: t.description,
           is_active: true,
+          allow_minors: (t as any).allow_minors,
+          require_photo: (t as any).require_photo,
+          require_video: (t as any).require_video,
+          video_url: (t as any).video_url,
+          default_expiration_days: (t as any).default_expiration_days,
+          brand_color: (t as any).brand_color,
+          brand_font: (t as any).brand_font,
           created_by: (await supabase.auth.getUser()).data.user?.id,
         } as any)
         .select()
