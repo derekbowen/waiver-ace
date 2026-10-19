@@ -76,16 +76,27 @@ export default function AuditLog() {
     const envMap = new Map(envData.map((e) => [e.id, e]));
     const envIds = envData.map((e) => e.id);
 
-    const { data: eventData, error } = await supabase
-      .from("envelope_events")
-      .select("*")
-      .in("envelope_id", envIds)
-      .order("created_at", { ascending: false })
-      .limit(500);
+    // Load the full history in batches (no silent 500-event cutoff).
+    const eventData: any[] = [];
+    let failed = false;
+    for (let i = 0; i < envIds.length && !failed; i += 150) {
+      const chunk = envIds.slice(i, i + 150);
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await supabase
+          .from("envelope_events")
+          .select("*")
+          .in("envelope_id", chunk)
+          .order("created_at", { ascending: false })
+          .range(from, from + 999);
+        if (error) { failed = true; break; }
+        eventData.push(...(data || []));
+        if (!data || data.length < 1000) break;
+      }
+    }
+    eventData.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
 
-    if (error) {
-      setLoading(false);
-      return;
+    if (failed) {
+      toast.error("Could not load the full activity history. Please refresh.");
     }
 
     const merged = (eventData || []).map((ev: any) => {
