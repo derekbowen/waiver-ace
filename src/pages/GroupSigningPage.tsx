@@ -165,6 +165,18 @@ export default function GroupSigningPage() {
     }
   };
 
+  useEffect(() => {
+    if (loading || !templateContent || scrolledToEnd) return;
+    const check = () => {
+      const el = contentRef.current;
+      if (el && el.scrollHeight <= el.clientHeight + 60) setScrolledToEnd(true);
+    };
+    check();
+    const t = setTimeout(check, 300);
+    return () => clearTimeout(t);
+  }, [loading, templateContent, scrolledToEnd]);
+
+
   const handleSign = async () => {
     if (!fullName.trim() || !initials.trim() || !agreed) {
       toast.error("Please complete all required fields");
