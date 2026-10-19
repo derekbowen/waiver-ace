@@ -71,7 +71,9 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/login");
+    let appMode = false;
+    try { appMode = localStorage.getItem("rw_app_mode") === "1"; } catch { /* ignore */ }
+    navigate(appMode ? "/app" : "/login");
   };
 
   const isMoreActive = mobileMoreItems.some(
