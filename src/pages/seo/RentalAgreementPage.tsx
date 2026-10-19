@@ -95,7 +95,7 @@ export default function RentalAgreementPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="text-base">
-              <Link to="/signup">Start Free — No Monthly Fee <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/login?mode=signup">Start Free — No Monthly Fee <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="text-base bg-white/10 border-white/30 text-white hover:bg-white/20">
               <Link to="/p/vacation-rental-waiver">See the Companion Waiver</Link>

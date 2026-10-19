@@ -92,7 +92,7 @@ export default function BounceHouseWaiverPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="text-base">
-              <Link to="/signup">Get the Free Template <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/login?mode=signup">Get the Free Template <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="text-base bg-white/10 border-white/30 text-white hover:bg-white/20">
               <Link to="/waiver-templates/bounce-house-rental-waiver-template">View the Waiver Template</Link>
