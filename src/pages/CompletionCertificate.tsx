@@ -269,7 +269,7 @@ export default function CompletionCertificate() {
                       <div className="flex items-center justify-between gap-4">
                         <p className="text-sm font-medium">{ev.event_type}</p>
                         <p className="text-xs text-muted-foreground whitespace-nowrap font-mono">
-                          {format(new Date(ev.created_at), "yyyy-MM-dd HH:mm:ss")} UTC
+                          {new Date(ev.created_at).toISOString().replace("T", " ").slice(0, 19)} UTC
                         </p>
                       </div>
                       <div className="flex gap-4 text-xs text-muted-foreground mt-1">
@@ -295,24 +295,42 @@ export default function CompletionCertificate() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-3">
-            <p>
-              This document was executed electronically in compliance with the United States Electronic
-              Signatures in Global and National Commerce Act (ESIGN Act, 15 U.S.C. {"\u00A7"} 7001 et seq.)
-              and the Uniform Electronic Transactions Act (UETA).
-            </p>
-            <p>
-              The signer provided explicit consent to conduct this transaction electronically. The signer's
-              identity was authenticated via email delivery to <strong>{envelope.signer_email}</strong>, and
-              their intent to sign was confirmed through affirmative action (drawing a signature,
-              typing their full legal name and initials, and checking an electronic consent checkbox).
-            </p>
-            <p>
-              A complete audit trail of all events — including document creation, delivery, viewing, and
-              signing — has been maintained with UTC timestamps
-              {envelope.ip_address ? ", IP addresses" : ""}, and user agent strings. The signed document
-              content was captured at the moment of signing and can be independently verified against
-              the stored content snapshot.
-            </p>
+            {(() => {
+              const isSigned = envelope.status === "completed" || envelope.status === "signed";
+              const isKiosk = (envelope.payload as any)?.source === "kiosk";
+              if (!isSigned) {
+                return (
+                  <p>
+                    This waiver has <strong>not been signed</strong>. No electronic signature, consent, or
+                    signed content snapshot exists for this record yet. The audit trail below reflects only
+                    the events recorded so far.
+                  </p>
+                );
+              }
+              return (
+                <>
+                  <p>
+                    This document was signed electronically, intended to comply with the United States Electronic
+                    Signatures in Global and National Commerce Act (ESIGN Act, 15 U.S.C. {"\u00A7"} 7001 et seq.)
+                    and the Uniform Electronic Transactions Act (UETA).
+                  </p>
+                  <p>
+                    The signer consented to conduct this transaction electronically and confirmed their intent
+                    to sign through affirmative action (drawing a signature, typing their full legal name and
+                    initials, and checking an electronic consent checkbox).{" "}
+                    {isKiosk ? (
+                      <>The signer entered the email address <strong>{envelope.signer_email}</strong> on a self-service device; this address was not independently verified.</>
+                    ) : (
+                      <>The signing link was delivered to <strong>{envelope.signer_email}</strong>.</>
+                    )}
+                  </p>
+                  <p>
+                    The audit trail records events with UTC timestamps
+                    {envelope.ip_address ? ", IP addresses" : ""} and user agent strings where available.
+                  </p>
+                </>
+              );
+            })()}
             {envelope.pdf_hash && (
               <p>
                 The generated PDF has been hashed using SHA-256 for integrity verification. Any

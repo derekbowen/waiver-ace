@@ -90,8 +90,9 @@ export default function Envelopes() {
               disabled={filtered.length === 0}
               onClick={() => {
                 const header = "Signer Name,Signer Email,Status,Booking ID,Created At\n";
+                const q = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
                 const rows = filtered.map((e) =>
-                  `"${(e.signer_name || "").replace(/"/g, '""')}","${e.signer_email}","${e.status}","${e.booking_id || ""}","${format(new Date(e.created_at), "yyyy-MM-dd HH:mm")}"`
+                  [e.signer_name, e.signer_email, e.status, e.booking_id, format(new Date(e.created_at), "yyyy-MM-dd HH:mm")].map(q).join(",")
                 ).join("\n");
                 const blob = new Blob([header + rows], { type: "text/csv" });
                 const url = URL.createObjectURL(blob);
