@@ -27,6 +27,8 @@ export default function Privacy() {
               <li><strong>Wallet and credit data:</strong> Credit purchase history, transaction records, payment method identifiers (stored securely via Stripe), auto-recharge preferences, and credit balance information.</li>
               <li><strong>Marketplace integration data:</strong> When you connect a marketplace (e.g., ShareTribe), we receive customer information from booking webhooks including customer names, email addresses, booking IDs, listing details, and booking dates as transmitted by the marketplace platform.</li>
               <li><strong>Customer portal lookups:</strong> When customers use the /my-waivers portal, we process the email address they enter to look up their waiver status. We do not store portal access logs beyond standard server logs.</li>
+              <li><strong>Signer photos (optional):</strong> If an operator enables photo verification, signers are asked to take a selfie during signing. Photos are captured only after the signer explicitly consents, are stored securely, and are used solely to verify the signer's identity for that waiver. We do not use photos for advertising, profiling, or biometric identification, and we never sell them.</li>
+              <li><strong>Check-in passes:</strong> Signed waivers may generate a digital check-in pass that can be saved to Apple Wallet or Google Wallet. Saving a pass is optional and initiated by the signer.</li>
             </ul>
           </section>
 
@@ -68,8 +70,9 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">8. Your Rights</h2>
+            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">8. Your Rights &amp; Account Deletion</h2>
             <p>Depending on your jurisdiction, you may have the right to access, correct, delete, or export your personal data. Contact us to exercise these rights.</p>
+            <p className="mt-3"><strong>Deleting your account.</strong> You can permanently delete your account and all associated data at any time from Settings &rarr; Danger Zone inside the app or on the website. Deletion is immediate and cannot be undone. You may also request deletion by emailing us.</p>
           </section>
 
           <section>
