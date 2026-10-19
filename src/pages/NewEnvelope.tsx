@@ -199,9 +199,8 @@ export default function NewEnvelope() {
               <Select value={templateId} onValueChange={(v) => {
                 setTemplateId(v);
                 const tmpl = templates.find((t: any) => t.id === v);
-                if (tmpl?.default_expiration_days) {
-                  setExpiresInDays(String(tmpl.default_expiration_days));
-                }
+                // Always reset to this template's default (7 days when it has none).
+                setExpiresInDays(tmpl?.default_expiration_days ? String(tmpl.default_expiration_days) : "7");
               }}>
                 <SelectTrigger><SelectValue placeholder="Select a template" /></SelectTrigger>
                 <SelectContent>
@@ -331,6 +330,9 @@ export default function NewEnvelope() {
                     <SelectItem value="7">7 days</SelectItem>
                     <SelectItem value="14">14 days</SelectItem>
                     <SelectItem value="30">30 days</SelectItem>
+                    {!["3", "7", "14", "30", "none"].includes(expiresInDays) && (
+                      <SelectItem value={expiresInDays}>{expiresInDays} days (template default)</SelectItem>
+                    )}
                     <SelectItem value="none">No expiration</SelectItem>
                   </SelectContent>
                 </Select>
