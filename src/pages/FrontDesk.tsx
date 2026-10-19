@@ -40,7 +40,7 @@ export default function FrontDesk() {
           <CardContent className="text-sm text-muted-foreground space-y-1">
             <p>1. Open this page on the tablet and pick a waiver below.</p>
             <p>2. On iPad, turn on Guided Access (Settings → Accessibility) so guests can't leave the screen.</p>
-            <p>3. Each signed waiver costs 1 credit, lands in Signed Waivers, and the guest gets an email copy.</p>
+            <p>3. Each guest session uses 1 credit when it starts. Signed waivers land in Signed Waivers, and the guest gets an email copy.</p>
             <p>4. Guests' details are never remembered between signers.</p>
           </CardContent>
         </Card>

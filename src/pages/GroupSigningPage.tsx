@@ -125,17 +125,14 @@ export default function GroupSigningPage() {
 
       const content = env.template_content?.body || "";
       const payload = env.payload as Record<string, any> || {};
-      let rendered = content;
-      Object.entries(payload).forEach(([key, value]) => {
-        rendered = rendered.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), String(value || ""));
-      });
-      rendered = rendered.replace(/\{\{customer_name\}\}/g, "");
       const effectiveDate = payload.rental_date
         ? new Date(payload.rental_date + "T00:00:00").toLocaleDateString()
         : new Date().toLocaleDateString();
-      rendered = rendered.replace(/\{\{date\}\}/g, effectiveDate);
-      rendered = rendered.replace(/\{\{rental_date\}\}/g, effectiveDate);
-      setTemplateContent(rendered);
+      setTemplateContent(renderWaiverTemplate(content, payload, {
+        customer_name: "",
+        date: effectiveDate,
+        rental_date: effectiveDate,
+      }));
 
       setSignatures(Array.isArray(env.signatures) ? env.signatures : []);
 
