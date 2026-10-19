@@ -26,7 +26,7 @@ const faqItems = [
   },
   {
     question: "What does the integration cost?",
-    answer: "Nothing extra. Integrations are included — you pay 6¢ per signed waiver with no monthly fee, and the first 250 signatures are free.",
+    answer: "Nothing extra. Integrations are included — you pay 6¢ per signed waiver with no monthly fee, and the first 100 signatures are free.",
   },
 ];
 
@@ -106,7 +106,7 @@ export default function IntegrationsHubPage() {
 
       <SeoCta
         headline="Connect your booking software tonight"
-        subtext="Setup takes about 15 minutes. 250 free signatures, then 6¢ each with no monthly fee."
+        subtext="Setup takes about 15 minutes. 100 free signatures, then 6¢ each with no monthly fee."
       />
 
       <InternalLinks currentSlug="integrations" />

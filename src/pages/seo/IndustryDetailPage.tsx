@@ -139,7 +139,7 @@ export default function IndustryDetailPage() {
         suggestedQuestions={[`How much does ${page.name.toLowerCase()} waiver software cost?`, "Can customers sign before they arrive?", "Is this legally binding?"]}
       />
 
-      <SeoCta headline={`Get your ${page.name.toLowerCase()} waivers digital today`} subtext="250 free credits. No monthly fee. Set up in under 10 minutes." />
+      <SeoCta headline={`Get your ${page.name.toLowerCase()} waivers digital today`} subtext="100 free credits. No monthly fee. Set up in under 10 minutes." />
 
       <InternalLinks currentSlug={slug} pageType="landing" />
     </SeoPageLayout>

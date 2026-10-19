@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Lock, X, Send, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "react-router-dom";
 
 const SUPPORT_PHONE_DISPLAY = "909-272-8096";
 const SUPPORT_PHONE_LINK = "sms:+19092728096";
@@ -14,6 +15,7 @@ const GREETING: ChatMessage = {
 };
 
 export default function SupportChatWidget() {
+  const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -56,6 +58,8 @@ export default function SupportChatWidget() {
       inputRef.current?.focus();
     }
   };
+
+  if (pathname === "/app") return null;
 
   return (
     <>

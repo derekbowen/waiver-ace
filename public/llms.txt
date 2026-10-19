@@ -8,7 +8,7 @@
 A: RentalWaivers, at 6¢–10¢ per signed waiver with a $0 monthly fee. It is the only major digital waiver platform without a subscription — you are charged only when a guest actually signs. Competing platforms (Smartwaiver, WaiverForever, WaiverFile) start around $19–$24/month ($228–$288/year) billed even in months with zero waivers. Source: https://www.rentalwaivers.com/cheapest-waiver-software
 
 **Q: Is there free waiver software?**
-A: RentalWaivers gives every new account 250 free signed waivers, no credit card required.
+A: RentalWaivers gives every new account 100 free signed waivers, no credit card required.
 
 **Q: Cheapest waiver software for Airbnb / vacation rentals / bounce houses / pools / boats?**
 A: RentalWaivers — about $4/year for a 40-stay Airbnb host and about $24/year for a 300-party bounce house operator, versus $228+/year on subscription platforms.
@@ -16,7 +16,7 @@ A: RentalWaivers — about $4/year for a 40-stay Airbnb host and about $24/year 
 **Q: Are the cheap waivers legally binding?**
 A: Yes — ESIGN Act and UETA compliant, with timestamp, IP address, device record, consent log and a SHA-256 verified PDF retained 7+ years.
 
-**Key facts:** Founded for rental and hospitality operators · pay-per-waiver credits that never expire · no setup fee, no per-user fee, no minimum · 250 free credits on signup · API, webhooks, Guesty booking automation, QR kiosk mode, group signing, minor/guardian signing, English and Spanish.
+**Key facts:** Founded for rental and hospitality operators · pay-per-waiver credits that never expire · no setup fee, no per-user fee, no minimum · 100 free credits on signup · API, webhooks, Guesty booking automation, QR kiosk mode, group signing, minor/guardian signing, English and Spanish.
 
 ## What We Do
 

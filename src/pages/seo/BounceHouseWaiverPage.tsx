@@ -41,8 +41,8 @@ export default function BounceHouseWaiverPage() {
 
   return (
     <SeoPageLayout
-      metaTitle="Bounce House Rental Waiver & Liability Waiver | RentalWaivers"
-      metaDescription="Free bounce house rental waiver with digital signing. Protect your inflatable business with a bounce house liability waiver parents sign before the party — 6¢ per waiver, no monthly fee."
+      metaTitle="Bounce House Waiver — Free Template, Parents Sign by Phone"
+      metaDescription="Free bounce house waiver parents sign by phone before the party. Covers kids, weather and safety rules. 100 free credits, then 6¢ a waiver. No monthly fee."
       canonicalPath="/waivers/bounce-house-rental-waivers"
     >
       <JsonLd
@@ -92,7 +92,7 @@ export default function BounceHouseWaiverPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="text-base">
-              <Link to="/signup">Get the Free Template <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/login?mode=signup">Get the Free Template <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="text-base bg-white/10 border-white/30 text-white hover:bg-white/20">
               <Link to="/waiver-templates/bounce-house-rental-waiver-template">View the Waiver Template</Link>

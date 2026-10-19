@@ -171,7 +171,7 @@ export default function RentalWaiverSoftwarePage() {
 
       <SeoCta
         headline="Get your rental waiver live today"
-        subtext="First 250 waivers free on signup. No credit card. No monthly fee."
+        subtext="First 100 waivers free on signup. No credit card. No monthly fee."
       />
           <InternalLinks />
 </SeoPageLayout>

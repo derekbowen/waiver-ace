@@ -108,8 +108,8 @@ export default function QrCodeWaiversPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="text-base">
-              <Link to="/signup">
-                Get Your QR Code — 250 Free Credits <ArrowRight className="ml-2 h-4 w-4" />
+              <Link to="/login?mode=signup">
+                Get Your QR Code — 100 Free Credits <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="text-base">
@@ -233,14 +233,14 @@ export default function QrCodeWaiversPage() {
 
       <SeoSection title="What It Costs">
         <p className="text-muted-foreground">
-          There is no subscription. New accounts start with 250 free credits. Generating a printable
+          There is no subscription. New accounts start with 100 free credits. Generating a printable
           QR sign is a one-time 5 credits, and each waiver actually signed through it costs the normal
           per-signature credit — about 6 cents. Storing, viewing, downloading and printing your signed
           waivers is always free and the records never expire.
         </p>
         <div className="mt-6">
           <Button asChild size="lg">
-            <Link to="/signup">
+            <Link to="/login?mode=signup">
               Start Free <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

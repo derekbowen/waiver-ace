@@ -93,7 +93,7 @@ export default function WaiverTemplatePage() {
             Stop printing this template. Use it digitally with RentalWaivers — customers sign on their phone in 60 seconds, and every signature includes timestamps, IP addresses, and a tamper-proof audit trail.
           </p>
           <Link to="/login"><Button size="lg" className="gap-2">Use This Template Online <ArrowRight className="h-4 w-4" /></Button></Link>
-          <p className="text-xs text-muted-foreground">250 free credits · No credit card · Starting at 6¢/waiver</p>
+          <p className="text-xs text-muted-foreground">100 free credits · No credit card · Starting at 6¢/waiver</p>
         </div>
       </SeoSection>
 

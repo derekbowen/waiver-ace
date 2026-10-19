@@ -86,11 +86,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => authSub.unsubscribe();
   }, [checkWallet]);
 
-  // Auto-refresh wallet every 60s
+  // Refresh wallet when the tab regains focus (max once per 60s) and every 5 min while visible
   useEffect(() => {
     if (!user) return;
-    const interval = setInterval(checkWallet, 60000);
-    return () => clearInterval(interval);
+    let last = Date.now();
+    const refresh = () => {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - last < 60000) return;
+      last = Date.now();
+      checkWallet();
+    };
+    const interval = setInterval(refresh, 300000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", refresh);
+    };
   }, [user, checkWallet]);
 
   const fetchProfile = async (userId: string) => {
@@ -105,6 +116,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       import("@/lib/page-tracking").then(({ attributeSignupSource }) =>
         attributeSignupSource(userId, (data as any)?.signup_source_path)
       );
+      // Count brand-new accounts as a Google Ads signup (once, consent-aware)
+      supabase.auth.getSession().then(({ data: s }) => {
+        const createdAt = s.session?.user?.created_at;
+        import("@/lib/google-ads").then(({ reportSignupConversion }) =>
+          reportSignupConversion(userId, createdAt)
+        );
+      });
     }
   };
 

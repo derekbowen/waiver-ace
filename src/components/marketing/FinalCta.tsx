@@ -12,7 +12,7 @@ export function FinalCta() {
             Start collecting guest waivers today.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-ink-inverse/75">
-            250 free signatures, no credit card, and no monthly subscription. Send your first waiver in under two
+            100 free signatures, no credit card, and no monthly subscription. Send your first waiver in under two
             minutes.
           </p>
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">

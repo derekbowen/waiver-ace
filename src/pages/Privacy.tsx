@@ -59,6 +59,7 @@ export default function Privacy() {
           <section>
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">6. Cookies &amp; Analytics</h2>
             <p>We use essential cookies for authentication and session management. We may use analytics tools to understand usage patterns and improve the Service.</p>
+            <p className="mt-3"><strong>Advertising measurement.</strong> When you arrive from one of our ads, our website uses the Google Ads tag (Google LLC) to measure whether you created an account. This shares an advertising cookie, your browser and device details, and the fact that a signup happened with Google, for ad measurement and to improve which ads are shown. In the EEA, UK, Switzerland and Canada we only do this if you accept in our cookie banner; elsewhere it is on by default. You can change or withdraw your choice anytime with "Cookie settings" in the site footer. Learn how Google uses data at <a href="https://business.safety.google/privacy/" target="_blank" rel="noopener noreferrer" className="underline">business.safety.google/privacy</a>.</p>
           </section>
 
           <section>

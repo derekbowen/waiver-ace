@@ -98,7 +98,7 @@ export const agreementTemplatePages: WaiverTemplatePage[] = [
       {
         question: "Is this rental agreement template free?",
         answer:
-          "Yes. Download and customize it for free. If you want renters to sign it online with a legal audit trail, RentalWaivers costs about 6¢ per signature with no monthly subscription, and your first 250 signatures are free.",
+          "Yes. Download and customize it for free. If you want renters to sign it online with a legal audit trail, RentalWaivers costs about 6¢ per signature with no monthly subscription, and your first 100 signatures are free.",
       },
       {
         question: "What's the difference between a rental agreement and a lease agreement?",

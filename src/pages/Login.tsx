@@ -3,6 +3,7 @@ import { useNoindex } from "@/hooks/useNoindex";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,9 @@ import { toast } from "sonner";
 
 export default function Login() {
   useNoindex();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(
+    () => new URLSearchParams(window.location.search).get("mode") === "signup"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -29,6 +32,12 @@ export default function Login() {
   const rawNext = searchParams.get("next");
   const nextPath = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : null;
   const returnUrl = nextPath ? window.location.origin + nextPath : window.location.origin;
+
+  // Already signed in (e.g. returning from Google/Apple): skip the form.
+  const { user, loading: authLoading } = useAuth();
+  useEffect(() => {
+    if (!authLoading && user) navigate(nextPath ?? "/dashboard", { replace: true });
+  }, [authLoading, user, nextPath, navigate]);
 
   // Capture referral code from URL (?ref=CODE) and persist in sessionStorage
   useEffect(() => {

@@ -2,7 +2,7 @@
 // Public: GET ?code=WVR-1234-AB  (pass codes are unguessable and already public via /pass/:code)
 import forge from "npm:node-forge@1.3.1";
 import { zipSync, strToU8 } from "npm:fflate@0.8.2";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

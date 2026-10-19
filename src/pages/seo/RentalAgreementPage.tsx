@@ -95,7 +95,7 @@ export default function RentalAgreementPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="text-base">
-              <Link to="/signup">Start Free — No Monthly Fee <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/login?mode=signup">Start Free — No Monthly Fee <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="text-base bg-white/10 border-white/30 text-white hover:bg-white/20">
               <Link to="/p/vacation-rental-waiver">See the Companion Waiver</Link>
@@ -184,7 +184,7 @@ export default function RentalAgreementPage() {
             {[
               { value: "6¢", label: "Per signed document" },
               { value: "$0", label: "Monthly fee, ever" },
-              { value: "250", label: "Free signatures to start" },
+              { value: "100", label: "Free signatures to start" },
             ].map((s) => (
               <div key={s.label}>
                 <p className="font-heading text-2xl md:text-3xl font-bold text-foreground">{s.value}</p>
@@ -203,7 +203,7 @@ export default function RentalAgreementPage() {
 
       <SeoCta
         headline="Get your rental agreement signed before the next check-in"
-        subtext="Upload your agreement, pair it with a waiver, and automate signing at booking. 6¢ per signature, no monthly fee, 250 free credits to start."
+        subtext="Upload your agreement, pair it with a waiver, and automate signing at booking. 6¢ per signature, no monthly fee, 100 free credits to start."
       />
 
       <InternalLinks currentSlug="rental-agreement" />

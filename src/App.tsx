@@ -14,6 +14,7 @@ import { lazy, Suspense } from "react";
 // Public / SEO pages — static imports so crawlers index them
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import MobileAppEntry from "./pages/MobileAppEntry";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import SigningPage from "./pages/SigningPage";
@@ -95,6 +96,7 @@ const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { trackPageView } from "@/lib/page-tracking";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -128,6 +130,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <PageViewTracker />
+        <CookieConsentBanner />
         <I18nProvider>
         <AuthProvider>
           <ErrorBoundary fallbackRoute="/dashboard">
@@ -135,6 +138,7 @@ const App = () => (
           <Routes>
             {/* Public / SEO — statically loaded for crawlers */}
             <Route path="/" element={<Landing />} />
+            <Route path="/app" element={<MobileAppEntry />} />
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />

@@ -124,7 +124,7 @@ export default function IntegrationIndustryPage() {
 
       <SeoCta
         headline={`Connect ${p.name} and cover every ${i.name.toLowerCase().replace(/s$/, "")} booking`}
-        subtext="250 free signatures, then 6¢ each. No monthly fee — you pay nothing in your off-season."
+        subtext="100 free signatures, then 6¢ each. No monthly fee — you pay nothing in your off-season."
       />
 
       <SeoSection title={`Other ${p.name} Waiver Guides`} muted>

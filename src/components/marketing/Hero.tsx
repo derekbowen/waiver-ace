@@ -61,7 +61,7 @@ export function Hero() {
           </div>
 
           <p className="mt-6 text-sm text-ink-subtle">
-            250 free signatures • No credit card • No monthly subscription
+            100 free signatures • No credit card • No monthly subscription
           </p>
         </div>
 

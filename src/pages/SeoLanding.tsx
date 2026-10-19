@@ -210,6 +210,30 @@ export default function SeoLanding() {
         </div>
       </section>
 
+      {page.slug === "event-rental-waivers" && (
+        <section className="py-16 container max-w-3xl">
+          <h2 className="font-heading text-2xl md:text-3xl font-bold mb-4">
+            Working with outside equipment vendors at your event
+          </h2>
+          <div className="space-y-4 text-muted-foreground leading-relaxed">
+            <p>
+              Many events bring in specialty vendors — inflatables, staging, or carnival rides — alongside your own rentals. Before the event, confirm who the actual equipment operator is. A booking agent or planner is not always the company that owns, sets up, and runs the equipment, and that company's name should appear on the paperwork guests sign.
+            </p>
+            <p>
+              Ask each operator for current certificates of insurance and any inspection or permit records your state or venue requires. Then coordinate event requirements in writing: setup and teardown windows, power, ground surface, staffing, rider rules, and who collects guest waivers. Organizers looking for ride companies can browse carnival ride operators on{" "}
+              <a href="https://carnivalriderental.us/" target="_blank" rel="noopener" className="text-primary underline underline-offset-2">
+                Carnival Ride Rental
+              </a>
+              , then verify each operator's documents directly.
+            </p>
+            <p>
+              Rental Waivers handles the signed-waiver side — collecting acknowledgments from organizers and guests before the event. A signed waiver does not replace insurance, equipment inspections, or any permit or regulatory obligation that applies to your event.
+            </p>
+          </div>
+        </section>
+      )}
+
+
       {/* Pricing Highlight */}
       <section className="py-16 container max-w-3xl text-center">
         <h2 className="font-heading text-2xl md:text-3xl font-bold mb-4">
