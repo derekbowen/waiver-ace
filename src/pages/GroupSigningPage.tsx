@@ -160,10 +160,22 @@ export default function GroupSigningPage() {
   const handleScroll = () => {
     if (!contentRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
-    if (scrollTop + clientHeight >= scrollHeight - 20) {
+    if (scrollTop + clientHeight >= scrollHeight - 60) {
       setScrolledToEnd(true);
     }
   };
+
+  useEffect(() => {
+    if (loading || !templateContent || scrolledToEnd) return;
+    const check = () => {
+      const el = contentRef.current;
+      if (el && el.scrollHeight <= el.clientHeight + 60) setScrolledToEnd(true);
+    };
+    check();
+    const t = setTimeout(check, 300);
+    return () => clearTimeout(t);
+  }, [loading, templateContent, scrolledToEnd]);
+
 
   const handleSign = async () => {
     if (!fullName.trim() || !initials.trim() || !agreed) {
@@ -397,12 +409,36 @@ export default function GroupSigningPage() {
                     .map((m) => (m.age.trim() ? `${m.name.trim()} (age ${m.age.trim()})` : m.name.trim()))
                     .join(", ")
                 )}
-
+                <div
+                  aria-hidden
+                  style={{ height: 1 }}
+                  ref={(node) => {
+                    if (!node || scrolledToEnd || typeof IntersectionObserver === "undefined") return;
+                    const io = new IntersectionObserver(
+                      (entries) => {
+                        if (entries.some((e) => e.isIntersecting)) {
+                          setScrolledToEnd(true);
+                          io.disconnect();
+                        }
+                      },
+                      { root: contentRef.current, threshold: 0 },
+                    );
+                    io.observe(node);
+                  }}
+                />
               </div>
               {!scrolledToEnd && (
-                <div className="border-t px-6 py-3 text-center text-xs text-muted-foreground bg-accent/50">
-                  ↓ Scroll to the end to continue
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = contentRef.current;
+                    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+                    setScrolledToEnd(true);
+                  }}
+                  className="w-full min-h-[44px] border-t px-6 py-3 text-center text-xs text-muted-foreground bg-accent/50"
+                >
+                  ↓ Scroll to the end to continue (tap to jump)
+                </button>
               )}
             </CardContent>
           </Card>
