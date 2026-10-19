@@ -319,7 +319,7 @@ var account_summary_default = defineTool5({
 });
 
 // src/lib/mcp/index.ts
-var projectRef = "llsgwfzoutdpgrgtcbif";
+var projectRef = "sibwbzhpyiwmhigskgtr";
 var mcp_default = defineMcp({
   name: "rental-waivers",
   title: "Rental waivers",
