@@ -192,7 +192,8 @@ export default function BulkSend() {
     toast.success(`${successCount}/${emails.length} waivers sent`);
   };
 
-  const emailCount = parseEmails().length;
+  const parsed = parseRecipients();
+  const emailCount = parsed.valid.length;
 
   return (
     <DashboardLayout>
@@ -249,7 +250,10 @@ export default function BulkSend() {
                 className="min-h-[150px] font-mono text-sm"
               />
               <p className="text-xs text-muted-foreground mt-2">
-                {emailCount} email{emailCount !== 1 ? "s" : ""} detected · {credits} credits remaining
+                {emailCount} valid email{emailCount !== 1 ? "s" : ""}
+                {parsed.duplicates > 0 && ` · ${parsed.duplicates} duplicate${parsed.duplicates === 1 ? "" : "s"} removed`}
+                {parsed.invalid.length > 0 && <span className="text-destructive"> · {parsed.invalid.length} invalid: {parsed.invalid.slice(0, 3).join(", ")}</span>}
+                {" "}· {credits} credits remaining
               </p>
             </CardContent>
           </Card>
@@ -279,7 +283,7 @@ export default function BulkSend() {
             <Button variant="outline" onClick={() => navigate("/envelopes")}>Cancel</Button>
             <Button
               onClick={handleBulkSend}
-              disabled={sending || isPaused || emailCount === 0 || !templateId}
+              disabled={sending || isPaused || emailCount === 0 || parsed.invalid.length > 0 || !templateId}
               className="gap-2"
             >
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
