@@ -383,7 +383,7 @@ export default function SigningPage() {
     );
   }
 
-  const canSubmit = agreed && fullName && initials && signatureDataUrl && (!requirePhoto || !!photoBlob);
+  const canSubmit = scrolledToEnd && (!requireVideo || videoWatched) && agreed && fullName && initials && signatureDataUrl && (!requirePhoto || !!photoBlob);
 
   return (
     <div className="min-h-screen bg-background">
@@ -466,7 +466,7 @@ export default function SigningPage() {
             <VideoEmbed url={videoUrl} onWatched={() => setVideoWatched(true)} />
           )}
 
-          <div className={`space-y-6 transition-opacity ${scrolledToEnd && (!requireVideo || videoWatched) ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
+          <div {...({ inert: scrolledToEnd && (!requireVideo || videoWatched) ? undefined : "" } as any)} aria-disabled={!(scrolledToEnd && (!requireVideo || videoWatched))} className={`space-y-6 transition-opacity ${scrolledToEnd && (!requireVideo || videoWatched) ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
