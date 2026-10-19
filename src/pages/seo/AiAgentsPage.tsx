@@ -11,6 +11,7 @@ const actions = [
   { icon: FileText, title: "List templates", text: "Active templates by default; optionally include inactive templates." },
   { icon: List, title: "List waivers", text: "Filter by status or signer email; return up to 100 results, newest first." },
   { icon: Search, title: "Get waiver details", text: "Use a waiver ID to see status, signer details, and recent activity." },
+  { icon: FileText, title: "Build a template", text: "Describe your activity and the AI writes and saves a ready-to-send waiver template. Free — no credits used." },
   { icon: Send, title: "Send a waiver", text: "Requires a template ID and signer email. Optional: signer name, booking reference, rental date, and expiration days." },
 ];
 
@@ -42,7 +43,7 @@ export default function AiAgentsPage() {
   return (
     <SeoPageLayout
       metaTitle="AI Agent Waiver Integration (MCP) | RentalWaivers"
-      metaDescription="Connect Claude, ChatGPT or any MCP-compatible AI agent to RentalWaivers. Send waivers, check signing status, list templates and see credits — by just asking."
+      metaDescription="Connect Claude, ChatGPT or any MCP-compatible AI agent to RentalWaivers. Send waivers, check signing status, build waiver templates, list templates and see credits — by just asking."
       canonicalPath="/ai-agents"
     >
       <JsonLd

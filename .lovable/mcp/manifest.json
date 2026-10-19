@@ -56,6 +56,57 @@
         "outputSchema": null
       },
       {
+        "name": "create_template",
+        "title": "Create a waiver template",
+        "description": "Create a new waiver template from the full waiver text. Placeholders like {{signer_name}} or {{business_name}} are filled in when sent. Free — no credits used. Returns the template id for send_waiver.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Template name, e.g. 'Kayak Rental Waiver'."
+            },
+            "body": {
+              "type": "string",
+              "minLength": 20,
+              "description": "Full waiver text the guest reads and signs."
+            },
+            "description": {
+              "type": "string",
+              "description": "Short internal description."
+            },
+            "require_photo": {
+              "type": "boolean",
+              "description": "Require a signer photo (+1 credit per waiver)."
+            },
+            "allow_minors": {
+              "type": "boolean",
+              "description": "Let signers add minors/dependents (default false)."
+            },
+            "default_expiration_days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "Default days before an unsigned waiver expires."
+            }
+          },
+          "required": [
+            "name",
+            "body"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
         "name": "send_waiver",
         "title": "Send a waiver",
         "description": "Create a waiver from a template and email it to the signer. Deducts credits from the account, the same as sending from the app.",
