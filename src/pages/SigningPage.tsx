@@ -61,15 +61,6 @@ export default function SigningPage() {
   const [scrolledToEnd, setScrolledToEnd] = useState(false);
   const [fullName, setFullName] = useState("");
   const [initials, setInitials] = useState("");
-  // Re-render the document as the guest types so it always names the actual signer.
-  const templateContent = useMemo(() => {
-    if (!templateSource) return "";
-    return renderWaiverTemplate(templateSource.content, templateSource.payload, {
-      customer_name: fullName.trim(),
-      date: templateSource.date,
-      rental_date: templateSource.date,
-    });
-  }, [templateSource, fullName]);
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
@@ -83,6 +74,16 @@ export default function SigningPage() {
   const removeMinor = (i: number) => setMinors((m) => m.filter((_, idx) => idx !== i));
   const updateMinor = (i: number, field: "name" | "age", value: string) =>
     setMinors((m) => m.map((row, idx) => (idx === i ? { ...row, [field]: value } : row)));
+  // Re-render the document as the guest types so it always names the actual signer.
+  const templateContent = useMemo(() => {
+    if (!templateSource) return "";
+    return renderWaiverTemplate(templateSource.content, templateSource.payload, {
+      customer_name: fullName.trim(),
+      date: templateSource.date,
+      rental_date: templateSource.date,
+      minor_names: minors.map((m) => m.name.trim()).filter(Boolean).join(", ") || "None",
+    });
+  }, [templateSource, fullName, minors]);
   const [submitting, setSubmitting] = useState(false);
   const [passCode, setPassCode] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -210,6 +211,10 @@ export default function SigningPage() {
       .filter((m) => m.name.length > 0);
     if (minors.some((m) => !m.name.trim())) {
       toast.error("Please enter a name for each minor, or remove the empty row");
+      return;
+    }
+    if (cleanMinors.some((m) => m.age && (!/^\d{1,2}$/.test(m.age) || Number(m.age) > 17))) {
+      toast.error("Each minor's age must be a number from 0 to 17");
       return;
     }
     if (cleanMinors.length > 0 && !guardianAttested) {
@@ -422,13 +427,7 @@ export default function SigningPage() {
                 onScroll={handleScroll}
                 className="max-h-[400px] overflow-y-auto p-6 text-sm leading-relaxed whitespace-pre-wrap"
               >
-                {templateContent.replace(
-                  /\{\{minor_names\}\}/g,
-                  minors
-                    .map((m) => m.name.trim())
-                    .filter(Boolean)
-                    .join(", ") || "None",
-                )}
+                {templateContent}
                 <div
                   aria-hidden
                   style={{ height: 1 }}
@@ -534,7 +533,7 @@ export default function SigningPage() {
                           />
                           <Input
                             value={m.age}
-                            onChange={(e) => updateMinor(i, "age", e.target.value)}
+                            onChange={(e) => updateMinor(i, "age", e.target.value.replace(/\D/g, ""))}
                             placeholder="Age"
                             inputMode="numeric"
                             maxLength={2}

@@ -131,6 +131,8 @@ export default function GroupSigningPage() {
         : new Date().toLocaleDateString();
       setTemplateContent(renderWaiverTemplate(content, payload, {
         customer_name: "",
+        // Kept as a slot; filled with the live list of minors when displayed.
+        minor_names: "{{minor_names}}",
         date: effectiveDate,
         rental_date: effectiveDate,
       }));
