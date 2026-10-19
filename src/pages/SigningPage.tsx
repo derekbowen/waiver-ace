@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { renderWaiverTemplate } from "@/lib/renderWaiver";
 import { useNoindex } from "@/hooks/useNoindex";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
