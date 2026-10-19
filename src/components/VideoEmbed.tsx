@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, CheckCircle } from "lucide-react";
@@ -8,7 +8,7 @@ interface VideoEmbedProps {
   onWatched: () => void;
 }
 
-function getEmbedUrl(url: string): string | null {
+export function getEmbedUrl(url: string): string | null {
   // YouTube: various formats
   const ytMatch = url.match(
     /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
@@ -26,11 +26,17 @@ export function VideoEmbed({ url, onWatched }: VideoEmbedProps) {
   const [watched, setWatched] = useState(false);
   const embedUrl = getEmbedUrl(url);
 
+  // Never trap a guest behind a broken video link: allow signing to continue.
+  useEffect(() => {
+    if (!embedUrl) onWatched();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [embedUrl]);
+
   if (!embedUrl) {
     return (
       <Card className="mb-6">
         <CardContent className="py-6 text-center text-sm text-muted-foreground">
-          <p>Unable to load video. Please contact the waiver sender.</p>
+          <p>The safety video could not be loaded. You can continue reading and signing below.</p>
         </CardContent>
       </Card>
     );
