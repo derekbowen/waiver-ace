@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { renderWaiverTemplate } from "@/lib/renderWaiver";
 import { useNoindex } from "@/hooks/useNoindex";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
@@ -51,7 +51,7 @@ export default function SigningPage() {
   const frontDeskReturn = rawReturn && rawReturn.startsWith("/waiver/") ? rawReturn : null;
   const [envelope, setEnvelope] = useState<any>(null);
   const [recognizedSigner] = useState(() => getRecognizedSigner());
-  const [templateContent, setTemplateContent] = useState("");
+  const [templateSource, setTemplateSource] = useState<{ content: string; payload: Record<string, any>; date: string } | null>(null);
   const [requirePhoto, setRequirePhoto] = useState(false);
   const [requireVideo, setRequireVideo] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -61,6 +61,15 @@ export default function SigningPage() {
   const [scrolledToEnd, setScrolledToEnd] = useState(false);
   const [fullName, setFullName] = useState("");
   const [initials, setInitials] = useState("");
+  // Re-render the document as the guest types so it always names the actual signer.
+  const templateContent = useMemo(() => {
+    if (!templateSource) return "";
+    return renderWaiverTemplate(templateSource.content, templateSource.payload, {
+      customer_name: fullName.trim(),
+      date: templateSource.date,
+      rental_date: templateSource.date,
+    });
+  }, [templateSource, fullName]);
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
@@ -113,12 +122,7 @@ export default function SigningPage() {
       const effectiveDate = payload.rental_date
         ? new Date(payload.rental_date + "T00:00:00").toLocaleDateString()
         : new Date().toLocaleDateString();
-      const isPlaceholderName = env.signer_name === "Kiosk Guest";
-      setTemplateContent(renderWaiverTemplate(content, payload, {
-        customer_name: isPlaceholderName ? "" : env.signer_name,
-        date: effectiveDate,
-        rental_date: effectiveDate,
-      }));
+      setTemplateSource({ content, payload, date: effectiveDate });
 
       if (env.status === "sent") {
         await supabase.rpc("view_envelope", {
@@ -135,7 +139,7 @@ export default function SigningPage() {
 
       // Prefill from the booking details the envelope was created with
       // (e.g. the guest name that came in from Guesty).
-      if (unsigned && env.signer_name) {
+      if (unsigned && env.signer_name && env.signer_name !== "Kiosk Guest") {
         const name = String(env.signer_name).trim();
         setFullName(name);
         const derived = name
