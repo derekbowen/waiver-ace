@@ -12,6 +12,7 @@ import { HowItWorks } from "@/components/marketing/HowItWorks";
 import { UseCases } from "@/components/marketing/UseCases";
 import { GuestyPreview } from "@/components/marketing/GuestyPreview";
 import { Capabilities } from "@/components/marketing/Capabilities";
+import { AgentSection } from "@/components/marketing/AgentSection";
 import { PricingSection } from "@/components/marketing/PricingSection";
 import { SecuritySection } from "@/components/marketing/SecuritySection";
 import { DirectorySection } from "@/components/marketing/DirectorySection";
@@ -43,6 +44,7 @@ export default function Landing() {
         <UseCases />
         <GuestyPreview />
         <Capabilities />
+        <AgentSection />
         <PricingSection />
         <SecuritySection />
         <DirectorySection />
