@@ -46,7 +46,8 @@ export default function Privacy() {
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">4. Data Sharing</h2>
             <p>We do not sell your personal information. We may share data with:</p>
             <ul className="list-disc pl-6 mt-2 space-y-1">
-              <li><strong>Stripe:</strong> Payment processing for credit purchases and auto-recharge. Stripe receives payment card details directly; we store only Stripe customer IDs and payment method identifiers.</li>
+              <li><strong>Stripe:</strong> Payment processing for credit purchases and auto-recharge on our website. Stripe receives payment card details directly; we store only Stripe customer IDs and payment method identifiers. Purchases are not offered inside the iOS or Android apps.</li>
+              <li><strong>Apple and Google:</strong> If you choose to save a check-in pass to Apple Wallet or Google Wallet, the pass details are delivered to your device through those services.</li>
               <li><strong>Resend:</strong> Email delivery service for sending waiver signing requests and notifications.</li>
               <li><strong>Connected marketplaces:</strong> If you use our marketplace integration, waiver status information may be returned to the marketplace via our status API when they query using their API key.</li>
               <li>As required by law or to protect our rights.</li>
