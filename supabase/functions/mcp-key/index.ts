@@ -2,7 +2,10 @@
 // (Settings -> Agent access). Accepts a static `Authorization: Bearer rwa_...`
 // header, which is what most MCP clients support in their config.
 import { createClient } from "npm:@supabase/supabase-js@2.49.1";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 const headers = {
   ...corsHeaders,
