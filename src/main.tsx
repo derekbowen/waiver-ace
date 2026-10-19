@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { registerServiceWorker } from "./lib/register-sw";
+import { isNativeApp } from "./lib/platform";
 
 registerServiceWorker();
 
@@ -25,5 +26,10 @@ window.addEventListener("unhandledrejection", (event) => {
     event.preventDefault();
   }
 });
+
+// Bundled native app: never show the marketing homepage — open the app welcome screen.
+if (isNativeApp() && (window.location.pathname === "/" || window.location.pathname === "/index.html")) {
+  window.history.replaceState(null, "", "/app");
+}
 
 createRoot(document.getElementById("root")!).render(<App />);
