@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight, Shield, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
+import { getEmbedUrl } from "@/components/VideoEmbed";
 import { TemplatePreviewDialog, fillSampleValues } from "@/components/TemplatePreviewDialog";
 
 const defaultVariables = [
@@ -863,20 +864,38 @@ export default function TemplateEditor() {
       toast.error("Please enter a video URL when requiring a safety video");
       return;
     }
+    if (requireVideo && !getEmbedUrl(videoUrl.trim())) {
+      toast.error("Please use a YouTube or Vimeo video link for the safety video");
+      return;
+    }
+    let expirationDays: number | null = null;
+    if (defaultExpirationDays.trim()) {
+      const n = Number(defaultExpirationDays);
+      if (!Number.isInteger(n) || n < 1 || n > 365) {
+        toast.error("Default expiration must be a whole number from 1 to 365 days, or left blank");
+        return;
+      }
+      expirationDays = n;
+    }
+    if (!buildContent().trim()) {
+      toast.error("Waiver content can't be empty");
+      return;
+    }
 
     setSaving(true);
     try {
       const content = buildContent();
-      const templateValues = {
+      const templateValues: Record<string, unknown> = {
           org_id: profile.org_id,
           name: templateName.trim(),
-          description: getTemplateDescription() || null,
           require_photo: requirePhoto,
           allow_minors: allowMinors,
           require_video: requireVideo,
           video_url: requireVideo && videoUrl.trim() ? videoUrl.trim() : null,
-          default_expiration_days: defaultExpirationDays ? parseInt(defaultExpirationDays) : null,
+          default_expiration_days: expirationDays,
       };
+      // Keep the existing description when editing; only set it for new templates.
+      if (!isEditing) templateValues.description = getTemplateDescription() || null;
 
       let template: { id: string };
       if (isEditing && id) {
