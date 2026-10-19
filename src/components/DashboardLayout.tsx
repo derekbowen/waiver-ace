@@ -42,7 +42,6 @@ const navItems = [
 { label: "QR Codes", href: "/qr-codes", icon: QrCode },
 { label: "Check In", href: "/check-in", icon: ScanLine },
 { label: "Front Desk", href: "/front-desk", icon: Tablet },
-{ label: "PhotoSell", href: "/photosell", icon: Sparkles },
 { label: "Contracts", href: "/contract-scanner", icon: FileSearch },
 { label: "Listing Analyzer", href: "/listing-analyzer", icon: BarChart },
 { label: "Documents", href: "/documents", icon: FolderOpen },

@@ -756,36 +756,6 @@ Signed waivers are automatically stored as tamper-proof PDFs with SHA-256 hashin
     `,
   },
   {
-    id: "photo-enhance",
-    title: "PhotoSell (AI Photo Enhancement)",
-    description: "Enhance your rental listing photos with AI-powered improvements.",
-    category: "tools",
-    icon: "Camera",
-    content: `
-## PhotoSell — AI Photo Enhancement
-
-Upload a photo of your rental property and get AI-powered enhancements to make your listing stand out.
-
-### How to use it
-1. Go to **PhotoSell** from the sidebar
-2. Upload a property photo (JPEG, PNG, or WebP)
-3. Click **"Enhance Photo"** — costs **5 credits**
-4. View the before/after comparison
-5. Download the enhanced version
-
-### What the AI does
-- **Sky replacement** — Overcast sky? AI replaces it with a vibrant blue sky
-- **Color boosting** — Enhances colors to make the space look inviting
-- **Quality analysis** — Rates your photo's composition, lighting, and appeal
-- **Brightness & contrast** — Balances lighting for a professional look
-
-### Tips for best results
-- Use well-lit photos taken during daytime
-- Include the full space in the frame
-- Original photos work better than already-edited ones
-    `,
-  },
-  {
     id: "credit-disputes",
     title: "Credit Disputes",
     description: "Request a credit refund if something went wrong.",

@@ -95,7 +95,6 @@ export const CAPABILITIES = [
 
 export const ADDITIONAL_TOOLS = [
 { name: 'Contract Scanner', body: 'AI review of an uploaded contract. Separate from the waiver workflow.' },
-{ name: 'PhotoSell', body: 'Listing photo tooling. Not part of the waiver product.' },
 { name: 'Listing Analyzer', body: 'Listing copy review. Not part of the waiver product.' }];
 
 
