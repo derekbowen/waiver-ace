@@ -17,13 +17,15 @@ export default function Privacy() {
           <ArrowLeft className="h-4 w-4" /> Back to home
         </Link>
         <h1 className="font-heading text-4xl font-bold tracking-tight mb-2">Privacy Policy</h1>
-        <p className="text-sm text-muted-foreground mb-10">Last updated: March 9, 2026</p>
+        <p className="text-sm text-muted-foreground mb-10">Last updated: October 18, 2026</p>
 
         <div className="prose prose-neutral max-w-none space-y-6 text-sm leading-relaxed text-muted-foreground">
           <section>
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">1. Information We Collect</h2>
-            <p>We collect information you provide directly, such as your name, email address, and organization details when you create an account. We also collect signer information (name, email, IP address, user agent) when documents are signed. Additional data we collect includes:</p>
+            <p>We collect information you provide directly, such as your name, email address, and organization details when you create an account. We also collect signer information (name, initials, email, electronic signature, consent records, IP address, device/browser information, and timestamps) when documents are signed. Additional data we collect includes:</p>
             <ul className="list-disc pl-6 mt-2 space-y-1">
+              <li><strong>Signer photos and minors:</strong> Signers may submit a photo; a business may require it. Adults signing for minors may provide each minor’s name and age and a guardian attestation.</li>
+              <li><strong>Check-in records:</strong> We process pass codes linked to signed waivers and record check-in activity.</li>
               <li><strong>Wallet and credit data:</strong> Credit purchase history, transaction records, payment method identifiers (stored securely via Stripe), auto-recharge preferences, and credit balance information.</li>
               <li><strong>Marketplace integration data:</strong> When you connect a marketplace (e.g., ShareTribe), we receive customer information from booking webhooks including customer names, email addresses, booking IDs, listing details, and booking dates as transmitted by the marketplace platform.</li>
               <li><strong>Customer portal lookups:</strong> When customers use the /my-waivers portal, we process the email address they enter to look up their waiver status. We do not store portal access logs beyond standard server logs.</li>
@@ -72,9 +74,18 @@ export default function Privacy() {
             <p>Depending on your jurisdiction, you may have the right to access, correct, delete, or export your personal data. Contact us to exercise these rights.</p>
           </section>
 
+
+          <section id="delete-account">
+            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">Delete your Rental Waivers account and data</h2>
+            <p>You can request deletion without installing the app. Email <a href="mailto:hello@rentalwaivers.com?subject=Delete%20my%20Rental%20Waivers%20account" className="text-primary underline">hello@rentalwaivers.com</a> from your account email with the subject “Delete my Rental Waivers account.” Include the account email and business name. We may verify your identity before processing your request; never send your password.</p>
+            <p className="mt-3">You can also sign in on the website or in the app, open Settings → Danger Zone → Delete my account, type DELETE MY ACCOUNT, and confirm.</p>
+            <p className="mt-3">Deletion removes your login and profile. If you are the last member of your organization, deletion also removes the organization and its associated waiver, signature, audit, template, check-in, integration, and wallet records. If other members remain, shared organization records remain available to them. Unused credits are forfeited.</p>
+            <p className="mt-3">If you signed a waiver as a guest without creating an account, contact the rental business or email us with the email you used to sign and the business name to request deletion of your signer data. Waiver retention follows the organization’s retention settings; credit transaction retention is described above. We will explain any records that must be retained and the applicable retention period when responding to your request.</p>
+          </section>
+
           <section>
             <h2 className="font-heading text-lg font-semibold text-foreground mb-3">9. Children's Privacy</h2>
-            <p>The Service is not intended for individuals under 18. We do not knowingly collect information from children.</p>
+            <p>Accounts are intended for adults. An adult signing a waiver on behalf of a minor may provide the minor’s name and age and attest that they are the parent, legal guardian, or authorized by one. Contact us or the rental business to request access to or deletion of this information.</p>
           </section>
 
           <section>
