@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPopper, Ship, CarFront, Bike, Truck, Eye, ChevronRight, Shield, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
+import { getEmbedUrl } from "@/components/VideoEmbed";
 import { TemplatePreviewDialog, fillSampleValues } from "@/components/TemplatePreviewDialog";
 
 const defaultVariables = [
