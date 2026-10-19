@@ -8,24 +8,28 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Mail, CheckCircle, Clock, Coins, AlertTriangle, MessageSquare, ReceiptText } from "lucide-react";
+import { FileText, Mail, CheckCircle, Clock, Coins, AlertTriangle, MessageSquare, ReceiptText, Send, Tablet, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 
 interface PageStat { path: string; views: number; signups: number }
+interface RecentRow { id: string; signer_name: string | null; signer_email: string | null; status: string; created_at: string }
 
 export default function Dashboard() {
   const { profile, roles, refreshWallet } = useAuth();
   const { credits, status, isPaused, isLow, isOverdraft, loading: walletLoading } = useWallet();
   const [stats, setStats] = useState({ templates: 0, sent: 0, completed: 0, pending: 0, expired: 0 });
   const [pageStats, setPageStats] = useState<PageStat[]>([]);
+  const [recent, setRecent] = useState<RecentRow[]>([]);
   const isAdmin = roles.includes("admin");
 
   const fetchStats = useCallback(async () => {
     if (!profile?.org_id) return;
-    const [templates, envelopes] = await Promise.all([
+    const [templates, envelopes, rec] = await Promise.all([
       supabase.from("templates").select("id", { count: "exact", head: true }).eq("org_id", profile.org_id!),
       supabase.from("envelopes").select("id, status").eq("org_id", profile.org_id!),
+      supabase.from("envelopes").select("id, signer_name, signer_email, status, created_at").eq("org_id", profile.org_id!).order("created_at", { ascending: false }).limit(5),
     ]);
+    if (!rec.error && rec.data) setRecent(rec.data as RecentRow[]);
     if (templates.error || envelopes.error) return;
     const envs = envelopes.data || [];
     setStats({
@@ -154,6 +158,14 @@ export default function Dashboard() {
           </Card>
         )}
 
+        {profile?.org_id && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            <Button asChild size="lg" className="h-12"><Link to="/envelopes/new"><Send className="h-4 w-4 mr-2" />Send Waiver</Link></Button>
+            <Button asChild size="lg" variant="outline" className="h-12"><Link to="/front-desk"><Tablet className="h-4 w-4 mr-2" />Front Desk</Link></Button>
+            <Button asChild size="lg" variant="outline" className="h-12"><Link to="/check-in"><ScanLine className="h-4 w-4 mr-2" />Check In</Link></Button>
+          </div>
+        )}
+
         {/* Credit balance card + stat cards */}
         <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-5 mb-6">
           {profile?.org_id && (
@@ -190,6 +202,28 @@ export default function Dashboard() {
             </Card>
           ))}
         </div>
+
+        {profile?.org_id && recent.length > 0 && (
+          <Card className="mt-6">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-base">Recent Waivers</CardTitle>
+              <Link to="/envelopes" className="text-xs text-primary hover:underline">View all</Link>
+            </CardHeader>
+            <CardContent className="divide-y">
+              {recent.map((r) => (
+                <Link key={r.id} to={`/envelopes/${r.id}`} className="flex items-center justify-between gap-3 py-3 min-h-[44px] hover:bg-accent/50 -mx-2 px-2 rounded">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{r.signer_name || r.signer_email || "Guest"}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</p>
+                  </div>
+                  <Badge variant={r.status === "completed" || r.status === "signed" ? "default" : "secondary"} className="text-[10px] capitalize shrink-0">
+                    {r.status === "completed" ? "signed" : r.status}
+                  </Badge>
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Marketing page conversions (owner/admin only) */}
         {isAdmin && pageStats.length > 0 && (
