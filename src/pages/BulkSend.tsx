@@ -34,18 +34,28 @@ export default function BulkSend() {
     if (!profile?.org_id) return;
     supabase
       .from("templates")
-      .select("id, name")
+      .select("id, name, default_expiration_days")
       .eq("org_id", profile.org_id)
       .eq("is_active", true)
       .then(({ data }) => setTemplates(data || []));
   }, [profile?.org_id]);
 
-  const parseEmails = () => {
-    return emailsText
-      .split(/[\n,;]+/)
-      .map((e) => e.trim().toLowerCase())
-      .filter((e) => e && e.includes("@"));
+  const parseRecipients = () => {
+    const valid: string[] = [];
+    const invalid: string[] = [];
+    let duplicates = 0;
+    const seen = new Set<string>();
+    for (const raw of emailsText.split(/[\n,;]+/)) {
+      const e = raw.trim().toLowerCase();
+      if (!e) continue;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { invalid.push(raw.trim()); continue; }
+      if (seen.has(e)) { duplicates++; continue; }
+      seen.add(e);
+      valid.push(e);
+    }
+    return { valid, invalid, duplicates };
   };
+  const parseEmails = () => parseRecipients().valid;
 
   const handleBulkSend = async () => {
     if (!profile?.org_id || !templateId) {
@@ -58,15 +68,14 @@ export default function BulkSend() {
       toast.error("Enter at least one valid email");
       return;
     }
-
-    if (isPaused) {
-      toast.error("Credit balance exhausted. Add credits to continue sending.");
+    const { invalid } = parseRecipients();
+    if (invalid.length > 0) {
+      toast.error(`Fix or remove ${invalid.length} invalid email${invalid.length === 1 ? "" : "s"}: ${invalid.slice(0, 3).join(", ")}`);
       return;
     }
 
-    // Allow sending up to credits + overdraft buffer (10)
-    if (emails.length > credits + 10) {
-      toast.error(`Not enough credits. You have ${credits} credits (with overdraft buffer). Add more credits.`);
+    if (isPaused) {
+      toast.error("Credit balance exhausted. Add credits to continue sending.");
       return;
     }
 
@@ -107,6 +116,16 @@ export default function BulkSend() {
       isBranded: orgIsBranded(org || {}),
     });
 
+    // Preflight using the real per-waiver cost (plus the 10-credit overdraft buffer).
+    const needed = emails.length * cost.total;
+    if (needed > credits + 10) {
+      toast.error(`This batch needs ${needed} credits (${cost.total} per waiver). You have ${credits}. Add credits or send fewer.`);
+      setSending(false);
+      return;
+    }
+    const tplDefault = templates.find((t: any) => t.id === templateId)?.default_expiration_days;
+    const expiryDays = tplDefault && tplDefault > 0 ? tplDefault : 7;
+
     for (const email of emails) {
       try {
         const { data: envelope, error } = await supabase
@@ -117,7 +136,7 @@ export default function BulkSend() {
             signer_email: email,
             status: "sent",
             credits_charged: cost.total,
-            expires_at: new Date(Date.now() + 7 * 86400000).toISOString(),
+            expires_at: new Date(Date.now() + expiryDays * 86400000).toISOString(),
             payload: {},
           })
           .select()
@@ -139,6 +158,9 @@ export default function BulkSend() {
           await supabase.from("envelopes").update({ status: "canceled" }).eq("id", envelope.id);
           const msg = creditResult?.[0]?.error_message || "Insufficient credits";
           bulkResults.push({ email, success: false, error: msg });
+          for (const rest of emails.slice(emails.indexOf(email) + 1)) {
+            bulkResults.push({ email: rest, success: false, error: "Skipped — not enough credits" });
+          }
           break; // Stop sending — no more credits
         }
 
@@ -154,6 +176,8 @@ export default function BulkSend() {
         });
         if (emailErr) {
           console.error(`Failed to send email to ${email}:`, emailErr);
+          bulkResults.push({ email, success: false, error: "Waiver created, but the email failed to send. Resend it from Sent Waivers." });
+          continue;
         }
 
         bulkResults.push({ email, success: true });
@@ -168,7 +192,8 @@ export default function BulkSend() {
     toast.success(`${successCount}/${emails.length} waivers sent`);
   };
 
-  const emailCount = parseEmails().length;
+  const parsed = parseRecipients();
+  const emailCount = parsed.valid.length;
 
   return (
     <DashboardLayout>
@@ -225,7 +250,10 @@ export default function BulkSend() {
                 className="min-h-[150px] font-mono text-sm"
               />
               <p className="text-xs text-muted-foreground mt-2">
-                {emailCount} email{emailCount !== 1 ? "s" : ""} detected · {credits} credits remaining
+                {emailCount} valid email{emailCount !== 1 ? "s" : ""}
+                {parsed.duplicates > 0 && ` · ${parsed.duplicates} duplicate${parsed.duplicates === 1 ? "" : "s"} removed`}
+                {parsed.invalid.length > 0 && <span className="text-destructive"> · {parsed.invalid.length} invalid: {parsed.invalid.slice(0, 3).join(", ")}</span>}
+                {" "}· {credits} credits remaining
               </p>
             </CardContent>
           </Card>
@@ -255,7 +283,7 @@ export default function BulkSend() {
             <Button variant="outline" onClick={() => navigate("/envelopes")}>Cancel</Button>
             <Button
               onClick={handleBulkSend}
-              disabled={sending || isPaused || emailCount === 0 || !templateId}
+              disabled={sending || isPaused || emailCount === 0 || parsed.invalid.length > 0 || !templateId}
               className="gap-2"
             >
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
