@@ -81,6 +81,24 @@ serve(async (req) => {
     };
 
     if (wipeOrg && orgId) {
+      // License images have a dedicated org/waiver/file layout. Remove every
+      // nested file before deleting the organization, without changing other buckets.
+      const removeLicenseFolder = async (prefix: string): Promise<void> => {
+        while (true) {
+          const { data: entries, error } = await admin.storage.from("driver-licenses").list(prefix, { limit: 100 });
+          if (error) throw error;
+          if (!entries?.length) return;
+          for (const entry of entries) {
+            const path = `${prefix}/${entry.name}`;
+            if (!entry.id) await removeLicenseFolder(path);
+            else {
+              const { error: removeError } = await admin.storage.from("driver-licenses").remove([path]);
+              if (removeError) throw removeError;
+            }
+          }
+        }
+      };
+      await removeLicenseFolder(orgId);
       // Delete all org-scoped data. Order matters: children first, then parents.
       // Storage objects in private buckets (waiver-pdfs, signer-photos, photo-uploads, org-documents)
       // are not auto-deleted by these row deletes — we list and remove them too.

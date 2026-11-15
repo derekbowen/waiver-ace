@@ -15,6 +15,7 @@ import { PhotoCapture } from "@/components/PhotoCapture";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { DriverVerificationFields } from "@/components/DriverVerificationFields";
 import { emptyDriverDetails, isGolfCartContent, validateDriverDetails } from "@/lib/golf-cart-template";
+import { uploadDriverLicense } from "@/lib/driver-license-upload";
 
 export default function GroupSigningPage() {
   useNoindex();
@@ -39,6 +40,8 @@ export default function GroupSigningPage() {
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [driverDetails, setDriverDetails] = useState(emptyDriverDetails);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [licenseConsent, setLicenseConsent] = useState(false);
   const isGolfCart = isGolfCartContent(envelope?.template_content);
   const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
   const [guardianAttested, setGuardianAttested] = useState(false);
@@ -222,6 +225,7 @@ export default function GroupSigningPage() {
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
+      const licenseAttachment = isGolfCart ? await uploadDriverLicense(licenseFile, licenseConsent, groupToken, true) : undefined;
 
       // Upload photo if captured
       let photoStorageKey: string | null = null;
@@ -242,7 +246,7 @@ export default function GroupSigningPage() {
         p_signer_email: signerEmail.trim() || null,
         p_initials: initials.trim(),
         p_signature_data: {
-          driver_verification: isGolfCart ? { ...driverDetails, driver_name: fullName.trim(), safety_acknowledged_at: now, verification_status: "pending_staff_review" } : undefined,
+          driver_verification: isGolfCart ? { ...driverDetails, ...licenseAttachment, driver_name: fullName.trim(), safety_acknowledged_at: now, verification_status: "pending_staff_review" } : undefined,
           signature_image: signatureDataUrl,
           agreed_to_electronic_signing: true,
           signed_at_utc: now,
@@ -362,7 +366,7 @@ export default function GroupSigningPage() {
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setPassCode(null); setOthersAtSign([]); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setDriverDetails(emptyDriverDetails); setMinors([]); setGuardianAttested(false); setScrolledToEnd(false); setVideoWatched(false); }}>
+          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setPassCode(null); setOthersAtSign([]); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setDriverDetails(emptyDriverDetails); setLicenseFile(null); setLicenseConsent(false); setMinors([]); setGuardianAttested(false); setScrolledToEnd(false); setVideoWatched(false); }}>
             Next Person — Sign Another
           </Button>
         </div>
@@ -489,7 +493,7 @@ export default function GroupSigningPage() {
                   </p>
                 </div>
 
-                {isGolfCart && <DriverVerificationFields value={driverDetails} onChange={setDriverDetails} />}
+                {isGolfCart && <DriverVerificationFields value={driverDetails} onChange={setDriverDetails} licenseFile={licenseFile} onLicenseFile={setLicenseFile} licenseConsent={licenseConsent} onLicenseConsent={setLicenseConsent} />}
 
                 {envelope?.allow_minors !== false && (
                 <div className="space-y-3 rounded-lg border p-4">

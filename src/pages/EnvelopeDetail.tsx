@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { DriverLicenseAttachment } from "@/components/DriverLicenseAttachment";
 
 export default function EnvelopeDetail() {
   const { id } = useParams();
@@ -293,6 +294,7 @@ export default function EnvelopeDetail() {
         </div>
 
         {/* Signer Photo Card */}
+        <DriverLicenseAttachment envelopeId={envelope.id} storageKey={envelope.signature_data?.driver_verification?.license_storage_key} />
         {photoUrl && (
           <Card className="mt-6">
             <CardHeader>
@@ -357,6 +359,7 @@ export default function EnvelopeDetail() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
+                        <DriverLicenseAttachment envelopeId={envelope.id} storageKey={sig.signature_data?.driver_verification?.license_storage_key} />
                         {groupPhotoUrls[sig.id] && (
                           <Button
                             variant="ghost"

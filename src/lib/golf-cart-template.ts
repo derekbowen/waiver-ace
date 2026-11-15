@@ -27,7 +27,7 @@ Pickup / return location: {{pickup_location}}
 Rental terms: {{rental_terms}}
 
 DRIVER VERIFICATION
-Each driver must provide their own legal name, age, license issuing jurisdiction, license identifier (last four characters only), and license expiration date in the signing form. Staff must inspect the original license, confirm identity and driving eligibility, and approve each driver before releasing the vehicle. A signature alone does not verify a license or authorize driving. A license copy is optional and must only be collected by authorized staff through private account document storage with the driver's consent; never through the public selfie form.
+Each driver must provide their own legal name, age, license issuing jurisdiction, license identifier (last four characters only), and license expiration date in the signing form. Staff must inspect the original license, confirm identity and driving eligibility, and approve each driver before releasing the vehicle. A signature alone does not verify a license or authorize driving. A license photo is optional and may be submitted with explicit consent through the dedicated private license upload in this waiver. Only authorized organization admins may retrieve it; it is not included in emailed PDFs. Never submit a license through the public selfie form.
 
 RISK ACKNOWLEDGMENT
 Gas-powered and electric golf carts may overturn, collide, lose traction, or expose occupants to falls, burns, battery or fuel hazards, serious injury, death, and damage to property. Roads, other vehicles, weather, terrain, and pedestrian traffic add risks. I understand these risks and voluntarily accept only those risks that may lawfully be assumed under applicable law.

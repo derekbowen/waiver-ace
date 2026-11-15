@@ -16,6 +16,7 @@ import { VideoEmbed } from "@/components/VideoEmbed";
 import { getRecognizedSigner, rememberSigner } from "@/lib/signer-recognition";
 import { DriverVerificationFields } from "@/components/DriverVerificationFields";
 import { emptyDriverDetails, isGolfCartContent, validateDriverDetails } from "@/lib/golf-cart-template";
+import { uploadDriverLicense } from "@/lib/driver-license-upload";
 
 function FrontDeskDone({ name, returnTo }: { name: string; returnTo: string }) {
   const navigate = useNavigate();
@@ -67,6 +68,8 @@ export default function SigningPage() {
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [driverDetails, setDriverDetails] = useState(emptyDriverDetails);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [licenseConsent, setLicenseConsent] = useState(false);
   const isGolfCart = isGolfCartContent(templateSource?.content);
   const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
   const [guardianAttested, setGuardianAttested] = useState(false);
@@ -237,6 +240,7 @@ export default function SigningPage() {
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
+      const licenseAttachment = isGolfCart ? await uploadDriverLicense(licenseFile, licenseConsent, token, false) : undefined;
 
       // Upload photo if captured
       let photoStorageKey: string | null = null;
@@ -258,7 +262,7 @@ export default function SigningPage() {
         p_signer_name: fullName.trim(),
         p_signature_data: {
           full_name: fullName.trim(),
-          driver_verification: isGolfCart ? { ...driverDetails, driver_name: fullName.trim(), safety_acknowledged_at: consentGivenAt, verification_status: "pending_staff_review" } : undefined,
+          driver_verification: isGolfCart ? { ...driverDetails, ...licenseAttachment, driver_name: fullName.trim(), safety_acknowledged_at: consentGivenAt, verification_status: "pending_staff_review" } : undefined,
           initials: initials.trim(),
           signature_image: signatureDataUrl,
           agreed_to_electronic_signing: true,
@@ -570,7 +574,7 @@ export default function SigningPage() {
                 </div>
                 )}
 
-                {isGolfCart && <DriverVerificationFields value={driverDetails} onChange={setDriverDetails} />}
+                {isGolfCart && <DriverVerificationFields value={driverDetails} onChange={setDriverDetails} licenseFile={licenseFile} onLicenseFile={setLicenseFile} licenseConsent={licenseConsent} onLicenseConsent={setLicenseConsent} />}
 
                 <div className="space-y-2">
                   <Label>Signature</Label>
