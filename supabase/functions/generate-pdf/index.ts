@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 import { renderWaiverTemplate } from "../_shared/renderWaiver.ts";
+import { driverVerificationLines } from "../_shared/driverVerification.ts";
 
 // Minimal multi-page PDF generator. Text is encoded as WinAnsi (Latin-1) so
 // accented names render correctly, and all offsets are byte-accurate.
@@ -219,6 +220,17 @@ serve(async (req: Request) => {
     lines.push(`IP Address: ${envelope.ip_address || "N/A"}`);
     lines.push(`User Agent: ${(sigData.user_agent || envelope.user_agent || "N/A").slice(0, 80)}`);
     lines.push(`Electronic Consent: ${sigData.agreed_to_electronic_signing ? "Yes" : "N/A"}`);
+    lines.push(...driverVerificationLines(sigData.driver_verification));
+    if (envelope.is_group_waiver) {
+      const { data: drivers, error: driverError } = await supabase.from("group_signatures")
+        .select("signer_name, initials, signed_at, signature_data")
+        .eq("envelope_id", envelope.id).order("signed_at", { ascending: true });
+      if (driverError) throw driverError;
+      for (const driver of drivers || []) {
+        lines.push("", "ADDITIONAL SIGNER", `Name: ${driver.signer_name}`, `Initials: ${driver.initials || ""}`, `Signed at (UTC): ${driver.signed_at}`);
+        lines.push(...driverVerificationLines((driver.signature_data as Record<string, unknown> | null)?.driver_verification));
+      }
+    }
     const pdfMinors = Array.isArray(sigData.minors) ? sigData.minors : [];
     if (pdfMinors.length > 0) {
       lines.push("");

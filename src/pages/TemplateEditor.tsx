@@ -13,6 +13,7 @@ import { ArrowLeft, ArrowRight, Save, FileText, Droplets, Home, Wrench, PartyPop
 import { toast } from "sonner";
 import { getEmbedUrl } from "@/components/VideoEmbed";
 import { TemplatePreviewDialog, fillSampleValues } from "@/components/TemplatePreviewDialog";
+import { GOLF_CART_TEMPLATE_NAME, golfCartContent, golfCartQuestions } from "@/lib/golf-cart-template";
 
 const defaultVariables = [
   "customer_name", "booking_id", "listing_id", "date", "rental_date", "time",
@@ -35,6 +36,7 @@ const COMMON_QUESTIONS: WizardQuestion[] = [
 ];
 
 const CATEGORY_QUESTIONS: Record<string, WizardQuestion[]> = {
+  golf_cart: [...COMMON_QUESTIONS, ...golfCartQuestions, { variable: "rules", label: "Additional safety rules (optional)", placeholder: "Route restrictions, passenger limits, emergency contact", type: "textarea" }],
   pool: [
     ...COMMON_QUESTIONS,
     { variable: "rules", label: "Any pool rules you want included?", placeholder: "e.g. No diving, no glass containers, children under 12 must be accompanied by an adult, maximum 8 guests...", type: "textarea" },
@@ -86,6 +88,7 @@ interface TemplatePreset {
 }
 
 const TEMPLATE_PRESETS: TemplatePreset[] = [
+  { id: "golf_cart", name: GOLF_CART_TEMPLATE_NAME, description: "Gas or electric carts, driver safety, insurance and street-use terms", icon: CarFront, content: golfCartContent },
   {
     id: "blank",
     name: "Blank Template",
@@ -794,7 +797,7 @@ export default function TemplateEditor() {
           template.default_expiration_days ? String(template.default_expiration_days) : "",
         );
         setCurrentVersionId(version?.id || null);
-        setSelectedPreset(TEMPLATE_PRESETS[0]);
+        setSelectedPreset(TEMPLATE_PRESETS.find(p => p.id === "blank") || null);
         setStep("extras");
       } catch (err: any) {
         toast.error(err.message || "Unable to load template");
@@ -826,7 +829,7 @@ export default function TemplateEditor() {
 
     let content = selectedPreset.content;
     // Only substitute business-level variables, leave per-guest ones as {{variables}}
-    const businessVars = ["host_name", "address_redacted", "rules", "state"];
+    const businessVars = ["host_name", "address_redacted", "rules", "state", ...golfCartQuestions.map(q => q.variable)];
     businessVars.forEach((v) => {
       const value = answers[v] || "";
       if (value) {

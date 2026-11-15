@@ -14,6 +14,8 @@ import { SignatureCanvas } from "@/components/SignatureCanvas";
 import { PhotoCapture } from "@/components/PhotoCapture";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { getRecognizedSigner, rememberSigner } from "@/lib/signer-recognition";
+import { DriverVerificationFields } from "@/components/DriverVerificationFields";
+import { emptyDriverDetails, isGolfCartContent, validateDriverDetails } from "@/lib/golf-cart-template";
 
 function FrontDeskDone({ name, returnTo }: { name: string; returnTo: string }) {
   const navigate = useNavigate();
@@ -64,6 +66,8 @@ export default function SigningPage() {
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [driverDetails, setDriverDetails] = useState(emptyDriverDetails);
+  const isGolfCart = isGolfCartContent(templateSource?.content);
   const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
   const [guardianAttested, setGuardianAttested] = useState(false);
   const [guestEmail, setGuestEmail] = useState("");
@@ -192,6 +196,9 @@ export default function SigningPage() {
   }, [loading, templateContent, scrolledToEnd]);
 
   const handleSign = async () => {
+    if (!token) return;
+    const driverError = isGolfCart ? validateDriverDetails(driverDetails) : null;
+    if (driverError) { toast.error(driverError); return; }
     if (!fullName.trim() || !initials.trim() || !agreed) {
       toast.error("Please complete all required fields");
       return;
@@ -247,10 +254,11 @@ export default function SigningPage() {
       // cannot be spoofed by the client. We no longer fetch it via ipify.
 
       const { data: result, error } = await supabase.rpc("sign_envelope", {
-        p_token: token!,
+        p_token: token,
         p_signer_name: fullName.trim(),
         p_signature_data: {
           full_name: fullName.trim(),
+          driver_verification: isGolfCart ? { ...driverDetails, driver_name: fullName.trim(), safety_acknowledged_at: consentGivenAt, verification_status: "pending_staff_review" } : undefined,
           initials: initials.trim(),
           signature_image: signatureDataUrl,
           agreed_to_electronic_signing: true,
@@ -383,7 +391,7 @@ export default function SigningPage() {
     );
   }
 
-  const canSubmit = scrolledToEnd && (!requireVideo || videoWatched) && agreed && fullName && initials && signatureDataUrl && (!requirePhoto || !!photoBlob);
+  const canSubmit = scrolledToEnd && (!requireVideo || videoWatched) && agreed && fullName && initials && signatureDataUrl && (!requirePhoto || !!photoBlob) && (!isGolfCart || !validateDriverDetails(driverDetails));
 
   return (
     <div className="min-h-screen bg-background">
@@ -561,6 +569,8 @@ export default function SigningPage() {
                   )}
                 </div>
                 )}
+
+                {isGolfCart && <DriverVerificationFields value={driverDetails} onChange={setDriverDetails} />}
 
                 <div className="space-y-2">
                   <Label>Signature</Label>
