@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { SignatureCanvas } from "@/components/SignatureCanvas";
 import { PhotoCapture } from "@/components/PhotoCapture";
 import { VideoEmbed } from "@/components/VideoEmbed";
+import { DriverVerificationFields } from "@/components/DriverVerificationFields";
+import { emptyDriverDetails, isGolfCartContent, validateDriverDetails } from "@/lib/golf-cart-template";
 
 export default function GroupSigningPage() {
   useNoindex();
@@ -36,6 +38,8 @@ export default function GroupSigningPage() {
   const [othersAtSign, setOthersAtSign] = useState<any[]>([]);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [driverDetails, setDriverDetails] = useState(emptyDriverDetails);
+  const isGolfCart = isGolfCartContent(envelope?.template_content);
   const [minors, setMinors] = useState<{ name: string; age: string }[]>([]);
   const [guardianAttested, setGuardianAttested] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -180,6 +184,9 @@ export default function GroupSigningPage() {
 
 
   const handleSign = async () => {
+    if (!groupToken) return;
+    const driverError = isGolfCart ? validateDriverDetails(driverDetails) : null;
+    if (driverError) { toast.error(driverError); return; }
     if (!fullName.trim() || !initials.trim() || !agreed) {
       toast.error("Please complete all required fields");
       return;
@@ -230,11 +237,12 @@ export default function GroupSigningPage() {
       setPassCode(null);
       const priorSignatures = signatures;
       const { data: result, error } = await supabase.rpc("sign_group_waiver", {
-        p_group_token: groupToken!,
+        p_group_token: groupToken,
         p_signer_name: fullName.trim(),
         p_signer_email: signerEmail.trim() || null,
         p_initials: initials.trim(),
         p_signature_data: {
+          driver_verification: isGolfCart ? { ...driverDetails, driver_name: fullName.trim(), safety_acknowledged_at: now, verification_status: "pending_staff_review" } : undefined,
           signature_image: signatureDataUrl,
           agreed_to_electronic_signing: true,
           signed_at_utc: now,
@@ -264,7 +272,7 @@ export default function GroupSigningPage() {
 
 
       try {
-        const { data: passRes } = await supabase.rpc("issue_check_in_pass", { p_token: groupToken! });
+        const { data: passRes } = await supabase.rpc("issue_check_in_pass", { p_token: groupToken });
         const pr = passRes as any;
         if (pr?.pass_code) setPassCode(pr.pass_code);
       } catch { /* pass is optional — never block signing */ }
@@ -354,7 +362,7 @@ export default function GroupSigningPage() {
           <p className="text-sm text-muted-foreground mt-6">
             Others in your group can use this same link to sign.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setPassCode(null); setOthersAtSign([]); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setMinors([]); setGuardianAttested(false); setScrolledToEnd(false); setVideoWatched(false); }}>
+          <Button variant="outline" className="mt-4" onClick={() => { setSigned(false); setPassCode(null); setOthersAtSign([]); setFullName(""); setInitials(""); setSignerEmail(""); setSignatureDataUrl(null); setPhotoBlob(null); setAgreed(false); setDriverDetails(emptyDriverDetails); setMinors([]); setGuardianAttested(false); setScrolledToEnd(false); setVideoWatched(false); }}>
             Next Person — Sign Another
           </Button>
         </div>
@@ -363,7 +371,7 @@ export default function GroupSigningPage() {
   }
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signerEmail.trim());
-  const canSubmit = scrolledToEnd && (!requireVideo || videoWatched) && agreed && fullName && initials && emailValid && signatureDataUrl && (!requirePhoto || !!photoBlob);
+  const canSubmit = scrolledToEnd && (!requireVideo || videoWatched) && agreed && fullName && initials && emailValid && signatureDataUrl && (!requirePhoto || !!photoBlob) && (!isGolfCart || !validateDriverDetails(driverDetails));
 
   return (
     <div className="min-h-screen bg-background">
@@ -480,6 +488,8 @@ export default function GroupSigningPage() {
                     We'll email your signed copy and any check-in instructions from the host here.
                   </p>
                 </div>
+
+                {isGolfCart && <DriverVerificationFields value={driverDetails} onChange={setDriverDetails} />}
 
                 {envelope?.allow_minors !== false && (
                 <div className="space-y-3 rounded-lg border p-4">
