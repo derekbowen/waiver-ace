@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { getEmbedUrl } from "@/components/VideoEmbed";
 import { TemplatePreviewDialog, fillSampleValues } from "@/components/TemplatePreviewDialog";
 import { GOLF_CART_TEMPLATE_NAME, golfCartContent, golfCartQuestions } from "@/lib/golf-cart-template";
+import { ACKNOWLEDGMENT_TEMPLATE_NAME, acknowledgmentContent, acknowledgmentQuestions } from "@/lib/waiver-acknowledgment-template";
 
 const defaultVariables = [
   "customer_name", "booking_id", "listing_id", "date", "rental_date", "time",
@@ -36,6 +37,7 @@ const COMMON_QUESTIONS: WizardQuestion[] = [
 ];
 
 const CATEGORY_QUESTIONS: Record<string, WizardQuestion[]> = {
+  waiver_acknowledgment: [...COMMON_QUESTIONS, ...acknowledgmentQuestions],
   golf_cart: [...COMMON_QUESTIONS, ...golfCartQuestions, { variable: "rules", label: "Additional safety rules (optional)", placeholder: "Route restrictions, passenger limits, emergency contact", type: "textarea" }],
   pool: [
     ...COMMON_QUESTIONS,
@@ -88,6 +90,7 @@ interface TemplatePreset {
 }
 
 const TEMPLATE_PRESETS: TemplatePreset[] = [
+  { id: "waiver_acknowledgment", name: ACKNOWLEDGMENT_TEMPLATE_NAME, description: "Separate confirmation of reading, understanding and voluntarily signing an identified waiver", icon: Shield, content: acknowledgmentContent },
   { id: "golf_cart", name: GOLF_CART_TEMPLATE_NAME, description: "Gas or electric carts, driver safety, insurance and street-use terms", icon: CarFront, content: golfCartContent },
   {
     id: "blank",
@@ -829,7 +832,7 @@ export default function TemplateEditor() {
 
     let content = selectedPreset.content;
     // Only substitute business-level variables, leave per-guest ones as {{variables}}
-    const businessVars = ["host_name", "address_redacted", "rules", "state", ...golfCartQuestions.map(q => q.variable)];
+    const businessVars = ["host_name", "address_redacted", "rules", "state", ...golfCartQuestions.map(q => q.variable), ...acknowledgmentQuestions.map(q => q.variable)];
     businessVars.forEach((v) => {
       const value = answers[v] || "";
       if (value) {
