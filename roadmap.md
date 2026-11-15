@@ -1,5 +1,11 @@
 # Roadmap
 
+## Golf cart template
+- [ ] Add configurable golf cart agreement to the existing template library.
+- [ ] Capture each driver's verification and safety acknowledgment using existing signatures.
+- [ ] Include driver details in existing PDFs; verify selection, QR access, signing, and retrieval.
+- [ ] Optional license copies: use the existing authenticated document upload, not public photo uploads.
+
 ## Done
 - Published email fix (htmlToText + retries) → www.rentalwaivers.com
 - Added missing completion_email_* columns to organizations in Test (parity fix)
