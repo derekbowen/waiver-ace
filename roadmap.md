@@ -1,9 +1,10 @@
 # Roadmap
 
 ## Driver license capture
-- [ ] Add optional consent-based license-image uploads to individual and group golf cart signing.
-- [ ] Store images privately and allow only organization admins to retrieve attached licenses.
-- [ ] Test upload, signature attachment, private retrieval, and denied public access.
+- [x] Add optional consent-based license-image uploads to individual and group golf cart signing; clear license data between group guests.
+- [x] Store images privately and allow only same-organization admins to retrieve signed attachments; no license images in PDFs or emails.
+- [x] Verified mobile upload, signed attachment, admin retrieval, PDF/document workflow, and denied public downloads/signed-out retrieval/late uploads; seven validation tests passed.
+- [x] Include license images in account-deletion cleanup. Group signing and account deletion not exercised end-to-end.
 
 ## Golf cart template
 - [x] Add configurable golf cart agreement to the existing template library.
