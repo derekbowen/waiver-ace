@@ -1,5 +1,4 @@
-import { isNativeIOS } from "@/lib/platform";
-import { IOS_CREDITS_MESSAGE } from "@/components/BuyCreditsLink";
+import { isNativeIOS, openCreditsPage } from "@/lib/platform";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -383,7 +382,10 @@ export default function Settings() {
               </CardHeader>
               <CardContent>
                 {isNativeIOS() ? (
-                  <p className="text-sm text-muted-foreground">{IOS_CREDITS_MESSAGE}</p>
+                  <Button variant="outline" className="gap-2" onClick={openCreditsPage}>
+                    <CreditCard className="h-4 w-4" />
+                    Buy credits
+                  </Button>
                 ) : (
                   <Button variant="outline" className="gap-2" onClick={() => window.location.href = "/pricing"}>
                     <CreditCard className="h-4 w-4" />

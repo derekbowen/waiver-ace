@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { isNativeIOS, openCreditsPage } from "@/lib/platform";
 import logo from "@/assets/logo.png";
 import {
   FileText,
@@ -62,6 +63,14 @@ const navItems = [
 const mobileTabItems = navItems.slice(0, 4); // Dashboard, Templates, Envelopes, PhotoSell
 const mobileMoreItems = navItems.slice(4); // Analytics, Team, API Keys, Webhooks, Pricing, Settings
 
+/** On iOS the Pricing item opens the website credit page in Safari instead of an in-app page. */
+function handleNavClick(e: React.MouseEvent, href: string) {
+  if (href === "/pricing" && isNativeIOS()) {
+    e.preventDefault();
+    openCreditsPage();
+  }
+}
+
 export function DashboardLayout({ children }: {children: React.ReactNode;}) {
   const location = useLocation();
   const { profile, signOut } = useAuth();
@@ -101,6 +110,7 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
               <Link
                 key={item.href}
                 to={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive ?
@@ -178,7 +188,7 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
                   <Link
                     key={item.href}
                     to={item.href}
-                    onClick={() => setMoreOpen(false)}
+                    onClick={(e) => { setMoreOpen(false); handleNavClick(e, item.href); }}
                     className={cn(
                       "flex items-center gap-3 rounded-xl mx-2 px-4 py-3 text-sm font-medium transition-colors",
                       isActive ? "bg-primary/10 text-primary" : "text-foreground active:bg-accent"
@@ -223,6 +233,7 @@ export function DashboardLayout({ children }: {children: React.ReactNode;}) {
               <Link
                 key={item.href}
                 to={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className={cn(
                   "flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors",
                   isActive ? "text-primary" : "text-muted-foreground active:text-foreground"

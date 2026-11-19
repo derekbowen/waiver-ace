@@ -32,3 +32,11 @@ export function getSignupPlatform(): "ios" | "android" | "web" {
 /** Free credits granted at signup, by platform. */
 export const WEB_SIGNUP_CREDITS = 100;
 export const IOS_SIGNUP_CREDITS = 10;
+
+/** Website page where operators pick a credit pack (signed-in, Stripe Checkout). */
+export const CREDITS_URL = "https://rentalwaivers.com/pricing";
+
+/** Opens the credit-pack page in the device's default browser (external link, no in-app purchase UI). */
+export function openCreditsPage(): void {
+  window.open(CREDITS_URL, "_blank");
+}

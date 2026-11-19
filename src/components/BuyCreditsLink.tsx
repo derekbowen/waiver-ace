@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { isNativeIOS } from "@/lib/platform";
+import { isNativeIOS, openCreditsPage } from "@/lib/platform";
 
 export const IOS_CREDITS_MESSAGE = "Credits are managed on the website.";
 
@@ -15,7 +15,11 @@ export function BuyCreditsLink({
   className?: string;
 }) {
   if (isNativeIOS()) {
-    return <span className="text-muted-foreground">{IOS_CREDITS_MESSAGE}</span>;
+    return (
+      <button type="button" onClick={openCreditsPage} className={className}>
+        {children}
+      </button>
+    );
   }
   return (
     <Link to="/pricing" className={className}>
