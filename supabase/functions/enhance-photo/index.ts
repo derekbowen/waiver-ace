@@ -146,7 +146,7 @@ serve(async (req) => {
       const errText = await aiResponse.text();
       console.error("AI enhance error:", aiResponse.status, errText);
       // Refund credit on failure
-      await supabase.rpc("add_credits", {
+      await supabase.rpc("add_credits_internal", {
         p_org_id: profile.org_id,
         p_amount: 5,
         p_reference_id: job_id,

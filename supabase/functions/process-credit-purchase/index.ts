@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { addPurchasedCredits, paidCreditAmount } from "../_shared/purchaseCredits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -91,7 +92,7 @@ serve(async (req) => {
 
     const packageId = session.metadata?.package_id;
     const orgId = session.metadata?.org_id;
-    const credits = parseInt(session.metadata?.credits || "0", 10);
+    const credits = paidCreditAmount(session);
 
     if (!orgId || !credits) {
       console.error("Missing metadata in checkout session:", session.id);
@@ -122,11 +123,10 @@ serve(async (req) => {
     }
 
     // Add credits using the atomic DB function
-    const { data: result, error } = await supabase.rpc("add_credits", {
+    const { data: result, error } = await addPurchasedCredits(supabase, {
       p_org_id: orgId,
       p_amount: credits,
       p_reference_id: session.id,
-      p_type: "purchase",
       p_notes: `Purchased ${credits} credits (${packageId})`,
     });
 

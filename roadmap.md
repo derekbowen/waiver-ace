@@ -1,5 +1,9 @@
 # Roadmap
 
+## Purchase credit recovery
+- [x] Fix ambiguous credit grants in payment processing, purchase recovery, and automatic recharge.
+- [x] Four purchase-credit tests passed; deployed fixes, replayed the customer's already-credited payment without duplicates, and checked signed-in Verify Purchase. No new paid purchase or automatic charge was made.
+
 ## Driver license capture
 - [x] Add optional consent-based license-image uploads to individual and group golf cart signing; clear license data between group guests.
 - [x] Store images privately and allow only same-organization admins to retrieve signed attachments; no license images in PDFs or emails.

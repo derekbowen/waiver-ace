@@ -5,6 +5,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { addPurchasedCredits, paidCreditAmount } from "../_shared/purchaseCredits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -83,34 +84,39 @@ serve(async (req) => {
     });
 
     let recovered = 0;
+    let failed = 0;
     const recoveredSessions: string[] = [];
 
     for (const session of sessions.data) {
       if (session.mode !== "payment") continue;
 
       const orgId = session.metadata?.org_id;
-      const credits = parseInt(session.metadata?.credits || "0", 10);
+      const credits = paidCreditAmount(session);
       const packageId = session.metadata?.package_id;
 
       // Only process sessions for this org
       if (orgId !== profile.org_id || !credits) continue;
 
       // Check if already processed
-      const { data: existing } = await adminClient
+      const { data: existing, error: existingError } = await adminClient
         .from("credit_transactions")
         .select("id")
         .eq("reference_id", session.id)
         .eq("type", "purchase")
         .limit(1);
 
+      if (existingError) {
+        failed += 1;
+        console.error("Could not check purchase ledger:", existingError);
+        continue;
+      }
       if (existing && existing.length > 0) continue;
 
       // Add the missing credits
-      const { error: creditErr } = await adminClient.rpc("add_credits", {
+      const { error: creditErr } = await addPurchasedCredits(adminClient, {
         p_org_id: orgId,
         p_amount: credits,
         p_reference_id: session.id,
-        p_type: "purchase",
         p_notes: `Recovered: ${credits} credits (${packageId}) — verified by user`,
       });
 
@@ -118,6 +124,7 @@ serve(async (req) => {
         recovered += credits;
         recoveredSessions.push(session.id);
       } else {
+        failed += 1;
         console.error(`Failed to recover session ${session.id}:`, creditErr);
       }
     }
@@ -125,11 +132,14 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       recovered,
       sessions_fixed: recoveredSessions.length,
-      message: recovered > 0
+      failed,
+      message: failed > 0
+        ? `Recovered ${recovered} credits; ${failed} purchase(s) could not be verified. Please try again.`
+        : recovered > 0
         ? `Recovered ${recovered} credits from ${recoveredSessions.length} session(s).`
         : "All purchases are accounted for. No missing credits found.",
     }), {
-      status: 200,
+      status: failed > 0 ? 500 : 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {

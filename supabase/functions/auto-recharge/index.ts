@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { addPurchasedCredits } from "../_shared/purchaseCredits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -104,11 +105,10 @@ serve(async (req) => {
 
     if (paymentIntent.status === "succeeded") {
       // Add credits
-      const { error: creditErr } = await supabase.rpc("add_credits", {
+      const { error: creditErr } = await addPurchasedCredits(supabase, {
         p_org_id: org_id,
         p_amount: pkg.credits,
         p_reference_id: paymentIntent.id,
-        p_type: "purchase",
         p_notes: `Auto-recharge: ${pkg.credits} credits (${wallet.auto_recharge_package})`,
       });
 
